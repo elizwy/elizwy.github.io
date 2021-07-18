@@ -40,6 +40,9 @@
   <div id="app">
     
       
+      <canvas width="1777" height="841"
+        style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
+      
     <main class="content on">
       <section class="outer">
   <article
@@ -100,12 +103,6 @@
 <p>大致意思是一个生产者源源不断的往队列放入消息，另外一个消费者不停的消费该队列。正常情况是没问题的，但当特殊情况18行代码(模拟数据库超时中断异常)成真时，try……catch在while 外面捕获，导致跳出while循环，消费者终止了消费，然而生产者依旧在不断生产数据，出现积压泄露，进而导致一系列假死状态</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3> 
       <!-- reward -->
-      
-      <div id="reword-out">
-        <div id="reward-btn">
-          Donate
-        </div>
-      </div>
       
     </div>
     
@@ -270,8 +267,6 @@
     <ul>
       <li>
         <!-- cnzz统计 -->
-        
-        <script type="text/javascript" src=''></script>
         
       </li>
     </ul>
@@ -494,7 +489,9 @@
 <!-- ClickBoom1 -->
 
 <!-- ClickBoom2 -->
-
+ 
+<script src="/js/clickBoom2.js"></script>
+ 
 <!-- CodeCopy -->
  
 <link rel="stylesheet" href="/css/clipboard.css">
@@ -554,7 +551,9 @@
 </script>
  
 <!-- CanvasBackground -->
-
+ 
+<script src="/js/dz.js"></script>
+ 
 <script>
   if (window.mermaid) {
     mermaid.initialize({ theme: "forest" });
