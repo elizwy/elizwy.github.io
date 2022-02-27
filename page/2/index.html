@@ -142,6 +142,69 @@
     
     
     <article
+  id="post-jpa 双向关联导致的堆栈溢出"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2019/08/30/jpa%20%E5%8F%8C%E5%90%91%E5%85%B3%E8%81%94%E5%AF%BC%E8%87%B4%E7%9A%84%E5%A0%86%E6%A0%88%E6%BA%A2%E5%87%BA/"
+    >jpa 双向关联导致的堆栈溢出</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2019/08/30/jpa%20%E5%8F%8C%E5%90%91%E5%85%B3%E8%81%94%E5%AF%BC%E8%87%B4%E7%9A%84%E5%A0%86%E6%A0%88%E6%BA%A2%E5%87%BA/" class="article-date">
+  <time datetime="2019-08-30T01:56:11.000Z" itemprop="datePublished">2019-08-30</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>最近做权限的过程中， 角色和资源的关系是多对多的关系，采用@ManyToMany 注解，在使用双向的过程中出现了jpa 循环依赖导致堆栈溢出问题</p>
+<h1 id="实体"><a href="#实体" class="headerlink" title="实体"></a>实体</h1><ul>
+<li><p>Role</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public class Role extends BaseEntity &#123;</span><br><span class="line">    @Id</span><br><span class="line">    @GeneratedValue(strategy = GenerationType.IDENTITY)</span><br><span class="line">    private Long id;</span><br><span class="line">    @Column(name = &quot;role_name&quot;)</span><br><span class="line">    private String roleName;</span><br><span class="line">    @Column(name = &quot;status&quot;)</span><br><span class="line">    private String status;</span><br><span class="line">    /**</span><br><span class="line">     * 角色拥有的资源id</span><br><span class="line">     */</span><br><span class="line">    @Transient</span><br><span class="line">    private Set&lt;Integer&gt; resourceIds=new HashSet&lt;&gt;();</span><br><span class="line">    /**</span><br><span class="line">     * 角色拥有的资源</span><br><span class="line">     */</span><br><span class="line">    @ManyToMany(fetch=FetchType.EAGER)</span><br><span class="line">    @JoinTable(name=&quot;role_resource&quot;,joinColumns = @JoinColumn(name = &quot;role_id&quot;),inverseJoinColumns = @JoinColumn(name = &quot;resource_id&quot;))</span><br><span class="line">    private Set&lt;Resource&gt; resources=new HashSet&lt;&gt;();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>Resource</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">@Id</span><br><span class="line">    @GeneratedValue(strategy = GenerationType.IDENTITY)</span><br><span class="line">    private Integer id;</span><br><span class="line">    private String name;</span><br><span class="line">    @ManyToOne</span><br><span class="line">    @NotFound(action= NotFoundAction.IGNORE)</span><br><span class="line">    private Resource parent;</span><br><span class="line">    @OneToMany(mappedBy = &quot;parent&quot;)</span><br><span class="line">    @OrderBy(&quot;sort ASC&quot;)</span><br><span class="line">    private List&lt;Resource&gt; childs=new ArrayList&lt;&gt;();</span><br><span class="line">    private String url;</span><br><span class="line">    private String status;</span><br><span class="line">    private String icon;</span><br><span class="line">    private String title;</span><br><span class="line"></span><br><span class="line">    @Transient</span><br><span class="line">    private Integer parentId;</span><br><span class="line"></span><br><span class="line">    @ManyToMany(mappedBy = &quot;resources&quot;)</span><br><span class="line">    private Set&lt;Role&gt; role;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">java.lang.StackOverflowError: null</span><br><span class="line">	at com.mysql.jdbc.Util.handleNewInstance(Util.java:425)</span><br><span class="line">	at com.mysql.jdbc.PreparedStatement.getInstance(PreparedStatement.java:761)</span><br><span class="line">	at com.mysql.jdbc.ConnectionImpl.clientPrepareStatement(ConnectionImpl.java:1471)</span><br><span class="line">	at com.mysql.jdbc.ConnectionImpl.prepareStatement(ConnectionImpl.java:4167)</span><br><span class="line">	at com.mysql.jdbc.ConnectionImpl.prepareStatement(ConnectionImpl.java:4071)</span><br><span class="line">	at com.zaxxer.hikari.pool.ProxyConnection.prepareStatement(ProxyConnection.java:311)</span><br><span class="line">	at com.zaxxer.hikari.pool.HikariProxyConnection.prepareStatement(HikariProxyConnection.java)</span><br><span class="line">	at org.hibernate.engine.jdbc.internal.StatementPreparerImpl$5.doPrepare(StatementPreparerImpl.java:146)</span><br><span class="line">	at org.hibernate.engine.jdbc.internal.StatementPreparerImpl$StatementPreparationTemplate.prepareStatement(StatementPreparerImpl.java:172)</span><br><span class="line">	at org.hibernate.engine.jdbc.internal.StatementPreparerImpl.prepareQueryStatement(StatementPreparerImpl.java:148)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.prepareQueryStatement(AbstractLoadPlanBasedLoader.java:226)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.executeQueryStatement(AbstractLoadPlanBasedLoader.java:190)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.executeLoad(AbstractLoadPlanBasedLoader.java:121)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.executeLoad(AbstractLoadPlanBasedLoader.java:86)</span><br><span class="line">	at org.hibernate.loader.collection.plan.AbstractLoadPlanBasedCollectionInitializer.initialize(AbstractLoadPlanBasedCollectionInitializer.java:87)</span><br><span class="line">	at org.hibernate.persister.collection.AbstractCollectionPersister.initialize(AbstractCollectionPersister.java:691)</span><br><span class="line">	at org.hibernate.event.internal.DefaultInitializeCollectionEventListener.onInitializeCollection(DefaultInitializeCollectionEventListener.java:75)</span><br><span class="line">	at org.hibernate.internal.SessionImpl.initializeCollection(SessionImpl.java:2246)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection$4.doWork(AbstractPersistentCollection.java:580)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection.withTemporarySessionIfNeeded(AbstractPersistentCollection.java:262)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection.initialize(AbstractPersistentCollection.java:576)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection.read(AbstractPersistentCollection.java:147)</span><br><span class="line">	at org.hibernate.collection.internal.PersistentSet.iterator(PersistentSet.java:188)</span><br><span class="line">	at java.util.Spliterators$IteratorSpliterator.estimateSize(Spliterators.java:1821)</span><br><span class="line">	at java.util.Spliterator.getExactSizeIfKnown(Spliterator.java:408)</span><br><span class="line">	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:483)</span><br><span class="line">	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:474)</span><br><span class="line">	at java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:913)</span><br><span class="line">	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)</span><br><span class="line">	at java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:578)</span><br><span class="line">	at com.testin.user.admin.service.role.domain.Role.getResourceIds(Role.java:76)</span><br><span class="line">	at com.testin.user.admin.service.role.domain.Role.hashCode(Role.java:29)</span><br><span class="line">	at java.util.HashMap.hash(HashMap.java:339)</span><br><span class="line">	at java.util.HashMap.put(HashMap.java:607)</span><br><span class="line">	at java.util.HashSet.add(HashSet.java:220)</span><br><span class="line">	at java.util.AbstractCollection.addAll(AbstractCollection.java:352)</span><br><span class="line">	at org.hibernate.collection.internal.PersistentSet.endRead(PersistentSet.java:355)</span><br><span class="line">	at org.hibernate.engine.loading.internal.CollectionLoadContext.endLoadingCollection(CollectionLoadContext.java:236)</span><br><span class="line">	at org.hibernate.engine.loading.internal.CollectionLoadContext.endLoadingCollections(CollectionLoadContext.java:223)</span><br><span class="line">	at org.hibernate.engine.loading.internal.CollectionLoadContext.endLoadingCollections(CollectionLoadContext.java:196)</span><br><span class="line">	at org.hibernate.loader.plan.exec.process.internal.CollectionReferenceInitializerImpl.endLoading(CollectionReferenceInitializerImpl.java:154)</span><br><span class="line">	at org.hibernate.loader.plan.exec.process.internal.AbstractRowReader.finishLoadingCollections(AbstractRowReader.java:249)</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p> 从堆栈信息可以看出, 循环依赖的中间衔接点在hashCode，所以我们只需要尝试在被维护方复写hashCode 即可</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">    public int hashCode() &#123;</span><br><span class="line">        return Objects.hash(id);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/jpa/" rel="tag">jpa</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
   id="post-领域驱动与应用服务的区别"
   class="article article-type-post"
   itemscope
