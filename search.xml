@@ -18,47 +18,24 @@
       </tags>
   </entry>
   <entry>
-    <title>java异常受控异常与非受控异常</title>
-    <url>/2019/09/11/java%E5%BC%82%E5%B8%B8%E5%8F%97%E6%8E%A7%E5%BC%82%E5%B8%B8%E4%B8%8E%E9%9D%9E%E5%8F%97%E6%8E%A7%E5%BC%82%E5%B8%B8/</url>
-    <content><![CDATA[<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>最近在参考《重构改善既有代码的设计》做重构的过程中，其中有两节小技巧是介绍如何处理java 中的错误。基于“代码的可理解性应该是我们虔诚追求的目标”采用以异常取代错误代码(310)，其中异常分为受控异常和非受控异常</p>
-<h1 id="java异常体系"><a href="#java异常体系" class="headerlink" title="java异常体系"></a>java异常体系</h1><p>![](/home/elizwy/文档/leaner/java/photo/java 异常体系.png)</p>
-<p>异常基类是Throwable,其下有两个子类，Error(系统错误)与Exception(系统异常)</p>
-<p>Exception 下分为RunTimeException(非受控、检查异常) 和非RuntimException(检查异常)</p>
-<h1 id="java-异常最好的实践"><a href="#java-异常最好的实践" class="headerlink" title="java 异常最好的实践"></a>java 异常最好的实践</h1><ol>
-<li>采用空对象代替返回null</li>
-<li>catch 里要写处理逻辑</li>
-<li>能抛受控异常就尽量不抛非受控异常</li>
-<li>不要让受控异常不加处理就抛到了前端</li>
-<li>数据库连接要关闭库</li>
+    <title>httpCilent的timeout设置</title>
+    <url>/2021/01/06/httpCilent%E7%9A%84timeout%E8%AE%BE%E7%BD%AE/</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>公司项目同事在使用httpClient向某个url post 数据时发现：大部分数据在1,2秒内对方url就会有响应，但是偶尔会出现需要等待10多分钟，甚至是30多分钟才能接收到对方返回的成功响应。使用httpClient 时使用的connectionTimeOut,socketTimeOut都设置在一分钟以内，按道理是不会等这么长的时间，应该早就报异常了，但是在等待30分钟之后还是能收到对方的成功响应，这个问题就一直困扰着他。</p>
+<h3 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h3><p>其实他当时post文件都是在10m左右，按照计算机网络的通信协议，http协议是基于tcp协议的，tcp 和udp 协议除了前者是稳定传输，后者是非稳定传输；还有一个特点就是udp是不会对应用层的数据进行任何处理，拆分的，直接包上自己的udp头就发出去(其实超过了2^16-20-8 自己还是要拆包的)，而tcp是基于字节流传输的，是会拆分的。而socketTimeOut 指的是两个数据包的间隔，这样一来，我拆分出10个包，每个包从发出到接收到的ack包之间间隔只要在一分钟内就不会抛异常，总的传输时间在10分钟也不会抛异常</p>
+<h3 id="处理"><a href="#处理" class="headerlink" title="处理"></a>处理</h3><ol>
+<li>加大带宽</li>
+<li>每次发送异步判断耗时，耗时超过一定时间就重试或者其他逻辑</li>
 </ol>
-<h1 id="为何还要存在受控异常"><a href="#为何还要存在受控异常" class="headerlink" title="为何还要存在受控异常"></a>为何还要存在受控异常</h1><p>既然RunTimeException 能用来处理错误，而为何还要存在非受控异常，主要是为了让我们在请求了不存在的系统资源时，能够优雅的处理这种情况。另外能够使受限的资源得到尽早的释放</p>
-<p>更多资源参考：<a href="https://www.cnblogs.com/huajiezh/p/5236864.html">https://www.cnblogs.com/huajiezh/p/5236864.html</a></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p> 计算机网络和httpclient 底层原理未弄清</p>
+<p>5bnktj7l</p>
 ]]></content>
-      <tags>
-        <tag>java</tag>
-      </tags>
   </entry>
   <entry>
-    <title>jpa 双向关联导致的堆栈溢出</title>
-    <url>/2019/08/30/jpa%20%E5%8F%8C%E5%90%91%E5%85%B3%E8%81%94%E5%AF%BC%E8%87%B4%E7%9A%84%E5%A0%86%E6%A0%88%E6%BA%A2%E5%87%BA/</url>
-    <content><![CDATA[<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>最近做权限的过程中， 角色和资源的关系是多对多的关系，采用@ManyToMany 注解，在使用双向的过程中出现了jpa 循环依赖导致堆栈溢出问题</p>
-<h1 id="实体"><a href="#实体" class="headerlink" title="实体"></a>实体</h1><ul>
-<li><p>Role</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public class Role extends BaseEntity &#123;</span><br><span class="line">    @Id</span><br><span class="line">    @GeneratedValue(strategy = GenerationType.IDENTITY)</span><br><span class="line">    private Long id;</span><br><span class="line">    @Column(name = &quot;role_name&quot;)</span><br><span class="line">    private String roleName;</span><br><span class="line">    @Column(name = &quot;status&quot;)</span><br><span class="line">    private String status;</span><br><span class="line">    /**</span><br><span class="line">     * 角色拥有的资源id</span><br><span class="line">     */</span><br><span class="line">    @Transient</span><br><span class="line">    private Set&lt;Integer&gt; resourceIds=new HashSet&lt;&gt;();</span><br><span class="line">    /**</span><br><span class="line">     * 角色拥有的资源</span><br><span class="line">     */</span><br><span class="line">    @ManyToMany(fetch=FetchType.EAGER)</span><br><span class="line">    @JoinTable(name=&quot;role_resource&quot;,joinColumns = @JoinColumn(name = &quot;role_id&quot;),inverseJoinColumns = @JoinColumn(name = &quot;resource_id&quot;))</span><br><span class="line">    private Set&lt;Resource&gt; resources=new HashSet&lt;&gt;();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
-<li><p>Resource</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">@Id</span><br><span class="line">    @GeneratedValue(strategy = GenerationType.IDENTITY)</span><br><span class="line">    private Integer id;</span><br><span class="line">    private String name;</span><br><span class="line">    @ManyToOne</span><br><span class="line">    @NotFound(action= NotFoundAction.IGNORE)</span><br><span class="line">    private Resource parent;</span><br><span class="line">    @OneToMany(mappedBy = &quot;parent&quot;)</span><br><span class="line">    @OrderBy(&quot;sort ASC&quot;)</span><br><span class="line">    private List&lt;Resource&gt; childs=new ArrayList&lt;&gt;();</span><br><span class="line">    private String url;</span><br><span class="line">    private String status;</span><br><span class="line">    private String icon;</span><br><span class="line">    private String title;</span><br><span class="line"></span><br><span class="line">    @Transient</span><br><span class="line">    private Integer parentId;</span><br><span class="line"></span><br><span class="line">    @ManyToMany(mappedBy = &quot;resources&quot;)</span><br><span class="line">    private Set&lt;Role&gt; role;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h1 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">java.lang.StackOverflowError: null</span><br><span class="line">	at com.mysql.jdbc.Util.handleNewInstance(Util.java:425)</span><br><span class="line">	at com.mysql.jdbc.PreparedStatement.getInstance(PreparedStatement.java:761)</span><br><span class="line">	at com.mysql.jdbc.ConnectionImpl.clientPrepareStatement(ConnectionImpl.java:1471)</span><br><span class="line">	at com.mysql.jdbc.ConnectionImpl.prepareStatement(ConnectionImpl.java:4167)</span><br><span class="line">	at com.mysql.jdbc.ConnectionImpl.prepareStatement(ConnectionImpl.java:4071)</span><br><span class="line">	at com.zaxxer.hikari.pool.ProxyConnection.prepareStatement(ProxyConnection.java:311)</span><br><span class="line">	at com.zaxxer.hikari.pool.HikariProxyConnection.prepareStatement(HikariProxyConnection.java)</span><br><span class="line">	at org.hibernate.engine.jdbc.internal.StatementPreparerImpl$5.doPrepare(StatementPreparerImpl.java:146)</span><br><span class="line">	at org.hibernate.engine.jdbc.internal.StatementPreparerImpl$StatementPreparationTemplate.prepareStatement(StatementPreparerImpl.java:172)</span><br><span class="line">	at org.hibernate.engine.jdbc.internal.StatementPreparerImpl.prepareQueryStatement(StatementPreparerImpl.java:148)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.prepareQueryStatement(AbstractLoadPlanBasedLoader.java:226)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.executeQueryStatement(AbstractLoadPlanBasedLoader.java:190)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.executeLoad(AbstractLoadPlanBasedLoader.java:121)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.executeLoad(AbstractLoadPlanBasedLoader.java:86)</span><br><span class="line">	at org.hibernate.loader.collection.plan.AbstractLoadPlanBasedCollectionInitializer.initialize(AbstractLoadPlanBasedCollectionInitializer.java:87)</span><br><span class="line">	at org.hibernate.persister.collection.AbstractCollectionPersister.initialize(AbstractCollectionPersister.java:691)</span><br><span class="line">	at org.hibernate.event.internal.DefaultInitializeCollectionEventListener.onInitializeCollection(DefaultInitializeCollectionEventListener.java:75)</span><br><span class="line">	at org.hibernate.internal.SessionImpl.initializeCollection(SessionImpl.java:2246)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection$4.doWork(AbstractPersistentCollection.java:580)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection.withTemporarySessionIfNeeded(AbstractPersistentCollection.java:262)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection.initialize(AbstractPersistentCollection.java:576)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection.read(AbstractPersistentCollection.java:147)</span><br><span class="line">	at org.hibernate.collection.internal.PersistentSet.iterator(PersistentSet.java:188)</span><br><span class="line">	at java.util.Spliterators$IteratorSpliterator.estimateSize(Spliterators.java:1821)</span><br><span class="line">	at java.util.Spliterator.getExactSizeIfKnown(Spliterator.java:408)</span><br><span class="line">	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:483)</span><br><span class="line">	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:474)</span><br><span class="line">	at java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:913)</span><br><span class="line">	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)</span><br><span class="line">	at java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:578)</span><br><span class="line">	at com.testin.user.admin.service.role.domain.Role.getResourceIds(Role.java:76)</span><br><span class="line">	at com.testin.user.admin.service.role.domain.Role.hashCode(Role.java:29)</span><br><span class="line">	at java.util.HashMap.hash(HashMap.java:339)</span><br><span class="line">	at java.util.HashMap.put(HashMap.java:607)</span><br><span class="line">	at java.util.HashSet.add(HashSet.java:220)</span><br><span class="line">	at java.util.AbstractCollection.addAll(AbstractCollection.java:352)</span><br><span class="line">	at org.hibernate.collection.internal.PersistentSet.endRead(PersistentSet.java:355)</span><br><span class="line">	at org.hibernate.engine.loading.internal.CollectionLoadContext.endLoadingCollection(CollectionLoadContext.java:236)</span><br><span class="line">	at org.hibernate.engine.loading.internal.CollectionLoadContext.endLoadingCollections(CollectionLoadContext.java:223)</span><br><span class="line">	at org.hibernate.engine.loading.internal.CollectionLoadContext.endLoadingCollections(CollectionLoadContext.java:196)</span><br><span class="line">	at org.hibernate.loader.plan.exec.process.internal.CollectionReferenceInitializerImpl.endLoading(CollectionReferenceInitializerImpl.java:154)</span><br><span class="line">	at org.hibernate.loader.plan.exec.process.internal.AbstractRowReader.finishLoadingCollections(AbstractRowReader.java:249)</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p> 从堆栈信息可以看出, 循环依赖的中间衔接点在hashCode，所以我们只需要尝试在被维护方复写hashCode 即可</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">    public int hashCode() &#123;</span><br><span class="line">        return Objects.hash(id);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
+    <title>manjaro彻底清除网易企业邮箱中的位于已删除文件夹下的文件</title>
+    <url>/2021/08/05/manjaro%E5%BD%BB%E5%BA%95%E6%B8%85%E9%99%A4%E7%BD%91%E6%98%93%E4%BC%81%E4%B8%9A%E9%82%AE%E7%AE%B1%E4%B8%AD%E7%9A%84%E4%BD%8D%E4%BA%8E%E5%B7%B2%E5%88%A0%E9%99%A4%E6%96%87%E4%BB%B6%E5%A4%B9%E4%B8%8B%E7%9A%84%E6%96%87%E4%BB%B6/</url>
+    <content><![CDATA[<hr>
+<p><a href="https://github.com/elizwy/tools/blob/main/shell/MailToolClean">工具链接</a></p>
 ]]></content>
-      <tags>
-        <tag>jpa</tag>
-      </tags>
   </entry>
   <entry>
     <title>manjaro交互式脚本解决vpn冲突问题</title>
@@ -113,11 +90,81 @@
       </tags>
   </entry>
   <entry>
-    <title>manjaro彻底清除网易企业邮箱中的位于已删除文件夹下的文件</title>
-    <url>/2021/08/05/manjaro%E5%BD%BB%E5%BA%95%E6%B8%85%E9%99%A4%E7%BD%91%E6%98%93%E4%BC%81%E4%B8%9A%E9%82%AE%E7%AE%B1%E4%B8%AD%E7%9A%84%E4%BD%8D%E4%BA%8E%E5%B7%B2%E5%88%A0%E9%99%A4%E6%96%87%E4%BB%B6%E5%A4%B9%E4%B8%8B%E7%9A%84%E6%96%87%E4%BB%B6/</url>
-    <content><![CDATA[<hr>
-<p><a href="https://github.com/elizwy/tools/blob/main/shell/MailToolClean">工具链接</a></p>
+    <title>jpa 双向关联导致的堆栈溢出</title>
+    <url>/2019/08/30/jpa%20%E5%8F%8C%E5%90%91%E5%85%B3%E8%81%94%E5%AF%BC%E8%87%B4%E7%9A%84%E5%A0%86%E6%A0%88%E6%BA%A2%E5%87%BA/</url>
+    <content><![CDATA[<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>最近做权限的过程中， 角色和资源的关系是多对多的关系，采用@ManyToMany 注解，在使用双向的过程中出现了jpa 循环依赖导致堆栈溢出问题</p>
+<h1 id="实体"><a href="#实体" class="headerlink" title="实体"></a>实体</h1><ul>
+<li><p>Role</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public class Role extends BaseEntity &#123;</span><br><span class="line">    @Id</span><br><span class="line">    @GeneratedValue(strategy = GenerationType.IDENTITY)</span><br><span class="line">    private Long id;</span><br><span class="line">    @Column(name = &quot;role_name&quot;)</span><br><span class="line">    private String roleName;</span><br><span class="line">    @Column(name = &quot;status&quot;)</span><br><span class="line">    private String status;</span><br><span class="line">    /**</span><br><span class="line">     * 角色拥有的资源id</span><br><span class="line">     */</span><br><span class="line">    @Transient</span><br><span class="line">    private Set&lt;Integer&gt; resourceIds=new HashSet&lt;&gt;();</span><br><span class="line">    /**</span><br><span class="line">     * 角色拥有的资源</span><br><span class="line">     */</span><br><span class="line">    @ManyToMany(fetch=FetchType.EAGER)</span><br><span class="line">    @JoinTable(name=&quot;role_resource&quot;,joinColumns = @JoinColumn(name = &quot;role_id&quot;),inverseJoinColumns = @JoinColumn(name = &quot;resource_id&quot;))</span><br><span class="line">    private Set&lt;Resource&gt; resources=new HashSet&lt;&gt;();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>Resource</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">@Id</span><br><span class="line">    @GeneratedValue(strategy = GenerationType.IDENTITY)</span><br><span class="line">    private Integer id;</span><br><span class="line">    private String name;</span><br><span class="line">    @ManyToOne</span><br><span class="line">    @NotFound(action= NotFoundAction.IGNORE)</span><br><span class="line">    private Resource parent;</span><br><span class="line">    @OneToMany(mappedBy = &quot;parent&quot;)</span><br><span class="line">    @OrderBy(&quot;sort ASC&quot;)</span><br><span class="line">    private List&lt;Resource&gt; childs=new ArrayList&lt;&gt;();</span><br><span class="line">    private String url;</span><br><span class="line">    private String status;</span><br><span class="line">    private String icon;</span><br><span class="line">    private String title;</span><br><span class="line"></span><br><span class="line">    @Transient</span><br><span class="line">    private Integer parentId;</span><br><span class="line"></span><br><span class="line">    @ManyToMany(mappedBy = &quot;resources&quot;)</span><br><span class="line">    private Set&lt;Role&gt; role;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">java.lang.StackOverflowError: null</span><br><span class="line">	at com.mysql.jdbc.Util.handleNewInstance(Util.java:425)</span><br><span class="line">	at com.mysql.jdbc.PreparedStatement.getInstance(PreparedStatement.java:761)</span><br><span class="line">	at com.mysql.jdbc.ConnectionImpl.clientPrepareStatement(ConnectionImpl.java:1471)</span><br><span class="line">	at com.mysql.jdbc.ConnectionImpl.prepareStatement(ConnectionImpl.java:4167)</span><br><span class="line">	at com.mysql.jdbc.ConnectionImpl.prepareStatement(ConnectionImpl.java:4071)</span><br><span class="line">	at com.zaxxer.hikari.pool.ProxyConnection.prepareStatement(ProxyConnection.java:311)</span><br><span class="line">	at com.zaxxer.hikari.pool.HikariProxyConnection.prepareStatement(HikariProxyConnection.java)</span><br><span class="line">	at org.hibernate.engine.jdbc.internal.StatementPreparerImpl$5.doPrepare(StatementPreparerImpl.java:146)</span><br><span class="line">	at org.hibernate.engine.jdbc.internal.StatementPreparerImpl$StatementPreparationTemplate.prepareStatement(StatementPreparerImpl.java:172)</span><br><span class="line">	at org.hibernate.engine.jdbc.internal.StatementPreparerImpl.prepareQueryStatement(StatementPreparerImpl.java:148)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.prepareQueryStatement(AbstractLoadPlanBasedLoader.java:226)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.executeQueryStatement(AbstractLoadPlanBasedLoader.java:190)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.executeLoad(AbstractLoadPlanBasedLoader.java:121)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.executeLoad(AbstractLoadPlanBasedLoader.java:86)</span><br><span class="line">	at org.hibernate.loader.collection.plan.AbstractLoadPlanBasedCollectionInitializer.initialize(AbstractLoadPlanBasedCollectionInitializer.java:87)</span><br><span class="line">	at org.hibernate.persister.collection.AbstractCollectionPersister.initialize(AbstractCollectionPersister.java:691)</span><br><span class="line">	at org.hibernate.event.internal.DefaultInitializeCollectionEventListener.onInitializeCollection(DefaultInitializeCollectionEventListener.java:75)</span><br><span class="line">	at org.hibernate.internal.SessionImpl.initializeCollection(SessionImpl.java:2246)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection$4.doWork(AbstractPersistentCollection.java:580)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection.withTemporarySessionIfNeeded(AbstractPersistentCollection.java:262)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection.initialize(AbstractPersistentCollection.java:576)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection.read(AbstractPersistentCollection.java:147)</span><br><span class="line">	at org.hibernate.collection.internal.PersistentSet.iterator(PersistentSet.java:188)</span><br><span class="line">	at java.util.Spliterators$IteratorSpliterator.estimateSize(Spliterators.java:1821)</span><br><span class="line">	at java.util.Spliterator.getExactSizeIfKnown(Spliterator.java:408)</span><br><span class="line">	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:483)</span><br><span class="line">	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:474)</span><br><span class="line">	at java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:913)</span><br><span class="line">	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)</span><br><span class="line">	at java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:578)</span><br><span class="line">	at com.testin.user.admin.service.role.domain.Role.getResourceIds(Role.java:76)</span><br><span class="line">	at com.testin.user.admin.service.role.domain.Role.hashCode(Role.java:29)</span><br><span class="line">	at java.util.HashMap.hash(HashMap.java:339)</span><br><span class="line">	at java.util.HashMap.put(HashMap.java:607)</span><br><span class="line">	at java.util.HashSet.add(HashSet.java:220)</span><br><span class="line">	at java.util.AbstractCollection.addAll(AbstractCollection.java:352)</span><br><span class="line">	at org.hibernate.collection.internal.PersistentSet.endRead(PersistentSet.java:355)</span><br><span class="line">	at org.hibernate.engine.loading.internal.CollectionLoadContext.endLoadingCollection(CollectionLoadContext.java:236)</span><br><span class="line">	at org.hibernate.engine.loading.internal.CollectionLoadContext.endLoadingCollections(CollectionLoadContext.java:223)</span><br><span class="line">	at org.hibernate.engine.loading.internal.CollectionLoadContext.endLoadingCollections(CollectionLoadContext.java:196)</span><br><span class="line">	at org.hibernate.loader.plan.exec.process.internal.CollectionReferenceInitializerImpl.endLoading(CollectionReferenceInitializerImpl.java:154)</span><br><span class="line">	at org.hibernate.loader.plan.exec.process.internal.AbstractRowReader.finishLoadingCollections(AbstractRowReader.java:249)</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p> 从堆栈信息可以看出, 循环依赖的中间衔接点在hashCode，所以我们只需要尝试在被维护方复写hashCode 即可</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">    public int hashCode() &#123;</span><br><span class="line">        return Objects.hash(id);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
 ]]></content>
+      <tags>
+        <tag>jpa</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>java异常受控异常与非受控异常</title>
+    <url>/2019/09/11/java%E5%BC%82%E5%B8%B8%E5%8F%97%E6%8E%A7%E5%BC%82%E5%B8%B8%E4%B8%8E%E9%9D%9E%E5%8F%97%E6%8E%A7%E5%BC%82%E5%B8%B8/</url>
+    <content><![CDATA[<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>最近在参考《重构改善既有代码的设计》做重构的过程中，其中有两节小技巧是介绍如何处理java 中的错误。基于“代码的可理解性应该是我们虔诚追求的目标”采用以异常取代错误代码(310)，其中异常分为受控异常和非受控异常</p>
+<h1 id="java异常体系"><a href="#java异常体系" class="headerlink" title="java异常体系"></a>java异常体系</h1><p>![](/home/elizwy/文档/leaner/java/photo/java 异常体系.png)</p>
+<p>异常基类是Throwable,其下有两个子类，Error(系统错误)与Exception(系统异常)</p>
+<p>Exception 下分为RunTimeException(非受控、检查异常) 和非RuntimException(检查异常)</p>
+<h1 id="java-异常最好的实践"><a href="#java-异常最好的实践" class="headerlink" title="java 异常最好的实践"></a>java 异常最好的实践</h1><ol>
+<li>采用空对象代替返回null</li>
+<li>catch 里要写处理逻辑</li>
+<li>能抛受控异常就尽量不抛非受控异常</li>
+<li>不要让受控异常不加处理就抛到了前端</li>
+<li>数据库连接要关闭库</li>
+</ol>
+<h1 id="为何还要存在受控异常"><a href="#为何还要存在受控异常" class="headerlink" title="为何还要存在受控异常"></a>为何还要存在受控异常</h1><p>既然RunTimeException 能用来处理错误，而为何还要存在非受控异常，主要是为了让我们在请求了不存在的系统资源时，能够优雅的处理这种情况。另外能够使受限的资源得到尽早的释放</p>
+<p>更多资源参考：<a href="https://www.cnblogs.com/huajiezh/p/5236864.html">https://www.cnblogs.com/huajiezh/p/5236864.html</a></p>
+]]></content>
+      <tags>
+        <tag>java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mysql round 遇到不精确值的处理</title>
+    <url>/2021/07/22/mysql-round-%E9%81%87%E5%88%B0%E4%B8%8D%E7%B2%BE%E7%A1%AE%E5%80%BC%E7%9A%84%E5%A4%84%E7%90%86/</url>
+    <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>　　笔者在处理报表sql时,碰到比率之类的指标需要进行四舍五入保留2位小数操作.按照惯例,round函数操作,但是在碰到如以下sql时出现结果不如预期想象</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> <span class="keyword">create</span> <span class="keyword">table</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="keyword">Table</span>     <span class="operator">|</span> <span class="keyword">Create</span> <span class="keyword">Table</span>                                                                                                                                                                                                          <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> roundTest <span class="operator">|</span> <span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `roundTest` (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">10</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `cost` <span class="type">decimal</span>(<span class="number">10</span>,<span class="number">4</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `metrics_map` json <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`)</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB AUTO_INCREMENT<span class="operator">=</span><span class="number">2</span> <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8 <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">----+--------+--------------+</span></span><br><span class="line"><span class="operator">|</span> id <span class="operator">|</span> cost   <span class="operator">|</span> metrics_map  <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+--------+--------------+</span></span><br><span class="line"><span class="operator">|</span>  <span class="number">1</span> <span class="operator">|</span> <span class="number">2.0100</span> <span class="operator">|</span> &#123;&quot;count&quot;: <span class="number">2</span>&#125; <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+--------+--------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> round(cost<span class="operator">/</span>metrics_map<span class="operator">-</span><span class="operator">&gt;</span>&quot;$.count&quot;,<span class="number">2</span>) <span class="keyword">from</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> round(cost<span class="operator">/</span>metrics_map<span class="operator">-</span><span class="operator">&gt;</span>&quot;$.count&quot;,<span class="number">2</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                                 <span class="number">1.00</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p>可以看到,当使用round进行四舍五入时,期望结果是1.01,可实际结果是1.00</p>
+<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>造成这种结果其实是多方努力带来的,</p>
+<ol>
+<li>可以看到metric_map 是一个json类型,我们从中提取count字段,虽然官方文档没有明确表示返回类型是是什么,但是按到json存储方式,很有可能知道是字符类型,或者为未知类型.</li>
+<li>cost 是decimal 类型,属于精确类型, cost/metrics_map-&gt;”$.count” = 精确类型/未知类型(字符类型), 由于count是非精确类型,那么结果就必然是非精确类型.</li>
+<li>round 进行四舍五入时按照官方文档是有两种情形的<ol>
+<li><p>当对精确类型使用时,就是四舍五入</p>
+</li>
+<li><p>当对非精确类型使用时,结果将会偏向偶数结</p>
+<p><img src="/home/elizwy/.config/Typora/typora-user-images/image-20210723174310858.png" alt="image-20210723174310858"></p>
+</li>
+</ol>
+</li>
+</ol>
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p>使用cast^2^ 函数将count 转成精确类型即可.</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> round(<span class="built_in">sum</span>(cost)<span class="operator">*</span><span class="number">1.0</span><span class="operator">/</span><span class="built_in">cast</span>(<span class="built_in">sum</span>(metrics_map<span class="operator">-</span><span class="operator">&gt;</span><span class="string">&#x27;$.count&#x27;</span>)<span class="keyword">as</span> <span class="type">decimal</span>),<span class="number">2</span>) <span class="keyword">from</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> round(<span class="built_in">sum</span>(cost)<span class="operator">*</span><span class="number">1.0</span><span class="operator">/</span><span class="built_in">cast</span>(<span class="built_in">sum</span>(metrics_map<span class="operator">-</span><span class="operator">&gt;</span><span class="string">&#x27;$.count&#x27;</span>)<span class="keyword">as</span> <span class="type">decimal</span>),<span class="number">2</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                                                               <span class="number">1.01</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+
+
+<h6 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h6><ol>
+<li> <a href="https://dev.mysql.com/doc/refman/5.7/en/precision-math-rounding.html">Rounding Behavior</a></li>
+<li><a href="https://dev.mysql.com/doc/refman/5.7/en/cast-functions.html#function_cast"> Cast Functions and Operators</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>issue</tag>
+      </tags>
   </entry>
   <entry>
     <title>《拯救记忆》读后感</title>
@@ -168,120 +215,6 @@
 </li>
 </ul>
 ]]></content>
-  </entry>
-  <entry>
-    <title>mysql round 遇到不精确值的处理</title>
-    <url>/2021/07/22/mysql-round-%E9%81%87%E5%88%B0%E4%B8%8D%E7%B2%BE%E7%A1%AE%E5%80%BC%E7%9A%84%E5%A4%84%E7%90%86/</url>
-    <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>　　笔者在处理报表sql时,碰到比率之类的指标需要进行四舍五入保留2位小数操作.按照惯例,round函数操作,但是在碰到如以下sql时出现结果不如预期想象</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> <span class="keyword">create</span> <span class="keyword">table</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="keyword">Table</span>     <span class="operator">|</span> <span class="keyword">Create</span> <span class="keyword">Table</span>                                                                                                                                                                                                          <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> roundTest <span class="operator">|</span> <span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `roundTest` (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">10</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `cost` <span class="type">decimal</span>(<span class="number">10</span>,<span class="number">4</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `metrics_map` json <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`)</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB AUTO_INCREMENT<span class="operator">=</span><span class="number">2</span> <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8 <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">----+--------+--------------+</span></span><br><span class="line"><span class="operator">|</span> id <span class="operator">|</span> cost   <span class="operator">|</span> metrics_map  <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+--------+--------------+</span></span><br><span class="line"><span class="operator">|</span>  <span class="number">1</span> <span class="operator">|</span> <span class="number">2.0100</span> <span class="operator">|</span> &#123;&quot;count&quot;: <span class="number">2</span>&#125; <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+--------+--------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> round(cost<span class="operator">/</span>metrics_map<span class="operator">-</span><span class="operator">&gt;</span>&quot;$.count&quot;,<span class="number">2</span>) <span class="keyword">from</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> round(cost<span class="operator">/</span>metrics_map<span class="operator">-</span><span class="operator">&gt;</span>&quot;$.count&quot;,<span class="number">2</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                                 <span class="number">1.00</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-<p>可以看到,当使用round进行四舍五入时,期望结果是1.01,可实际结果是1.00</p>
-<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>造成这种结果其实是多方努力带来的,</p>
-<ol>
-<li>可以看到metric_map 是一个json类型,我们从中提取count字段,虽然官方文档没有明确表示返回类型是是什么,但是按到json存储方式,很有可能知道是字符类型,或者为未知类型.</li>
-<li>cost 是decimal 类型,属于精确类型, cost/metrics_map-&gt;”$.count” = 精确类型/未知类型(字符类型), 由于count是非精确类型,那么结果就必然是非精确类型.</li>
-<li>round 进行四舍五入时按照官方文档是有两种情形的<ol>
-<li><p>当对精确类型使用时,就是四舍五入</p>
-</li>
-<li><p>当对非精确类型使用时,结果将会偏向偶数结</p>
-<p><img src="/home/elizwy/.config/Typora/typora-user-images/image-20210723174310858.png" alt="image-20210723174310858"></p>
-</li>
-</ol>
-</li>
-</ol>
-<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p>使用cast^2^ 函数将count 转成精确类型即可.</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> round(<span class="built_in">sum</span>(cost)<span class="operator">*</span><span class="number">1.0</span><span class="operator">/</span><span class="built_in">cast</span>(<span class="built_in">sum</span>(metrics_map<span class="operator">-</span><span class="operator">&gt;</span><span class="string">&#x27;$.count&#x27;</span>)<span class="keyword">as</span> <span class="type">decimal</span>),<span class="number">2</span>) <span class="keyword">from</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> round(<span class="built_in">sum</span>(cost)<span class="operator">*</span><span class="number">1.0</span><span class="operator">/</span><span class="built_in">cast</span>(<span class="built_in">sum</span>(metrics_map<span class="operator">-</span><span class="operator">&gt;</span><span class="string">&#x27;$.count&#x27;</span>)<span class="keyword">as</span> <span class="type">decimal</span>),<span class="number">2</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                                                               <span class="number">1.01</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-
-
-<h6 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h6><ol>
-<li> <a href="https://dev.mysql.com/doc/refman/5.7/en/precision-math-rounding.html">Rounding Behavior</a></li>
-<li><a href="https://dev.mysql.com/doc/refman/5.7/en/cast-functions.html#function_cast"> Cast Functions and Operators</a></li>
-</ol>
-]]></content>
-      <tags>
-        <tag>issue</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>httpCilent的timeout设置</title>
-    <url>/2021/01/06/httpCilent%E7%9A%84timeout%E8%AE%BE%E7%BD%AE/</url>
-    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>公司项目同事在使用httpClient向某个url post 数据时发现：大部分数据在1,2秒内对方url就会有响应，但是偶尔会出现需要等待10多分钟，甚至是30多分钟才能接收到对方返回的成功响应。使用httpClient 时使用的connectionTimeOut,socketTimeOut都设置在一分钟以内，按道理是不会等这么长的时间，应该早就报异常了，但是在等待30分钟之后还是能收到对方的成功响应，这个问题就一直困扰着他。</p>
-<h3 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h3><p>其实他当时post文件都是在10m左右，按照计算机网络的通信协议，http协议是基于tcp协议的，tcp 和udp 协议除了前者是稳定传输，后者是非稳定传输；还有一个特点就是udp是不会对应用层的数据进行任何处理，拆分的，直接包上自己的udp头就发出去(其实超过了2^16-20-8 自己还是要拆包的)，而tcp是基于字节流传输的，是会拆分的。而socketTimeOut 指的是两个数据包的间隔，这样一来，我拆分出10个包，每个包从发出到接收到的ack包之间间隔只要在一分钟内就不会抛异常，总的传输时间在10分钟也不会抛异常</p>
-<h3 id="处理"><a href="#处理" class="headerlink" title="处理"></a>处理</h3><ol>
-<li>加大带宽</li>
-<li>每次发送异步判断耗时，耗时超过一定时间就重试或者其他逻辑</li>
-</ol>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p> 计算机网络和httpclient 底层原理未弄清</p>
-<p>5bnktj7l</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>交换两变量的值</title>
-    <url>/2020/12/29/%E4%BA%A4%E6%8D%A2%E4%B8%A4%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/</url>
-    <content><![CDATA[<h3 id="方式一"><a href="#方式一" class="headerlink" title="方式一"></a>方式一</h3><ul>
-<li><p>采用第三个变量作为中间存储值来实现</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public void testSwap01(int a,int b)&#123;</span><br><span class="line">    int c=a;</span><br><span class="line">    a=b;</span><br><span class="line">    b=c;</span><br><span class="line">    System.out.println(&quot;a=&quot;+a);</span><br><span class="line">    System.out.println(&quot;b=&quot;+b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h3 id="方式二"><a href="#方式二" class="headerlink" title="方式二"></a>方式二</h3><ul>
-<li><p>采用异或的逻辑运算，a^a=0</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public void testSwap02(int a, int b)&#123;</span><br><span class="line">    a=a^b;</span><br><span class="line">    b=a^b;</span><br><span class="line">    a=a^b;</span><br><span class="line">    System.out.println(&quot;a=&quot;+a);</span><br><span class="line">    System.out.println(&quot;b=&quot;+b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>《警世恒言》第一章“两县令竞义婚孤女”读后感</title>
-    <url>/2021/07/19/%E3%80%8A%E8%AD%A6%E4%B8%96%E6%81%92%E8%A8%80%E3%80%8B%E7%AC%AC%E4%B8%80%E7%AB%A0%E2%80%9C%E4%B8%A4%E5%8E%BF%E4%BB%A4%E7%AB%9E%E4%B9%89%E5%A9%9A%E5%AD%A4%E5%A5%B3%E2%80%9D%E8%AF%BB%E5%90%8E%E6%84%9F/</url>
-    <content><![CDATA[<h1 id="文章简述"><a href="#文章简述" class="headerlink" title="文章简述"></a>文章简述</h1><h1 id="精华"><a href="#精华" class="headerlink" title="精华"></a>精华</h1><h1 id="糟粕"><a href="#糟粕" class="headerlink" title="糟粕"></a>糟粕</h1><h1 id="文章总感"><a href="#文章总感" class="headerlink" title="文章总感"></a>文章总感</h1>]]></content>
-      <tags>
-        <tag>读后感</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>记录一次内存泄露定位</title>
-    <url>/2020/12/29/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%AE%9A%E4%BD%8D/</url>
-    <content><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>这次问题的出现是公司另外一个项目组同事遇到的。当时情况是大约晚上9点左右grafana发出某个服务出现假死状态，研发人员立即登上服务器检查，发现服务器cpu满载，于是就尝试jstack 查看服务进程的堆栈情况，发现已经无法连接了，查看不到堆栈信息；无奈只能从业务日志入手，发现零星的error日志，分别是上午9点左右，在error日志附近都是写库的日志，明显能看到写库的时间在变长，20多秒/30多秒零星出现。然后立马想到的是有可能是出现了60秒导致了中断异常导致某个地方出现内存泄露，致使cpu满载，jstack 无法查看，顺着error 日志的堆栈信息发现类似以下代码</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Queue queue=new LinkedBlockingQueue();</span><br><span class="line"></span><br><span class="line">public void consume() &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            consumeSomething();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">        System.out.println(&quot;遇到异常了：&quot;+e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void consumeSomething() throws InterruptedException &#123;</span><br><span class="line">        if(queue.isEmpty())&#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(&quot;i have consume &quot;+queue.peek());</span><br><span class="line">        if(RandomUtils.nextInt(0,10)==5)&#123;</span><br><span class="line">            throw new InterruptedException(&quot;test&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line">private void produce()&#123;</span><br><span class="line">    while (true)&#123;</span><br><span class="line">            queue.add(RandomUtils.nextInt());</span><br><span class="line">        try &#123;</span><br><span class="line">            TimeUnit.SECONDS.sleep(1);</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    OutMemoryTest outMemoryTest = new OutMemoryTest();</span><br><span class="line">    new Thread(()-&gt;outMemoryTest.produce()).start();</span><br><span class="line">    new Thread(()-&gt;outMemoryTest.consume()).start();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>大致意思是一个生产者源源不断的往队列放入消息，另外一个消费者不停的消费该队列。正常情况是没问题的，但当特殊情况18行代码(模拟数据库超时中断异常)成真时，try……catch在while 外面捕获，导致跳出while循环，消费者终止了消费，然而生产者依旧在不断生产数据，出现积压泄露，进而导致一系列假死状态</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
-  </entry>
-  <entry>
-    <title>《高效休息》 读后感</title>
-    <url>/2019/08/24/%E3%80%8A%E9%AB%98%E6%95%88%E4%BC%91%E6%81%AF%E3%80%8B%20%E8%AF%BB%E5%90%8E%E6%84%9F/</url>
-    <content><![CDATA[<h1 id="缘由"><a href="#缘由" class="headerlink" title="缘由"></a>缘由</h1><p>​    我选择《高效休息》这本书的主要缘由是某个周五忘交电费结果4点多就热醒了，又恰逢前一天网上听闻了陆奇这个人的生活作息，于是就想亲身体验一把。可是我也有自知之明的，知道他能有这样的作息，肯定有充足的休息，于是就有阅读些“如何休息”类的书籍想法。</p>
-<h1 id="评价"><a href="#评价" class="headerlink" title="评价"></a>评价</h1><p>​    简单，易懂（总分总结构，加以小说类型叙述，带入性好），实操性强，很快就能看到良性反馈。</p>
-<h1 id="主要内容"><a href="#主要内容" class="headerlink" title="主要内容"></a>主要内容</h1><p>书的结构分为 前言，先睹为快，正念时刻，结语，特别附录</p>
-<ul>
-<li><p>前言</p>
-<p>在前言中，该书指出DMN（预设模式网络，被认为是“大脑能量吞噬者”） 是造成人感觉累的主要原因，<br>而人感觉累主要是由于大脑疲劳。书中采用的解决方就是“正念”，也就是冥想，强调当下的感觉、体验，<br>用以解除大脑疲劳，获得休息。</p>
-</li>
-<li><p>先睹为快</p>
-<p>介绍了7个休息法，分别是 正念呼吸法，动态冥想，压力呼吸法，”猴子思维“消除法，RAIN法，温柔的慈<br>悲心，扫描全身法。 贯穿这七个方法的核心就是呼吸， 呼吸是意识的锚，注意呼吸就是为了将注意力集<br>中在当下，这就是正念呼吸法，整本书的精髓之所在了。</p>
-</li>
-<li><p>正念时刻</p>
-<p>该部分采用小说似的情节，讲述作者留学耶鲁大学精神医学系时，因为学习的压力产生的疲劳感而求助“尤<br>达”大师，尤达大师用正念思想帮助作者解决了当前的疲劳的情况，随便用正念思想帮助作者伯父的“当下<br>百吉果“ 摆脱困境。</p>
-</li>
-<li><p>结语</p>
-<p>从doing 到being,价值观从”任务导向型”生活 转为 “向成为什么” ，这一点也与《高效能人士的七个<br>习惯中的 以终为始 和要事第一 有着相同的含义</p>
-</li>
-<li><p>特别语录</p>
-<p>美国精神科医生推荐的五日简单休息法，于较长假期中实现较为好</p>
-</li>
-</ul>
-<h1 id="感悟"><a href="#感悟" class="headerlink" title="感悟"></a>感悟</h1><p>​    书中讲的正念思想来源于东方的佛教思想中，而佛教有助于心境平静，休息这一点我其实在高中时期就已经感受到了。在高二的一段黑暗时期，我曾执着于“人是如何入睡的”而导致精神崩溃，现在回想起来，也感觉有点发笑，当时自己也是在注意呼吸的，快入睡时而被“原来是这样入睡的”杂念给干扰，然后就是各种回忆，这也许就是我比别人能记得小时候更多的事 缘由吧。</p>
-<p>​    现在回想起来，当时就差一个步骤了，书中处理“猴子思维” 这个杂念是缓慢拉回到呼吸，而我当时的做法是猛然拉回到呼吸上，这一点就导致了我精神几乎崩溃。幸而当初有爱看书的习惯，在“三味书屋” 里淘到一本 佛教小故事的集的《禅思》，这本小册子都快翻烂了，现今依旧被珍藏在我家里的书桌上。再之后，我也有点开窍了，接触到了冥想，每天晚饭时期都会找个空荡无人的地方冥思会。到了高三因为学业繁忙，渐渐忘却了这种思想，如今又再次相遇，如果把思想比作人的话，恐怕此刻得泪眼朦胧了吧。当初不作一声告别，从此人海茫茫，杳无音信，穿越世间沉浮十几载，物事人非，耗尽半生追寻，突然在拐角的角落再次相遇，才发现，原来是你就是我要穷尽一生要找的那个人。</p>
-<p>​    有点跑题了，正念=冥想=当下=呼吸</p>
-]]></content>
-      <tags>
-        <tag>读后感</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>领域驱动中的结构</title>
-    <url>/2019/08/30/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E4%B8%8E%E5%BA%94%E7%94%A8%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%8C%BA%E5%88%AB/</url>
-    <content><![CDATA[<h1 id="缘由"><a href="#缘由" class="headerlink" title="缘由"></a>缘由</h1><p>在实行DDD 领域驱动开发的过程中，需要面对的问题有： 如何分结构？在项目中怎样的包结构能够适用于领域驱动？应该怎样决定该段代码合适的位置？</p>
-<h1 id="战略结构"><a href="#战略结构" class="headerlink" title="战略结构"></a>战略结构</h1>]]></content>
   </entry>
   <entry>
     <title>《抗衰老计划》读后感</title>
@@ -341,5 +274,72 @@
 <li>这本书和《拯救记忆》中类似，推荐褪黑素</li>
 </ul>
 ]]></content>
+  </entry>
+  <entry>
+    <title>《警世恒言》第一章“两县令竞义婚孤女”读后感</title>
+    <url>/2021/07/19/%E3%80%8A%E8%AD%A6%E4%B8%96%E6%81%92%E8%A8%80%E3%80%8B%E7%AC%AC%E4%B8%80%E7%AB%A0%E2%80%9C%E4%B8%A4%E5%8E%BF%E4%BB%A4%E7%AB%9E%E4%B9%89%E5%A9%9A%E5%AD%A4%E5%A5%B3%E2%80%9D%E8%AF%BB%E5%90%8E%E6%84%9F/</url>
+    <content><![CDATA[<h1 id="文章简述"><a href="#文章简述" class="headerlink" title="文章简述"></a>文章简述</h1><h1 id="精华"><a href="#精华" class="headerlink" title="精华"></a>精华</h1><h1 id="糟粕"><a href="#糟粕" class="headerlink" title="糟粕"></a>糟粕</h1><h1 id="文章总感"><a href="#文章总感" class="headerlink" title="文章总感"></a>文章总感</h1>]]></content>
+      <tags>
+        <tag>读后感</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>《高效休息》 读后感</title>
+    <url>/2019/08/24/%E3%80%8A%E9%AB%98%E6%95%88%E4%BC%91%E6%81%AF%E3%80%8B%20%E8%AF%BB%E5%90%8E%E6%84%9F/</url>
+    <content><![CDATA[<h1 id="缘由"><a href="#缘由" class="headerlink" title="缘由"></a>缘由</h1><p>​    我选择《高效休息》这本书的主要缘由是某个周五忘交电费结果4点多就热醒了，又恰逢前一天网上听闻了陆奇这个人的生活作息，于是就想亲身体验一把。可是我也有自知之明的，知道他能有这样的作息，肯定有充足的休息，于是就有阅读些“如何休息”类的书籍想法。</p>
+<h1 id="评价"><a href="#评价" class="headerlink" title="评价"></a>评价</h1><p>​    简单，易懂（总分总结构，加以小说类型叙述，带入性好），实操性强，很快就能看到良性反馈。</p>
+<h1 id="主要内容"><a href="#主要内容" class="headerlink" title="主要内容"></a>主要内容</h1><p>书的结构分为 前言，先睹为快，正念时刻，结语，特别附录</p>
+<ul>
+<li><p>前言</p>
+<p>在前言中，该书指出DMN（预设模式网络，被认为是“大脑能量吞噬者”） 是造成人感觉累的主要原因，<br>而人感觉累主要是由于大脑疲劳。书中采用的解决方就是“正念”，也就是冥想，强调当下的感觉、体验，<br>用以解除大脑疲劳，获得休息。</p>
+</li>
+<li><p>先睹为快</p>
+<p>介绍了7个休息法，分别是 正念呼吸法，动态冥想，压力呼吸法，”猴子思维“消除法，RAIN法，温柔的慈<br>悲心，扫描全身法。 贯穿这七个方法的核心就是呼吸， 呼吸是意识的锚，注意呼吸就是为了将注意力集<br>中在当下，这就是正念呼吸法，整本书的精髓之所在了。</p>
+</li>
+<li><p>正念时刻</p>
+<p>该部分采用小说似的情节，讲述作者留学耶鲁大学精神医学系时，因为学习的压力产生的疲劳感而求助“尤<br>达”大师，尤达大师用正念思想帮助作者解决了当前的疲劳的情况，随便用正念思想帮助作者伯父的“当下<br>百吉果“ 摆脱困境。</p>
+</li>
+<li><p>结语</p>
+<p>从doing 到being,价值观从”任务导向型”生活 转为 “向成为什么” ，这一点也与《高效能人士的七个<br>习惯中的 以终为始 和要事第一 有着相同的含义</p>
+</li>
+<li><p>特别语录</p>
+<p>美国精神科医生推荐的五日简单休息法，于较长假期中实现较为好</p>
+</li>
+</ul>
+<h1 id="感悟"><a href="#感悟" class="headerlink" title="感悟"></a>感悟</h1><p>​    书中讲的正念思想来源于东方的佛教思想中，而佛教有助于心境平静，休息这一点我其实在高中时期就已经感受到了。在高二的一段黑暗时期，我曾执着于“人是如何入睡的”而导致精神崩溃，现在回想起来，也感觉有点发笑，当时自己也是在注意呼吸的，快入睡时而被“原来是这样入睡的”杂念给干扰，然后就是各种回忆，这也许就是我比别人能记得小时候更多的事 缘由吧。</p>
+<p>​    现在回想起来，当时就差一个步骤了，书中处理“猴子思维” 这个杂念是缓慢拉回到呼吸，而我当时的做法是猛然拉回到呼吸上，这一点就导致了我精神几乎崩溃。幸而当初有爱看书的习惯，在“三味书屋” 里淘到一本 佛教小故事的集的《禅思》，这本小册子都快翻烂了，现今依旧被珍藏在我家里的书桌上。再之后，我也有点开窍了，接触到了冥想，每天晚饭时期都会找个空荡无人的地方冥思会。到了高三因为学业繁忙，渐渐忘却了这种思想，如今又再次相遇，如果把思想比作人的话，恐怕此刻得泪眼朦胧了吧。当初不作一声告别，从此人海茫茫，杳无音信，穿越世间沉浮十几载，物事人非，耗尽半生追寻，突然在拐角的角落再次相遇，才发现，原来是你就是我要穷尽一生要找的那个人。</p>
+<p>​    有点跑题了，正念=冥想=当下=呼吸</p>
+]]></content>
+      <tags>
+        <tag>读后感</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>交换两变量的值</title>
+    <url>/2020/12/29/%E4%BA%A4%E6%8D%A2%E4%B8%A4%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/</url>
+    <content><![CDATA[<h3 id="方式一"><a href="#方式一" class="headerlink" title="方式一"></a>方式一</h3><ul>
+<li><p>采用第三个变量作为中间存储值来实现</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public void testSwap01(int a,int b)&#123;</span><br><span class="line">    int c=a;</span><br><span class="line">    a=b;</span><br><span class="line">    b=c;</span><br><span class="line">    System.out.println(&quot;a=&quot;+a);</span><br><span class="line">    System.out.println(&quot;b=&quot;+b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="方式二"><a href="#方式二" class="headerlink" title="方式二"></a>方式二</h3><ul>
+<li><p>采用异或的逻辑运算，a^a=0</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public void testSwap02(int a, int b)&#123;</span><br><span class="line">    a=a^b;</span><br><span class="line">    b=a^b;</span><br><span class="line">    a=a^b;</span><br><span class="line">    System.out.println(&quot;a=&quot;+a);</span><br><span class="line">    System.out.println(&quot;b=&quot;+b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>领域驱动中的结构</title>
+    <url>/2019/08/30/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E4%B8%8E%E5%BA%94%E7%94%A8%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%8C%BA%E5%88%AB/</url>
+    <content><![CDATA[<h1 id="缘由"><a href="#缘由" class="headerlink" title="缘由"></a>缘由</h1><p>在实行DDD 领域驱动开发的过程中，需要面对的问题有： 如何分结构？在项目中怎样的包结构能够适用于领域驱动？应该怎样决定该段代码合适的位置？</p>
+<h1 id="战略结构"><a href="#战略结构" class="headerlink" title="战略结构"></a>战略结构</h1>]]></content>
+  </entry>
+  <entry>
+    <title>记录一次内存泄露定位</title>
+    <url>/2020/12/29/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%AE%9A%E4%BD%8D/</url>
+    <content><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>这次问题的出现是公司另外一个项目组同事遇到的。当时情况是大约晚上9点左右grafana发出某个服务出现假死状态，研发人员立即登上服务器检查，发现服务器cpu满载，于是就尝试jstack 查看服务进程的堆栈情况，发现已经无法连接了，查看不到堆栈信息；无奈只能从业务日志入手，发现零星的error日志，分别是上午9点左右，在error日志附近都是写库的日志，明显能看到写库的时间在变长，20多秒/30多秒零星出现。然后立马想到的是有可能是出现了60秒导致了中断异常导致某个地方出现内存泄露，致使cpu满载，jstack 无法查看，顺着error 日志的堆栈信息发现类似以下代码</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Queue queue=new LinkedBlockingQueue();</span><br><span class="line"></span><br><span class="line">public void consume() &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            consumeSomething();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">        System.out.println(&quot;遇到异常了：&quot;+e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void consumeSomething() throws InterruptedException &#123;</span><br><span class="line">        if(queue.isEmpty())&#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(&quot;i have consume &quot;+queue.peek());</span><br><span class="line">        if(RandomUtils.nextInt(0,10)==5)&#123;</span><br><span class="line">            throw new InterruptedException(&quot;test&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line">private void produce()&#123;</span><br><span class="line">    while (true)&#123;</span><br><span class="line">            queue.add(RandomUtils.nextInt());</span><br><span class="line">        try &#123;</span><br><span class="line">            TimeUnit.SECONDS.sleep(1);</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    OutMemoryTest outMemoryTest = new OutMemoryTest();</span><br><span class="line">    new Thread(()-&gt;outMemoryTest.produce()).start();</span><br><span class="line">    new Thread(()-&gt;outMemoryTest.consume()).start();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>大致意思是一个生产者源源不断的往队列放入消息，另外一个消费者不停的消费该队列。正常情况是没问题的，但当特殊情况18行代码(模拟数据库超时中断异常)成真时，try……catch在while 外面捕获，导致跳出while循环，消费者终止了消费，然而生产者依旧在不断生产数据，出现积压泄露，进而导致一系列假死状态</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
   </entry>
 </search>
