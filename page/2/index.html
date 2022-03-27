@@ -142,6 +142,112 @@
     
     
     <article
+  id="post-记录一次内存泄露定位"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/12/29/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%AE%9A%E4%BD%8D/"
+    >记录一次内存泄露定位</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/12/29/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%AE%9A%E4%BD%8D/" class="article-date">
+  <time datetime="2020-12-29T15:00:28.000Z" itemprop="datePublished">2020-12-29</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>这次问题的出现是公司另外一个项目组同事遇到的。当时情况是大约晚上9点左右grafana发出某个服务出现假死状态，研发人员立即登上服务器检查，发现服务器cpu满载，于是就尝试jstack 查看服务进程的堆栈情况，发现已经无法连接了，查看不到堆栈信息；无奈只能从业务日志入手，发现零星的error日志，分别是上午9点左右，在error日志附近都是写库的日志，明显能看到写库的时间在变长，20多秒/30多秒零星出现。然后立马想到的是有可能是出现了60秒导致了中断异常导致某个地方出现内存泄露，致使cpu满载，jstack 无法查看，顺着error 日志的堆栈信息发现类似以下代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">Queue queue=new LinkedBlockingQueue();</span><br><span class="line"></span><br><span class="line">public void consume() &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            consumeSomething();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">        System.out.println(&quot;遇到异常了：&quot;+e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void consumeSomething() throws InterruptedException &#123;</span><br><span class="line">        if(queue.isEmpty())&#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(&quot;i have consume &quot;+queue.peek());</span><br><span class="line">        if(RandomUtils.nextInt(0,10)==5)&#123;</span><br><span class="line">            throw new InterruptedException(&quot;test&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line">private void produce()&#123;</span><br><span class="line">    while (true)&#123;</span><br><span class="line">            queue.add(RandomUtils.nextInt());</span><br><span class="line">        try &#123;</span><br><span class="line">            TimeUnit.SECONDS.sleep(1);</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    OutMemoryTest outMemoryTest = new OutMemoryTest();</span><br><span class="line">    new Thread(()-&gt;outMemoryTest.produce()).start();</span><br><span class="line">    new Thread(()-&gt;outMemoryTest.consume()).start();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>大致意思是一个生产者源源不断的往队列放入消息，另外一个消费者不停的消费该队列。正常情况是没问题的，但当特殊情况18行代码(模拟数据库超时中断异常)成真时，try……catch在while 外面捕获，导致跳出while循环，消费者终止了消费，然而生产者依旧在不断生产数据，出现积压泄露，进而导致一系列假死状态</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3> 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
+  id="post-交换两变量的值"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/12/29/%E4%BA%A4%E6%8D%A2%E4%B8%A4%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/"
+    >交换两变量的值</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/12/29/%E4%BA%A4%E6%8D%A2%E4%B8%A4%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/" class="article-date">
+  <time datetime="2020-12-29T14:31:39.000Z" itemprop="datePublished">2020-12-29</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="方式一"><a href="#方式一" class="headerlink" title="方式一"></a>方式一</h3><ul>
+<li><p>采用第三个变量作为中间存储值来实现</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public void testSwap01(int a,int b)&#123;</span><br><span class="line">    int c=a;</span><br><span class="line">    a=b;</span><br><span class="line">    b=c;</span><br><span class="line">    System.out.println(&quot;a=&quot;+a);</span><br><span class="line">    System.out.println(&quot;b=&quot;+b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="方式二"><a href="#方式二" class="headerlink" title="方式二"></a>方式二</h3><ul>
+<li><p>采用异或的逻辑运算，a^a=0</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public void testSwap02(int a, int b)&#123;</span><br><span class="line">    a=a^b;</span><br><span class="line">    b=a^b;</span><br><span class="line">    a=a^b;</span><br><span class="line">    System.out.println(&quot;a=&quot;+a);</span><br><span class="line">    System.out.println(&quot;b=&quot;+b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
   id="post-java异常受控异常与非受控异常"
   class="article article-type-post"
   itemscope
