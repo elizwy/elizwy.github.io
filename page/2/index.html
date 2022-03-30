@@ -142,6 +142,61 @@
     
     
     <article
+  id="post-httpCilent的timeout设置"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2021/01/06/httpCilent%E7%9A%84timeout%E8%AE%BE%E7%BD%AE/"
+    >httpCilent的timeout设置</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/01/06/httpCilent%E7%9A%84timeout%E8%AE%BE%E7%BD%AE/" class="article-date">
+  <time datetime="2021-01-06T14:03:57.000Z" itemprop="datePublished">2021-01-06</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>公司项目同事在使用httpClient向某个url post 数据时发现：大部分数据在1,2秒内对方url就会有响应，但是偶尔会出现需要等待10多分钟，甚至是30多分钟才能接收到对方返回的成功响应。使用httpClient 时使用的connectionTimeOut,socketTimeOut都设置在一分钟以内，按道理是不会等这么长的时间，应该早就报异常了，但是在等待30分钟之后还是能收到对方的成功响应，这个问题就一直困扰着他。</p>
+<h3 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h3><p>其实他当时post文件都是在10m左右，按照计算机网络的通信协议，http协议是基于tcp协议的，tcp 和udp 协议除了前者是稳定传输，后者是非稳定传输；还有一个特点就是udp是不会对应用层的数据进行任何处理，拆分的，直接包上自己的udp头就发出去(其实超过了2^16-20-8 自己还是要拆包的)，而tcp是基于字节流传输的，是会拆分的。而socketTimeOut 指的是两个数据包的间隔，这样一来，我拆分出10个包，每个包从发出到接收到的ack包之间间隔只要在一分钟内就不会抛异常，总的传输时间在10分钟也不会抛异常</p>
+<h3 id="处理"><a href="#处理" class="headerlink" title="处理"></a>处理</h3><ol>
+<li>加大带宽</li>
+<li>每次发送异步判断耗时，耗时超过一定时间就重试或者其他逻辑</li>
+</ol>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p> 计算机网络和httpclient 底层原理未弄清</p>
+<p>5bnktj7l</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
   id="post-记录一次内存泄露定位"
   class="article article-type-post"
   itemscope

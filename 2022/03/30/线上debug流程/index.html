@@ -11,7 +11,7 @@
         name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1"
       />
-      <title>《警世恒言》第一章“两县令竞义婚孤女”读后感 |  ELIZWY</title>
+      <title>线上debug流程 |  ELIZWY</title>
   <meta name="generator" content="hexo-theme-ayer">
       
       <link rel="shortcut icon" href="/favicon.ico" />
@@ -46,7 +46,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-《警世恒言》第一章“两县令竞义婚孤女”读后感"
+  id="post-线上debug流程"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -57,7 +57,7 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  《警世恒言》第一章“两县令竞义婚孤女”读后感
+  线上debug流程
 </h1>
  
 
@@ -65,15 +65,15 @@
     </header>
      
     <div class="article-meta">
-      <a href="/2021/07/19/%E3%80%8A%E8%AD%A6%E4%B8%96%E6%81%92%E8%A8%80%E3%80%8B%E7%AC%AC%E4%B8%80%E7%AB%A0%E2%80%9C%E4%B8%A4%E5%8E%BF%E4%BB%A4%E7%AB%9E%E4%B9%89%E5%A9%9A%E5%AD%A4%E5%A5%B3%E2%80%9D%E8%AF%BB%E5%90%8E%E6%84%9F/" class="article-date">
-  <time datetime="2021-07-19T15:38:31.000Z" itemprop="datePublished">2021-07-19</time>
+      <a href="/2022/03/30/%E7%BA%BF%E4%B8%8Adebug%E6%B5%81%E7%A8%8B/" class="article-date">
+  <time datetime="2022-03-30T11:41:45.000Z" itemprop="datePublished">2022-03-30</time>
 </a>   
 <div class="word_count">
     <span class="post-time">
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> Word count:</span>
-            <span class="post-count">12</span>
+            <span class="post-count">101</span>
         </span>
     </span>
 
@@ -97,7 +97,25 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <h1 id="文章简述"><a href="#文章简述" class="headerlink" title="文章简述"></a>文章简述</h1><h1 id="精华"><a href="#精华" class="headerlink" title="精华"></a>精华</h1><h1 id="糟粕"><a href="#糟粕" class="headerlink" title="糟粕"></a>糟粕</h1><h1 id="文章总感"><a href="#文章总感" class="headerlink" title="文章总感"></a>文章总感</h1> 
+  <h1 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h1><p>我们有时碰到线上的一些问题，例如进程是否卡住了，输入输出不合预期，cpu负载飙升，GC太频繁</p>
+<h1 id="bebug-模版"><a href="#bebug-模版" class="headerlink" title="bebug 模版"></a>bebug 模版</h1><ul>
+<li>根据现有的日志分析</li>
+<li>查看进程中各个线程工作情况<ul>
+<li>top -Hp pid</li>
+<li>jstack pid</li>
+</ul>
+</li>
+<li>查看网络链接情况<ul>
+<li>netstat -antp|grep pid</li>
+<li>dstat 查看网络流量情况</li>
+</ul>
+</li>
+<li>查看内存使用情况<ul>
+<li>profile</li>
+</ul>
+</li>
+</ul>
+ 
       <!-- reward -->
       
     </div>
@@ -161,32 +179,30 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/07/19/%E3%80%8A%E8%AD%A6%E4%B8%96%E6%81%92%E8%A8%80%E3%80%8B%E7%AC%AC%E4%B8%80%E7%AB%A0%E2%80%9C%E4%B8%A4%E5%8E%BF%E4%BB%A4%E7%AB%9E%E4%B9%89%E5%A9%9A%E5%AD%A4%E5%A5%B3%E2%80%9D%E8%AF%BB%E5%90%8E%E6%84%9F/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2022/03/30/%E7%BA%BF%E4%B8%8Adebug%E6%B5%81%E7%A8%8B/" alt="微信分享二维码">
     </div>
 </div>
 
 <div id="share-mask"></div>  
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E5%90%8E%E6%84%9F/" rel="tag">读后感</a></li></ul>
-
     </footer>
   </div>
 
    
   <nav class="article-nav">
     
-      <a href="/2021/07/22/mysql-round-%E9%81%87%E5%88%B0%E4%B8%8D%E7%B2%BE%E7%A1%AE%E5%80%BC%E7%9A%84%E5%A4%84%E7%90%86/" class="article-nav-link">
+      <a href="/2022/03/30/rfc1/" class="article-nav-link">
         <strong class="article-nav-caption">上一篇</strong>
         <div class="article-nav-title">
           
-            mysql round 遇到不精确值的处理
+            rfc1
           
         </div>
       </a>
     
     
-      <a href="/2021/07/19/manjaro%E4%BA%A4%E4%BA%92%E5%BC%8F%E8%84%9A%E6%9C%AC%E8%A7%A3%E5%86%B3vpn%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98/" class="article-nav-link">
+      <a href="/2022/03/27/%E7%A9%BA%E9%9A%BE%E6%84%9F%E6%83%B3/" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">manjaro交互式脚本解决vpn冲突问题</div>
+        <div class="article-nav-title">空难感想</div>
       </a>
     
   </nav>
