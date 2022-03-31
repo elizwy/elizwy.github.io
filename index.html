@@ -211,8 +211,17 @@
 </ol>
 </li>
 </ol>
-<p>介绍</p>
-<p>​    IMPs 和 各自主机中部分软件共同组成在ARPA网络中通信软件</p>
+<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>IMPs 和 各自主机中部分软件共同组成在ARPA网络中通信软件，BB&amp;N has specified the software of the IMPs and it is the responsibility of the HOST groups to agree on HOST software. </p>
+<p>During the summer of 1968, representatives from the initial four sites met several times to discuss the HOST software and initial experiments on the network.  There emerged from these meetings a working group of three, Steve Carr from Utah, Jeff Rulifson from SRI, and Steve Crocker of UCLA, who met during the fall and winter.  The most recent meeting was in the last week of March in Utah.  Also present was Bill Duvall of SRI who has recently started working with Jeff Rulifson.</p>
+<p>Somewhat independently, Gerard DeLoche of UCLA has been working on the HOST-IMP interface.</p>
+<p>I present here some of the tentative agreements reached and some of the open questions encountered.  Very little of what is here is firm and reactions are expected.</p>
+<h1 id="IMP软件综述"><a href="#IMP软件综述" class="headerlink" title="IMP软件综述"></a>IMP软件综述</h1><h2 id="消息"><a href="#消息" class="headerlink" title="消息"></a>消息</h2><p>在主机之间按包传送的信息称为消息，一条消息加上消息头在任何流中都不能超过8080bit。消息头一般占16bit，主要包含以下信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">目的地址	5bits</span><br><span class="line">链接		 8bits</span><br><span class="line">追踪 	1bit</span><br><span class="line">spare		2bits</span><br></pre></td></tr></table></figure>
+
+<p>目标地址是目标主机的一串数字代号，代表消息的传递到的终点。追踪位代表着消息的状态，这个状态会发送到nmc(网络测量中心)，spare bit 无使用</p>
+<p>链接是一个imps中的特殊字段，用来处理各种阻塞情况。功能主要如下：每对主机链接是一个32位全双工链接，消息能够由任意一端发起。imps对链接做了一些严格要求，一个主机发送完一条消息后必须等待目标主机允许发送下一条消息的消息才能发送下一条消息.这个限制能够防止一台主机在一条链接上发送太多消息从而导致目标主机阻塞，这是因为我们发现目标主机只能同时处理1，2条链接，可能没有能力同时处理32条链接，所以主机之间需要就这方面就行协调。</p>
+<p>链接主要有以下几个重要的特征：它们永久在线与它们数目永远是32的倍数</p>
+<p>永久在线意味着imps随时能够传递消息，imps中不存在开始/结束这个概念，所以在imps中链接是无状态的（这和查询imps上一条链接是不同概念的）</p>
  
       <!-- reward -->
       
