@@ -61,16 +61,10 @@
       </tags>
   </entry>
   <entry>
-    <title>httpCilent的timeout设置</title>
-    <url>/2021/01/06/httpCilent%E7%9A%84timeout%E8%AE%BE%E7%BD%AE/</url>
-    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>公司项目同事在使用httpClient向某个url post 数据时发现：大部分数据在1,2秒内对方url就会有响应，但是偶尔会出现需要等待10多分钟，甚至是30多分钟才能接收到对方返回的成功响应。使用httpClient 时使用的connectionTimeOut,socketTimeOut都设置在一分钟以内，按道理是不会等这么长的时间，应该早就报异常了，但是在等待30分钟之后还是能收到对方的成功响应，这个问题就一直困扰着他。</p>
-<h3 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h3><p>其实他当时post文件都是在10m左右，按照计算机网络的通信协议，http协议是基于tcp协议的，tcp 和udp 协议除了前者是稳定传输，后者是非稳定传输；还有一个特点就是udp是不会对应用层的数据进行任何处理，拆分的，直接包上自己的udp头就发出去(其实超过了2^16-20-8 自己还是要拆包的)，而tcp是基于字节流传输的，是会拆分的。而socketTimeOut 指的是两个数据包的间隔，这样一来，我拆分出10个包，每个包从发出到接收到的ack包之间间隔只要在一分钟内就不会抛异常，总的传输时间在10分钟也不会抛异常</p>
-<h3 id="处理"><a href="#处理" class="headerlink" title="处理"></a>处理</h3><ol>
-<li>加大带宽</li>
-<li>每次发送异步判断耗时，耗时超过一定时间就重试或者其他逻辑</li>
-</ol>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p> 计算机网络和httpclient 底层原理未弄清</p>
-<p>5bnktj7l</p>
+    <title>manjaro彻底清除网易企业邮箱中的位于已删除文件夹下的文件</title>
+    <url>/2021/08/05/manjaro%E5%BD%BB%E5%BA%95%E6%B8%85%E9%99%A4%E7%BD%91%E6%98%93%E4%BC%81%E4%B8%9A%E9%82%AE%E7%AE%B1%E4%B8%AD%E7%9A%84%E4%BD%8D%E4%BA%8E%E5%B7%B2%E5%88%A0%E9%99%A4%E6%96%87%E4%BB%B6%E5%A4%B9%E4%B8%8B%E7%9A%84%E6%96%87%E4%BB%B6/</url>
+    <content><![CDATA[<hr>
+<p><a href="https://github.com/elizwy/tools/blob/main/shell/MailToolClean">工具链接</a></p>
 ]]></content>
   </entry>
   <entry>
@@ -106,302 +100,6 @@
       <tags>
         <tag>issue</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>《抗衰老计划》读后感</title>
-    <url>/2022/03/06/%E3%80%8A%E6%8A%97%E8%A1%B0%E8%80%81%E8%AE%A1%E5%88%92%E3%80%8B%E8%AF%BB%E5%90%8E%E6%84%9F/</url>
-    <content><![CDATA[<h1 id="金句"><a href="#金句" class="headerlink" title="金句"></a>金句</h1><ul>
-<li>我们所谓的衰老在大多数情况下就是疾病的一种表现，普遍存在的慢性疾病不断地侵蚀我们的身体，使我们普遍地接受这种衰退是”变老“的结果</li>
-<li>抗衰老有两种途径：逆转疾病进程 和 武装自己消除早期的疾病隐患</li>
-<li>抗衰老三种武器：饮食，补充营养物和锻炼身体</li>
-<li>抵抗衰老要从抵抗传统的错误教导开始</li>
-<li>胆固醇是蜡状的，不溶于水；血液成分主要是水，身体用蛋白质吧胆固醇覆盖后在血液中输送，这些蛋白质载体被称为载脂蛋白</li>
-<li>绿茶中的生物类黄酮消灭自由基的能力是维生素E的25倍，是维生素C的100倍</li>
-<li>生物类黄酮：茶，洋葱，大蒜</li>
-<li>游泳，散步，瑜伽，和其他更缓慢，温和的方式作为锻炼。过度锻炼或剧烈锻炼会产生大量自由基。推荐健美操和力量操</li>
-<li>糖类是健康的克星，需要坚决抵制</li>
-<li>多吃鸡蛋，番茄</li>
-<li>线粒体的DNA和细胞核中DNA是独立的，线粒体的DNA是环状的，无保护层，易受自由基的攻击</li>
-</ul>
-<h1 id="收获-amp-评价"><a href="#收获-amp-评价" class="headerlink" title="收获&amp;评价"></a>收获&amp;评价</h1><p>这本书和《拯救记忆》类似，都属于营养学类书籍。《拯救记忆》的关注点是大脑，记忆。这本书囊括《拯救》讨论范围，依靠人体血液的指标，讨论了包括主要的心脏病，糖尿病，高血压，阿尔茨海默症。</p>
-<h3 id="心脏疾病关键因素："><a href="#心脏疾病关键因素：" class="headerlink" title="心脏疾病关键因素："></a>心脏疾病关键因素：</h3><ul>
-<li>高水平的低密度载脂蛋白和高甘油三脂肪组合<ul>
-<li>原理：两种物质都特别黏稠；容易引发动脉粥样硬状化</li>
-<li>原因：摄入过多糖类（作者限制糖类进食观察血脂中两者组合比例下降，反推出来的）</li>
-</ul>
-</li>
-<li>高水平的同形半胱氨酸<ul>
-<li>原理： 导致染色体损害程度增加，尚不清楚如何损害动脉</li>
-<li>原因： 缺乏叶酸和维B会导致无法合成足量的清除同形半胱氨酸的酶</li>
-</ul>
-</li>
-</ul>
-<h3 id="衰老理论："><a href="#衰老理论：" class="headerlink" title="衰老理论："></a>衰老理论：</h3><ul>
-<li><p>糖</p>
-<ul>
-<li>糖基化改变蛋白质结构，破坏胶原蛋白的弹力；破坏抗氧化物生产酶；直接和DNA结合损害细胞，导致其无法复制或复制紊乱发生癌变</li>
-<li>引发胰岛素抵抗和葡糖糖耐受异常，从而导致高血压；高水平胰岛素抑制脱氢表雄酮合成</li>
-</ul>
-</li>
-<li><p>自由基理论</p>
-<ul>
-<li>预防：食用富含抗氧化物的食物和补充剂</li>
-</ul>
-</li>
-</ul>
-<h3 id="拯救"><a href="#拯救" class="headerlink" title="拯救"></a>拯救</h3><ul>
-<li>抗氧化剂<ul>
-<li>维e，c，硫辛酸，硒</li>
-</ul>
-</li>
-<li>抗氧化酶<ul>
-<li>辅酶Q10（心脏细胞中参与线粒体能量的生产和运输，同时消灭能量产生过程出现的自由基，保护线粒体）</li>
-</ul>
-</li>
-</ul>
-<h1 id="缺陷"><a href="#缺陷" class="headerlink" title="缺陷"></a>缺陷</h1><ul>
-<li>不知道是翻译问题，还是原作者问题。书中将载脂蛋白A定义为 一种非常黏的低密度载脂蛋白胆固醇。医学百科中定义载脂蛋白A(HDL)是高密度载脂蛋白胆固醇，属于好的胆固醇；载脂蛋白B(LDL)是低密度载脂蛋白胆固醇，属于坏的胆固醇。</li>
-<li>文中引用到其他人的说法和观点，没有参考文献和来源，确认费劲</li>
-<li>这本书和《拯救记忆》中类似，推荐褪黑素</li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>《拯救记忆》读后感</title>
-    <url>/2022/02/27/%E3%80%8A%E6%8B%AF%E6%95%91%E8%AE%B0%E5%BF%86%E3%80%8B%E8%AF%BB%E5%90%8E%E6%84%9F/</url>
-    <content><![CDATA[<h1 id="大纲"><a href="#大纲" class="headerlink" title="大纲"></a>大纲</h1><p>![image-20220227155947736](/Users/zwyeli/Library/Application Support/typora-user-images/image-20220227155947736.png)</p>
-<ul>
-<li><p>背景</p>
-<p>Author: 丹尼尔·亚曼  译: 黎非凡<br>Background: 美国精神病学协会杰出成员<br>product date: 202104</p>
-</li>
-<li><p>为何会选择这本书</p>
-<ul>
-<li>最近刚刚把《心理学导论》，对人自身相关事物产生浓厚兴趣，联系到我自己在工作上经常容易忘记一些事情，这个让我有点苦恼。刚好在首都图书馆发现了这本书，便借来阅读一番</li>
-</ul>
-</li>
-<li><p>主要内容</p>
-<ul>
-<li>作者基于自己临床案例和研究，总结出一套关于记忆问题的判定标准和相应的治疗方案</li>
-<li>将自己的拯救记忆计划和传统针对阿尔茨海默症治疗方法对比，斥责传统治疗方法的无效及带来的副作用。</li>
-<li>作者将记忆模糊等问题定义为疾病，采用大脑SPECT扫描和MRI扫描来分别检测大脑的功能和结构问题。采用10个维度(血流量，退休/衰老，炎症，遗传，头部创伤，毒素，精神健康，免疫性疾病，神经激素，糖胖病，睡眠问题)来评估记忆情况。用案例故事一一举例相关维度出现的病症及相应的治疗措施。治疗措施主要分为：运动，食疗，保健品。</li>
-</ul>
-</li>
-<li><p>评价</p>
-<ul>
-<li>文中作者将记忆模糊定义为疾病这个举动让我想到了<a href="https://book.jd.com/writer/%E9%9F%A6%E6%81%A9%C2%B7%E9%9F%A6%E7%99%BB_1.html">韦恩·韦登</a>《心理学导论》中有一章批判思维关于定义的讨论。“定义”是一个比较重要但又是较为主观的，会牵涉到很多方面。在这篇文章里作者是一名精神病分析专家，自然将记忆问题定义为疾病是有利于自己的，一方面能突然自己研究的重要性，另一方面也能引起社会关注，增加记忆领域的经济和社会价值。</li>
-<li>文中作者有一句话让我突然眼前一新的感觉。 人一生要经历 出生，成长，衰老，疾病，死亡，这是自然规律，但是自然规律就是对的么？如果我们将衰老定义为一种病呢？ 这个脑洞很大，让我想到了无限可能</li>
-<li>书中每一个维度都有推荐保健品。</li>
-<li>这本书中曾多次推荐褪黑素营养品,但是最新科学研究已经实锤了褪黑素的各种副作用；</li>
-<li>书中建议 运动优先，学习新知识，学习音乐。我采纳接收，因为我喜欢^_^</li>
-</ul>
-</li>
-<li><p>我得到建议</p>
-<ul>
-<li>多喝水</li>
-<li>多做运动，尤其是球拍类运动</li>
-<li>每天花15分钟以上学习新知识，比如学习音乐，跳舞或者一门新的语言</li>
-<li>尝试每天禁食12～16小时</li>
-<li>爱护牙龈</li>
-<li>多摄入W-3脂肪酸和益生菌</li>
-<li>多食用有机蓝莓</li>
-<li>多摄入十字花科蔬菜</li>
-<li>多做负重练习</li>
-<li>入睡前一小时关掉所有电子产品</li>
-<li>打破常规，找一些新鲜的，有挑战性的而且自己也热爱的事情去做</li>
-<li>报名去听一节课或参与一次会议，主题是自己不熟悉而又感兴趣的内容</li>
-<li>尽快解决任何学习方面的问题</li>
-<li>晚上不可太晚吃东西</li>
-</ul>
-</li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>manjaro彻底清除网易企业邮箱中的位于已删除文件夹下的文件</title>
-    <url>/2021/08/05/manjaro%E5%BD%BB%E5%BA%95%E6%B8%85%E9%99%A4%E7%BD%91%E6%98%93%E4%BC%81%E4%B8%9A%E9%82%AE%E7%AE%B1%E4%B8%AD%E7%9A%84%E4%BD%8D%E4%BA%8E%E5%B7%B2%E5%88%A0%E9%99%A4%E6%96%87%E4%BB%B6%E5%A4%B9%E4%B8%8B%E7%9A%84%E6%96%87%E4%BB%B6/</url>
-    <content><![CDATA[<hr>
-<p><a href="https://github.com/elizwy/tools/blob/main/shell/MailToolClean">工具链接</a></p>
-]]></content>
-  </entry>
-  <entry>
-    <title>manjaro交互式脚本解决vpn冲突问题</title>
-    <url>/2021/07/19/manjaro%E4%BA%A4%E4%BA%92%E5%BC%8F%E8%84%9A%E6%9C%AC%E8%A7%A3%E5%86%B3vpn%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98/</url>
-    <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>工作之中需要链接各种vpn进入各个环境，由于家里和公司各自有一台电脑，回家时公司电脑通常是不会关机的，vpn也就一直连着，一旦出现了报警，家里电脑连上vpn就和公司电脑的vpn产生冲突，导致互相踢对方，连接不稳定。排查问题十分痛苦，只好回到公司追查问题。如果是家里电脑忘记退出vpn,结果更加痛苦。</p>
-<h1 id="环境条件"><a href="#环境条件" class="headerlink" title="环境条件"></a>环境条件</h1><ul>
-<li>manjaro操作系统</li>
-<li>openvpn3 </li>
-<li>expect</li>
-</ul>
-<h1 id="可行性解决方案"><a href="#可行性解决方案" class="headerlink" title="可行性解决方案"></a>可行性解决方案</h1><ol>
-<li>远程连接，家里电脑和公司电脑互相穿透。</li>
-<li>家里电脑和公司电脑都各自维护定时脚本</li>
-</ol>
-<h1 id="可行性分析"><a href="#可行性分析" class="headerlink" title="可行性分析"></a>可行性分析</h1><ul>
-<li><p>方案一</p>
-<ul>
-<li><p>优点</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">除了能解决vpn冲突问题，还能处理很多其他问题，资源共享等等</span><br></pre></td></tr></table></figure></li>
-<li><p>缺点</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">需要能有稳定的对外端口;暴露公网带来安全风险</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-<li><p>方案二</p>
-<ul>
-<li><p>优点</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">能解决vpn冲突问题，安全</span><br></pre></td></tr></table></figure></li>
-<li><p>缺点</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">比较固定，死板</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-</ul>
-<p>在平衡以上方案的优缺利弊，最终选择了方案二，安全胜于一切，其他的花里胡哨最终都是要乘以这个安全系数的，安全系数为0,其它都是白说。这就是君子不立危墙之下的道理。</p>
-<h1 id="执行步骤"><a href="#执行步骤" class="headerlink" title="执行步骤"></a>执行步骤</h1><ol>
-<li>编写vpn一键启动/关闭脚本</li>
-<li>加入crontab定时队列中</li>
-</ol>
-<h2 id="步骤1"><a href="#步骤1" class="headerlink" title="步骤1"></a>步骤1</h2><ul>
-<li><p>我采用的是openvpn3 来管理vpn，由于openvpn3每次启动需要一堆参数，而且笔者工作时设计多个vpn环境，每次启动也是重复工作，故编写了一个批量启动脚本</p>
-</li>
-<li><p>由于登陆每次都需要密码，且目前openvpn3没有找到可行性的记住密码功能，故采用expect脚本来完成交互式输入密码</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> vpnStart.tcl</span></span><br><span class="line"></span><br><span class="line">start()&#123;</span><br><span class="line">expect&lt;&lt;EOF</span><br><span class="line">spawn openvpn3 session-start -c /data/nutstore/TEST/config/aliyun/aliyun.ovpn</span><br><span class="line">expect  &quot;*key passphrase&quot; &#123;</span><br><span class="line">  send &quot;TEST\n&quot;</span><br><span class="line">&#125;</span><br><span class="line">expect eof</span><br><span class="line"></span><br><span class="line">spawn openvpn3 session-start -c /data/nutstore/TEST/config/TEST/TEST.ovpn</span><br><span class="line">expect  &quot;*key passphrase&quot; &#123;</span><br><span class="line">  send &quot;TEST\n&quot;</span><br><span class="line">&#125;</span><br><span class="line">expect eof</span><br><span class="line"></span><br><span class="line">EOF</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">stop()&#123;</span><br><span class="line"> for session in ` openvpn3 sessions-list|grep Path|awk -F &#x27;:&#x27; &#x27;&#123;print $2&#125;&#x27; `</span><br><span class="line"> do</span><br><span class="line">  openvpn3 session-manage -D -o $session</span><br><span class="line"> done</span><br><span class="line"> openvpn3 sessions-list</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if test $1 = &quot;start&quot;</span><br><span class="line">then</span><br><span class="line"> start</span><br><span class="line">elif test  $1=&quot;stop&quot;</span><br><span class="line">then  </span><br><span class="line"> stop</span><br><span class="line">else </span><br><span class="line"> echo &quot;noting to do&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
-</ul>
-<h2 id="步骤2"><a href="#步骤2" class="headerlink" title="步骤2"></a>步骤2</h2><ul>
-<li><p>加入crontab中，依据笔者的工作作息，设置为工作日12、13、21、22、23、24 关闭。这样一来，最多在家会存在半个小时的冲突时间，完全达到了我想要的效果</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">0 12,13,21,22,23,0 * * 1-5 ~/vpnStart.tcl stop</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p> 充分动手，利用liunx的高度定制性，为自己需求开发。关于expect相关语法和openvpn3相关语法请参考官方文档即可</p>
-]]></content>
-      <tags>
-        <tag>shell</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>《高效休息》 读后感</title>
-    <url>/2019/08/24/%E3%80%8A%E9%AB%98%E6%95%88%E4%BC%91%E6%81%AF%E3%80%8B%20%E8%AF%BB%E5%90%8E%E6%84%9F/</url>
-    <content><![CDATA[<h1 id="缘由"><a href="#缘由" class="headerlink" title="缘由"></a>缘由</h1><p>​    我选择《高效休息》这本书的主要缘由是某个周五忘交电费结果4点多就热醒了，又恰逢前一天网上听闻了陆奇这个人的生活作息，于是就想亲身体验一把。可是我也有自知之明的，知道他能有这样的作息，肯定有充足的休息，于是就有阅读些“如何休息”类的书籍想法。</p>
-<h1 id="评价"><a href="#评价" class="headerlink" title="评价"></a>评价</h1><p>​    简单，易懂（总分总结构，加以小说类型叙述，带入性好），实操性强，很快就能看到良性反馈。</p>
-<h1 id="主要内容"><a href="#主要内容" class="headerlink" title="主要内容"></a>主要内容</h1><p>书的结构分为 前言，先睹为快，正念时刻，结语，特别附录</p>
-<ul>
-<li><p>前言</p>
-<p>在前言中，该书指出DMN（预设模式网络，被认为是“大脑能量吞噬者”） 是造成人感觉累的主要原因，<br>而人感觉累主要是由于大脑疲劳。书中采用的解决方就是“正念”，也就是冥想，强调当下的感觉、体验，<br>用以解除大脑疲劳，获得休息。</p>
-</li>
-<li><p>先睹为快</p>
-<p>介绍了7个休息法，分别是 正念呼吸法，动态冥想，压力呼吸法，”猴子思维“消除法，RAIN法，温柔的慈<br>悲心，扫描全身法。 贯穿这七个方法的核心就是呼吸， 呼吸是意识的锚，注意呼吸就是为了将注意力集<br>中在当下，这就是正念呼吸法，整本书的精髓之所在了。</p>
-</li>
-<li><p>正念时刻</p>
-<p>该部分采用小说似的情节，讲述作者留学耶鲁大学精神医学系时，因为学习的压力产生的疲劳感而求助“尤<br>达”大师，尤达大师用正念思想帮助作者解决了当前的疲劳的情况，随便用正念思想帮助作者伯父的“当下<br>百吉果“ 摆脱困境。</p>
-</li>
-<li><p>结语</p>
-<p>从doing 到being,价值观从”任务导向型”生活 转为 “向成为什么” ，这一点也与《高效能人士的七个<br>习惯中的 以终为始 和要事第一 有着相同的含义</p>
-</li>
-<li><p>特别语录</p>
-<p>美国精神科医生推荐的五日简单休息法，于较长假期中实现较为好</p>
-</li>
-</ul>
-<h1 id="感悟"><a href="#感悟" class="headerlink" title="感悟"></a>感悟</h1><p>​    书中讲的正念思想来源于东方的佛教思想中，而佛教有助于心境平静，休息这一点我其实在高中时期就已经感受到了。在高二的一段黑暗时期，我曾执着于“人是如何入睡的”而导致精神崩溃，现在回想起来，也感觉有点发笑，当时自己也是在注意呼吸的，快入睡时而被“原来是这样入睡的”杂念给干扰，然后就是各种回忆，这也许就是我比别人能记得小时候更多的事 缘由吧。</p>
-<p>​    现在回想起来，当时就差一个步骤了，书中处理“猴子思维” 这个杂念是缓慢拉回到呼吸，而我当时的做法是猛然拉回到呼吸上，这一点就导致了我精神几乎崩溃。幸而当初有爱看书的习惯，在“三味书屋” 里淘到一本 佛教小故事的集的《禅思》，这本小册子都快翻烂了，现今依旧被珍藏在我家里的书桌上。再之后，我也有点开窍了，接触到了冥想，每天晚饭时期都会找个空荡无人的地方冥思会。到了高三因为学业繁忙，渐渐忘却了这种思想，如今又再次相遇，如果把思想比作人的话，恐怕此刻得泪眼朦胧了吧。当初不作一声告别，从此人海茫茫，杳无音信，穿越世间沉浮十几载，物事人非，耗尽半生追寻，突然在拐角的角落再次相遇，才发现，原来是你就是我要穷尽一生要找的那个人。</p>
-<p>​    有点跑题了，正念=冥想=当下=呼吸</p>
-]]></content>
-      <tags>
-        <tag>读后感</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>长头发的十二种自然疗法</title>
-    <url>/2022/03/08/%E9%95%BF%E5%A4%B4%E5%8F%91%E7%9A%84%E5%8D%81%E4%BA%8C%E7%A7%8D%E8%87%AA%E7%84%B6%E7%96%97%E6%B3%95/</url>
-    <content><![CDATA[<h1 id="两个重要的事实"><a href="#两个重要的事实" class="headerlink" title="两个重要的事实"></a>两个重要的事实</h1><ul>
-<li>头发常受洗澡时不断冲水，水中含有的氟化物容易让人掉发，长粉刺；氟化物抑制甲状腺<ul>
-<li>使用能过滤氟化物的淋浴喷头</li>
-</ul>
-</li>
-<li>头发91%是蛋白质组成，硫酸盐会破坏蛋白质结构<ul>
-<li>使用不含硫酸盐的洗发水</li>
-</ul>
-</li>
-<li>双氢</li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>记录一次内存泄露定位</title>
-    <url>/2020/12/29/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%AE%9A%E4%BD%8D/</url>
-    <content><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>这次问题的出现是公司另外一个项目组同事遇到的。当时情况是大约晚上9点左右grafana发出某个服务出现假死状态，研发人员立即登上服务器检查，发现服务器cpu满载，于是就尝试jstack 查看服务进程的堆栈情况，发现已经无法连接了，查看不到堆栈信息；无奈只能从业务日志入手，发现零星的error日志，分别是上午9点左右，在error日志附近都是写库的日志，明显能看到写库的时间在变长，20多秒/30多秒零星出现。然后立马想到的是有可能是出现了60秒导致了中断异常导致某个地方出现内存泄露，致使cpu满载，jstack 无法查看，顺着error 日志的堆栈信息发现类似以下代码</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Queue queue=new LinkedBlockingQueue();</span><br><span class="line"></span><br><span class="line">public void consume() &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            consumeSomething();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">        System.out.println(&quot;遇到异常了：&quot;+e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void consumeSomething() throws InterruptedException &#123;</span><br><span class="line">        if(queue.isEmpty())&#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(&quot;i have consume &quot;+queue.peek());</span><br><span class="line">        if(RandomUtils.nextInt(0,10)==5)&#123;</span><br><span class="line">            throw new InterruptedException(&quot;test&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line">private void produce()&#123;</span><br><span class="line">    while (true)&#123;</span><br><span class="line">            queue.add(RandomUtils.nextInt());</span><br><span class="line">        try &#123;</span><br><span class="line">            TimeUnit.SECONDS.sleep(1);</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    OutMemoryTest outMemoryTest = new OutMemoryTest();</span><br><span class="line">    new Thread(()-&gt;outMemoryTest.produce()).start();</span><br><span class="line">    new Thread(()-&gt;outMemoryTest.consume()).start();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>大致意思是一个生产者源源不断的往队列放入消息，另外一个消费者不停的消费该队列。正常情况是没问题的，但当特殊情况18行代码(模拟数据库超时中断异常)成真时，try……catch在while 外面捕获，导致跳出while循环，消费者终止了消费，然而生产者依旧在不断生产数据，出现积压泄露，进而导致一系列假死状态</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
-  </entry>
-  <entry>
-    <title>线上debug流程</title>
-    <url>/2022/03/30/%E7%BA%BF%E4%B8%8Adebug%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h1 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h1><p>我们有时碰到线上的一些问题，例如进程是否卡住了，输入输出不合预期，cpu负载飙升，GC太频繁</p>
-<h1 id="bebug-模版"><a href="#bebug-模版" class="headerlink" title="bebug 模版"></a>bebug 模版</h1><ul>
-<li>根据现有的日志分析</li>
-<li>查看进程中各个线程工作情况<ul>
-<li>top -Hp pid</li>
-<li>jstack pid</li>
-</ul>
-</li>
-<li>查看网络链接情况<ul>
-<li>netstat -antp|grep pid</li>
-<li>dstat 查看网络流量情况</li>
-</ul>
-</li>
-<li>查看内存使用情况<ul>
-<li>profile</li>
-</ul>
-</li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>空难感想</title>
-    <url>/2022/03/27/%E7%A9%BA%E9%9A%BE%E6%84%9F%E6%83%B3/</url>
-    <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>最近3.21东方航空空难事件触动了我的神经，以前不怎么关注也不怎么在意，随着步入社会，也坐过多次飞机，自然空难也就成了我关注的一个点。于是我就专门花了一晚上看了一些历史上的空难视频，这些视频主要是视频主根据公开的黑匣子语音和飞行数据的一个再现模拟。在这一晚上的观看和了解我也收获了一些成长</p>
-<h1 id="空难原因"><a href="#空难原因" class="headerlink" title="空难原因"></a>空难原因</h1><ul>
-<li>机组人员操作不规范，实际经验不足，能力水平不够(南航地勤人员贿赂当是机长，暴雨天气落地发生海豚跳；国际航线机长英文水平不过关，盲猜塔台指令)，过劳操作，外界压力(波兰政府前去俄罗斯参加卡庭纪念日损失80%政府精要)，精神崩溃(炒股亏损)，突然死亡</li>
-<li>塔台人员不足，（瑞士空管局导致空中两机相撞）,经验不足，瞎指挥</li>
-<li>维修人员：取巧维护，疏忽细节，产生细节破坏(引擎脱离)</li>
-<li>制造商：产品不合格(钢管厚度不一致)</li>
-<li>航空公司：对机组人员反馈不够重视</li>
-<li>乘客：非法携带违禁品（台湾明星携带汽油）</li>
-</ul>
-<h1 id="化险为夷要素"><a href="#化险为夷要素" class="headerlink" title="化险为夷要素"></a>化险为夷要素</h1><ul>
-<li>未起飞</li>
-<li>已落地</li>
-<li>机长经验丰富，当机果断；塔台全力配合</li>
-</ul>
-<h1 id="感动"><a href="#感动" class="headerlink" title="感动"></a>感动</h1><p>日本123航班空难事件是一个印象最深也是落泪的一次事件，飞机在死亡边缘线挣扎30多分钟内时间内，乘客们留下的遗书让我不禁潸然泪下。遗书中有人遗憾，好想能继续活；有人对妻子，对孩子说对不起了，不能继续陪他们走下去了，很自责把剩下的事抛给他们了。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">飞机的氧气面罩突然就掉下来了</span><br><span class="line">飞机开始下降</span><br><span class="line">知子，哲也，爸爸妈妈就拜托你们了</span><br><span class="line">哲也 要加油</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">好可怕</span><br><span class="line">好可怕</span><br><span class="line">好可怕</span><br><span class="line">谁来帮帮我</span><br><span class="line">好难受</span><br><span class="line">我不想死</span><br><span class="line">麻理子、津度、知代子：</span><br><span class="line">你们要齐心协力，好好帮妈妈的忙</span><br><span class="line">爸爸是在太遗憾了，肯定无救了</span><br><span class="line">原因不明，已经5分钟了</span><br><span class="line">我这辈子再也不想坐飞机了</span><br><span class="line">你们求神保佑我吧</span><br><span class="line">机内好像什么东西爆炸了似的</span><br><span class="line">冒出了浓雾，飞机正在下降</span><br><span class="line">没想到昨天的晚餐是与你们的最后一顿饭</span><br><span class="line">孩子的妈，遇到这种事令人遗憾</span><br><span class="line">永别了，孩子的事就拜托你了</span><br><span class="line">现在是6点30分，飞机盘旋急剧下降</span><br><span class="line">到今天为止，我的人生是幸福的，感谢你</span><br></pre></td></tr></table></figure>
-
-<h1 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h1><ul>
-<li>细节至关重要，重视细节可以化险为夷，忽视细节可以酿造出世纪性悲剧。</li>
-<li>时间就是生命，而我们生活中的每一项工作/学习/任务都是需要时间的付出，换而言之我们的人生也就是一趟航班，上面满载的是我们的时间，是我们的生命。</li>
-<li>作为我们人生这趟航班的机长，发展出一套完善的自我监控指标和自动报警系统，帮助我们做出最佳决策；与他人合作，时刻保持清醒头脑，塔台有可能不可靠，你的引路人也有可能是个洗脑者；不断累积总结内化经验，面对人生重大危机/转折是，要沉着冷静，要尽办法夺回掌握人生航班的控制权，远离危险；如果大环境对你不友好，直接远离它！强调你要有远见，牺牲当下精神的组织，远离它！时刻把你当作耗材的集体，远离它！永远保持清醒头脑！</li>
-<li>有生之年去趟日本</li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>领域驱动中的结构</title>
-    <url>/2019/08/30/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E4%B8%8E%E5%BA%94%E7%94%A8%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%8C%BA%E5%88%AB/</url>
-    <content><![CDATA[<h1 id="缘由"><a href="#缘由" class="headerlink" title="缘由"></a>缘由</h1><p>在实行DDD 领域驱动开发的过程中，需要面对的问题有： 如何分结构？在项目中怎样的包结构能够适用于领域驱动？应该怎样决定该段代码合适的位置？</p>
-<h1 id="战略结构"><a href="#战略结构" class="headerlink" title="战略结构"></a>战略结构</h1>]]></content>
-  </entry>
-  <entry>
-    <title>交换两变量的值</title>
-    <url>/2020/12/29/%E4%BA%A4%E6%8D%A2%E4%B8%A4%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/</url>
-    <content><![CDATA[<h3 id="方式一"><a href="#方式一" class="headerlink" title="方式一"></a>方式一</h3><ul>
-<li><p>采用第三个变量作为中间存储值来实现</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public void testSwap01(int a,int b)&#123;</span><br><span class="line">    int c=a;</span><br><span class="line">    a=b;</span><br><span class="line">    b=c;</span><br><span class="line">    System.out.println(&quot;a=&quot;+a);</span><br><span class="line">    System.out.println(&quot;b=&quot;+b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h3 id="方式二"><a href="#方式二" class="headerlink" title="方式二"></a>方式二</h3><ul>
-<li><p>采用异或的逻辑运算，a^a=0</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public void testSwap02(int a, int b)&#123;</span><br><span class="line">    a=a^b;</span><br><span class="line">    b=a^b;</span><br><span class="line">    a=a^b;</span><br><span class="line">    System.out.println(&quot;a=&quot;+a);</span><br><span class="line">    System.out.println(&quot;b=&quot;+b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-]]></content>
   </entry>
   <entry>
     <title>rfc1</title>
@@ -463,5 +161,307 @@
       <tags>
         <tag>翻译</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>httpCilent的timeout设置</title>
+    <url>/2021/01/06/httpCilent%E7%9A%84timeout%E8%AE%BE%E7%BD%AE/</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>公司项目同事在使用httpClient向某个url post 数据时发现：大部分数据在1,2秒内对方url就会有响应，但是偶尔会出现需要等待10多分钟，甚至是30多分钟才能接收到对方返回的成功响应。使用httpClient 时使用的connectionTimeOut,socketTimeOut都设置在一分钟以内，按道理是不会等这么长的时间，应该早就报异常了，但是在等待30分钟之后还是能收到对方的成功响应，这个问题就一直困扰着他。</p>
+<h3 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h3><p>其实他当时post文件都是在10m左右，按照计算机网络的通信协议，http协议是基于tcp协议的，tcp 和udp 协议除了前者是稳定传输，后者是非稳定传输；还有一个特点就是udp是不会对应用层的数据进行任何处理，拆分的，直接包上自己的udp头就发出去(其实超过了2^16-20-8 自己还是要拆包的)，而tcp是基于字节流传输的，是会拆分的。而socketTimeOut 指的是两个数据包的间隔，这样一来，我拆分出10个包，每个包从发出到接收到的ack包之间间隔只要在一分钟内就不会抛异常，总的传输时间在10分钟也不会抛异常</p>
+<h3 id="处理"><a href="#处理" class="headerlink" title="处理"></a>处理</h3><ol>
+<li>加大带宽</li>
+<li>每次发送异步判断耗时，耗时超过一定时间就重试或者其他逻辑</li>
+</ol>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p> 计算机网络和httpclient 底层原理未弄清</p>
+<p>5bnktj7l</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>manjaro交互式脚本解决vpn冲突问题</title>
+    <url>/2021/07/19/manjaro%E4%BA%A4%E4%BA%92%E5%BC%8F%E8%84%9A%E6%9C%AC%E8%A7%A3%E5%86%B3vpn%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>工作之中需要链接各种vpn进入各个环境，由于家里和公司各自有一台电脑，回家时公司电脑通常是不会关机的，vpn也就一直连着，一旦出现了报警，家里电脑连上vpn就和公司电脑的vpn产生冲突，导致互相踢对方，连接不稳定。排查问题十分痛苦，只好回到公司追查问题。如果是家里电脑忘记退出vpn,结果更加痛苦。</p>
+<h1 id="环境条件"><a href="#环境条件" class="headerlink" title="环境条件"></a>环境条件</h1><ul>
+<li>manjaro操作系统</li>
+<li>openvpn3 </li>
+<li>expect</li>
+</ul>
+<h1 id="可行性解决方案"><a href="#可行性解决方案" class="headerlink" title="可行性解决方案"></a>可行性解决方案</h1><ol>
+<li>远程连接，家里电脑和公司电脑互相穿透。</li>
+<li>家里电脑和公司电脑都各自维护定时脚本</li>
+</ol>
+<h1 id="可行性分析"><a href="#可行性分析" class="headerlink" title="可行性分析"></a>可行性分析</h1><ul>
+<li><p>方案一</p>
+<ul>
+<li><p>优点</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">除了能解决vpn冲突问题，还能处理很多其他问题，资源共享等等</span><br></pre></td></tr></table></figure></li>
+<li><p>缺点</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">需要能有稳定的对外端口;暴露公网带来安全风险</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>方案二</p>
+<ul>
+<li><p>优点</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">能解决vpn冲突问题，安全</span><br></pre></td></tr></table></figure></li>
+<li><p>缺点</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">比较固定，死板</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<p>在平衡以上方案的优缺利弊，最终选择了方案二，安全胜于一切，其他的花里胡哨最终都是要乘以这个安全系数的，安全系数为0,其它都是白说。这就是君子不立危墙之下的道理。</p>
+<h1 id="执行步骤"><a href="#执行步骤" class="headerlink" title="执行步骤"></a>执行步骤</h1><ol>
+<li>编写vpn一键启动/关闭脚本</li>
+<li>加入crontab定时队列中</li>
+</ol>
+<h2 id="步骤1"><a href="#步骤1" class="headerlink" title="步骤1"></a>步骤1</h2><ul>
+<li><p>我采用的是openvpn3 来管理vpn，由于openvpn3每次启动需要一堆参数，而且笔者工作时设计多个vpn环境，每次启动也是重复工作，故编写了一个批量启动脚本</p>
+</li>
+<li><p>由于登陆每次都需要密码，且目前openvpn3没有找到可行性的记住密码功能，故采用expect脚本来完成交互式输入密码</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> vpnStart.tcl</span></span><br><span class="line"></span><br><span class="line">start()&#123;</span><br><span class="line">expect&lt;&lt;EOF</span><br><span class="line">spawn openvpn3 session-start -c /data/nutstore/TEST/config/aliyun/aliyun.ovpn</span><br><span class="line">expect  &quot;*key passphrase&quot; &#123;</span><br><span class="line">  send &quot;TEST\n&quot;</span><br><span class="line">&#125;</span><br><span class="line">expect eof</span><br><span class="line"></span><br><span class="line">spawn openvpn3 session-start -c /data/nutstore/TEST/config/TEST/TEST.ovpn</span><br><span class="line">expect  &quot;*key passphrase&quot; &#123;</span><br><span class="line">  send &quot;TEST\n&quot;</span><br><span class="line">&#125;</span><br><span class="line">expect eof</span><br><span class="line"></span><br><span class="line">EOF</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">stop()&#123;</span><br><span class="line"> for session in ` openvpn3 sessions-list|grep Path|awk -F &#x27;:&#x27; &#x27;&#123;print $2&#125;&#x27; `</span><br><span class="line"> do</span><br><span class="line">  openvpn3 session-manage -D -o $session</span><br><span class="line"> done</span><br><span class="line"> openvpn3 sessions-list</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if test $1 = &quot;start&quot;</span><br><span class="line">then</span><br><span class="line"> start</span><br><span class="line">elif test  $1=&quot;stop&quot;</span><br><span class="line">then  </span><br><span class="line"> stop</span><br><span class="line">else </span><br><span class="line"> echo &quot;noting to do&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="步骤2"><a href="#步骤2" class="headerlink" title="步骤2"></a>步骤2</h2><ul>
+<li><p>加入crontab中，依据笔者的工作作息，设置为工作日12、13、21、22、23、24 关闭。这样一来，最多在家会存在半个小时的冲突时间，完全达到了我想要的效果</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">0 12,13,21,22,23,0 * * 1-5 ~/vpnStart.tcl stop</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p> 充分动手，利用liunx的高度定制性，为自己需求开发。关于expect相关语法和openvpn3相关语法请参考官方文档即可</p>
+]]></content>
+      <tags>
+        <tag>shell</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>《拯救记忆》读后感</title>
+    <url>/2022/02/27/%E3%80%8A%E6%8B%AF%E6%95%91%E8%AE%B0%E5%BF%86%E3%80%8B%E8%AF%BB%E5%90%8E%E6%84%9F/</url>
+    <content><![CDATA[<h1 id="大纲"><a href="#大纲" class="headerlink" title="大纲"></a>大纲</h1><p>![image-20220227155947736](/Users/zwyeli/Library/Application Support/typora-user-images/image-20220227155947736.png)</p>
+<ul>
+<li><p>背景</p>
+<p>Author: 丹尼尔·亚曼  译: 黎非凡<br>Background: 美国精神病学协会杰出成员<br>product date: 202104</p>
+</li>
+<li><p>为何会选择这本书</p>
+<ul>
+<li>最近刚刚把《心理学导论》，对人自身相关事物产生浓厚兴趣，联系到我自己在工作上经常容易忘记一些事情，这个让我有点苦恼。刚好在首都图书馆发现了这本书，便借来阅读一番</li>
+</ul>
+</li>
+<li><p>主要内容</p>
+<ul>
+<li>作者基于自己临床案例和研究，总结出一套关于记忆问题的判定标准和相应的治疗方案</li>
+<li>将自己的拯救记忆计划和传统针对阿尔茨海默症治疗方法对比，斥责传统治疗方法的无效及带来的副作用。</li>
+<li>作者将记忆模糊等问题定义为疾病，采用大脑SPECT扫描和MRI扫描来分别检测大脑的功能和结构问题。采用10个维度(血流量，退休/衰老，炎症，遗传，头部创伤，毒素，精神健康，免疫性疾病，神经激素，糖胖病，睡眠问题)来评估记忆情况。用案例故事一一举例相关维度出现的病症及相应的治疗措施。治疗措施主要分为：运动，食疗，保健品。</li>
+</ul>
+</li>
+<li><p>评价</p>
+<ul>
+<li>文中作者将记忆模糊定义为疾病这个举动让我想到了<a href="https://book.jd.com/writer/%E9%9F%A6%E6%81%A9%C2%B7%E9%9F%A6%E7%99%BB_1.html">韦恩·韦登</a>《心理学导论》中有一章批判思维关于定义的讨论。“定义”是一个比较重要但又是较为主观的，会牵涉到很多方面。在这篇文章里作者是一名精神病分析专家，自然将记忆问题定义为疾病是有利于自己的，一方面能突然自己研究的重要性，另一方面也能引起社会关注，增加记忆领域的经济和社会价值。</li>
+<li>文中作者有一句话让我突然眼前一新的感觉。 人一生要经历 出生，成长，衰老，疾病，死亡，这是自然规律，但是自然规律就是对的么？如果我们将衰老定义为一种病呢？ 这个脑洞很大，让我想到了无限可能</li>
+<li>书中每一个维度都有推荐保健品。</li>
+<li>这本书中曾多次推荐褪黑素营养品,但是最新科学研究已经实锤了褪黑素的各种副作用；</li>
+<li>书中建议 运动优先，学习新知识，学习音乐。我采纳接收，因为我喜欢^_^</li>
+</ul>
+</li>
+<li><p>我得到建议</p>
+<ul>
+<li>多喝水</li>
+<li>多做运动，尤其是球拍类运动</li>
+<li>每天花15分钟以上学习新知识，比如学习音乐，跳舞或者一门新的语言</li>
+<li>尝试每天禁食12～16小时</li>
+<li>爱护牙龈</li>
+<li>多摄入W-3脂肪酸和益生菌</li>
+<li>多食用有机蓝莓</li>
+<li>多摄入十字花科蔬菜</li>
+<li>多做负重练习</li>
+<li>入睡前一小时关掉所有电子产品</li>
+<li>打破常规，找一些新鲜的，有挑战性的而且自己也热爱的事情去做</li>
+<li>报名去听一节课或参与一次会议，主题是自己不熟悉而又感兴趣的内容</li>
+<li>尽快解决任何学习方面的问题</li>
+<li>晚上不可太晚吃东西</li>
+</ul>
+</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>《抗衰老计划》读后感</title>
+    <url>/2022/03/06/%E3%80%8A%E6%8A%97%E8%A1%B0%E8%80%81%E8%AE%A1%E5%88%92%E3%80%8B%E8%AF%BB%E5%90%8E%E6%84%9F/</url>
+    <content><![CDATA[<h1 id="金句"><a href="#金句" class="headerlink" title="金句"></a>金句</h1><ul>
+<li>我们所谓的衰老在大多数情况下就是疾病的一种表现，普遍存在的慢性疾病不断地侵蚀我们的身体，使我们普遍地接受这种衰退是”变老“的结果</li>
+<li>抗衰老有两种途径：逆转疾病进程 和 武装自己消除早期的疾病隐患</li>
+<li>抗衰老三种武器：饮食，补充营养物和锻炼身体</li>
+<li>抵抗衰老要从抵抗传统的错误教导开始</li>
+<li>胆固醇是蜡状的，不溶于水；血液成分主要是水，身体用蛋白质吧胆固醇覆盖后在血液中输送，这些蛋白质载体被称为载脂蛋白</li>
+<li>绿茶中的生物类黄酮消灭自由基的能力是维生素E的25倍，是维生素C的100倍</li>
+<li>生物类黄酮：茶，洋葱，大蒜</li>
+<li>游泳，散步，瑜伽，和其他更缓慢，温和的方式作为锻炼。过度锻炼或剧烈锻炼会产生大量自由基。推荐健美操和力量操</li>
+<li>糖类是健康的克星，需要坚决抵制</li>
+<li>多吃鸡蛋，番茄</li>
+<li>线粒体的DNA和细胞核中DNA是独立的，线粒体的DNA是环状的，无保护层，易受自由基的攻击</li>
+</ul>
+<h1 id="收获-amp-评价"><a href="#收获-amp-评价" class="headerlink" title="收获&amp;评价"></a>收获&amp;评价</h1><p>这本书和《拯救记忆》类似，都属于营养学类书籍。《拯救记忆》的关注点是大脑，记忆。这本书囊括《拯救》讨论范围，依靠人体血液的指标，讨论了包括主要的心脏病，糖尿病，高血压，阿尔茨海默症。</p>
+<h3 id="心脏疾病关键因素："><a href="#心脏疾病关键因素：" class="headerlink" title="心脏疾病关键因素："></a>心脏疾病关键因素：</h3><ul>
+<li>高水平的低密度载脂蛋白和高甘油三脂肪组合<ul>
+<li>原理：两种物质都特别黏稠；容易引发动脉粥样硬状化</li>
+<li>原因：摄入过多糖类（作者限制糖类进食观察血脂中两者组合比例下降，反推出来的）</li>
+</ul>
+</li>
+<li>高水平的同形半胱氨酸<ul>
+<li>原理： 导致染色体损害程度增加，尚不清楚如何损害动脉</li>
+<li>原因： 缺乏叶酸和维B会导致无法合成足量的清除同形半胱氨酸的酶</li>
+</ul>
+</li>
+</ul>
+<h3 id="衰老理论："><a href="#衰老理论：" class="headerlink" title="衰老理论："></a>衰老理论：</h3><ul>
+<li><p>糖</p>
+<ul>
+<li>糖基化改变蛋白质结构，破坏胶原蛋白的弹力；破坏抗氧化物生产酶；直接和DNA结合损害细胞，导致其无法复制或复制紊乱发生癌变</li>
+<li>引发胰岛素抵抗和葡糖糖耐受异常，从而导致高血压；高水平胰岛素抑制脱氢表雄酮合成</li>
+</ul>
+</li>
+<li><p>自由基理论</p>
+<ul>
+<li>预防：食用富含抗氧化物的食物和补充剂</li>
+</ul>
+</li>
+</ul>
+<h3 id="拯救"><a href="#拯救" class="headerlink" title="拯救"></a>拯救</h3><ul>
+<li>抗氧化剂<ul>
+<li>维e，c，硫辛酸，硒</li>
+</ul>
+</li>
+<li>抗氧化酶<ul>
+<li>辅酶Q10（心脏细胞中参与线粒体能量的生产和运输，同时消灭能量产生过程出现的自由基，保护线粒体）</li>
+</ul>
+</li>
+</ul>
+<h1 id="缺陷"><a href="#缺陷" class="headerlink" title="缺陷"></a>缺陷</h1><ul>
+<li>不知道是翻译问题，还是原作者问题。书中将载脂蛋白A定义为 一种非常黏的低密度载脂蛋白胆固醇。医学百科中定义载脂蛋白A(HDL)是高密度载脂蛋白胆固醇，属于好的胆固醇；载脂蛋白B(LDL)是低密度载脂蛋白胆固醇，属于坏的胆固醇。</li>
+<li>文中引用到其他人的说法和观点，没有参考文献和来源，确认费劲</li>
+<li>这本书和《拯救记忆》中类似，推荐褪黑素</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>《高效休息》 读后感</title>
+    <url>/2019/08/24/%E3%80%8A%E9%AB%98%E6%95%88%E4%BC%91%E6%81%AF%E3%80%8B%20%E8%AF%BB%E5%90%8E%E6%84%9F/</url>
+    <content><![CDATA[<h1 id="缘由"><a href="#缘由" class="headerlink" title="缘由"></a>缘由</h1><p>​    我选择《高效休息》这本书的主要缘由是某个周五忘交电费结果4点多就热醒了，又恰逢前一天网上听闻了陆奇这个人的生活作息，于是就想亲身体验一把。可是我也有自知之明的，知道他能有这样的作息，肯定有充足的休息，于是就有阅读些“如何休息”类的书籍想法。</p>
+<h1 id="评价"><a href="#评价" class="headerlink" title="评价"></a>评价</h1><p>​    简单，易懂（总分总结构，加以小说类型叙述，带入性好），实操性强，很快就能看到良性反馈。</p>
+<h1 id="主要内容"><a href="#主要内容" class="headerlink" title="主要内容"></a>主要内容</h1><p>书的结构分为 前言，先睹为快，正念时刻，结语，特别附录</p>
+<ul>
+<li><p>前言</p>
+<p>在前言中，该书指出DMN（预设模式网络，被认为是“大脑能量吞噬者”） 是造成人感觉累的主要原因，<br>而人感觉累主要是由于大脑疲劳。书中采用的解决方就是“正念”，也就是冥想，强调当下的感觉、体验，<br>用以解除大脑疲劳，获得休息。</p>
+</li>
+<li><p>先睹为快</p>
+<p>介绍了7个休息法，分别是 正念呼吸法，动态冥想，压力呼吸法，”猴子思维“消除法，RAIN法，温柔的慈<br>悲心，扫描全身法。 贯穿这七个方法的核心就是呼吸， 呼吸是意识的锚，注意呼吸就是为了将注意力集<br>中在当下，这就是正念呼吸法，整本书的精髓之所在了。</p>
+</li>
+<li><p>正念时刻</p>
+<p>该部分采用小说似的情节，讲述作者留学耶鲁大学精神医学系时，因为学习的压力产生的疲劳感而求助“尤<br>达”大师，尤达大师用正念思想帮助作者解决了当前的疲劳的情况，随便用正念思想帮助作者伯父的“当下<br>百吉果“ 摆脱困境。</p>
+</li>
+<li><p>结语</p>
+<p>从doing 到being,价值观从”任务导向型”生活 转为 “向成为什么” ，这一点也与《高效能人士的七个<br>习惯中的 以终为始 和要事第一 有着相同的含义</p>
+</li>
+<li><p>特别语录</p>
+<p>美国精神科医生推荐的五日简单休息法，于较长假期中实现较为好</p>
+</li>
+</ul>
+<h1 id="感悟"><a href="#感悟" class="headerlink" title="感悟"></a>感悟</h1><p>​    书中讲的正念思想来源于东方的佛教思想中，而佛教有助于心境平静，休息这一点我其实在高中时期就已经感受到了。在高二的一段黑暗时期，我曾执着于“人是如何入睡的”而导致精神崩溃，现在回想起来，也感觉有点发笑，当时自己也是在注意呼吸的，快入睡时而被“原来是这样入睡的”杂念给干扰，然后就是各种回忆，这也许就是我比别人能记得小时候更多的事 缘由吧。</p>
+<p>​    现在回想起来，当时就差一个步骤了，书中处理“猴子思维” 这个杂念是缓慢拉回到呼吸，而我当时的做法是猛然拉回到呼吸上，这一点就导致了我精神几乎崩溃。幸而当初有爱看书的习惯，在“三味书屋” 里淘到一本 佛教小故事的集的《禅思》，这本小册子都快翻烂了，现今依旧被珍藏在我家里的书桌上。再之后，我也有点开窍了，接触到了冥想，每天晚饭时期都会找个空荡无人的地方冥思会。到了高三因为学业繁忙，渐渐忘却了这种思想，如今又再次相遇，如果把思想比作人的话，恐怕此刻得泪眼朦胧了吧。当初不作一声告别，从此人海茫茫，杳无音信，穿越世间沉浮十几载，物事人非，耗尽半生追寻，突然在拐角的角落再次相遇，才发现，原来是你就是我要穷尽一生要找的那个人。</p>
+<p>​    有点跑题了，正念=冥想=当下=呼吸</p>
+]]></content>
+      <tags>
+        <tag>读后感</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>空难感想</title>
+    <url>/2022/03/27/%E7%A9%BA%E9%9A%BE%E6%84%9F%E6%83%B3/</url>
+    <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>最近3.21东方航空空难事件触动了我的神经，以前不怎么关注也不怎么在意，随着步入社会，也坐过多次飞机，自然空难也就成了我关注的一个点。于是我就专门花了一晚上看了一些历史上的空难视频，这些视频主要是视频主根据公开的黑匣子语音和飞行数据的一个再现模拟。在这一晚上的观看和了解我也收获了一些成长</p>
+<h1 id="空难原因"><a href="#空难原因" class="headerlink" title="空难原因"></a>空难原因</h1><ul>
+<li>机组人员操作不规范，实际经验不足，能力水平不够(南航地勤人员贿赂当是机长，暴雨天气落地发生海豚跳；国际航线机长英文水平不过关，盲猜塔台指令)，过劳操作，外界压力(波兰政府前去俄罗斯参加卡庭纪念日损失80%政府精要)，精神崩溃(炒股亏损)，突然死亡</li>
+<li>塔台人员不足，（瑞士空管局导致空中两机相撞）,经验不足，瞎指挥</li>
+<li>维修人员：取巧维护，疏忽细节，产生细节破坏(引擎脱离)</li>
+<li>制造商：产品不合格(钢管厚度不一致)</li>
+<li>航空公司：对机组人员反馈不够重视</li>
+<li>乘客：非法携带违禁品（台湾明星携带汽油）</li>
+</ul>
+<h1 id="化险为夷要素"><a href="#化险为夷要素" class="headerlink" title="化险为夷要素"></a>化险为夷要素</h1><ul>
+<li>未起飞</li>
+<li>已落地</li>
+<li>机长经验丰富，当机果断；塔台全力配合</li>
+</ul>
+<h1 id="感动"><a href="#感动" class="headerlink" title="感动"></a>感动</h1><p>日本123航班空难事件是一个印象最深也是落泪的一次事件，飞机在死亡边缘线挣扎30多分钟内时间内，乘客们留下的遗书让我不禁潸然泪下。遗书中有人遗憾，好想能继续活；有人对妻子，对孩子说对不起了，不能继续陪他们走下去了，很自责把剩下的事抛给他们了。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">飞机的氧气面罩突然就掉下来了</span><br><span class="line">飞机开始下降</span><br><span class="line">知子，哲也，爸爸妈妈就拜托你们了</span><br><span class="line">哲也 要加油</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">好可怕</span><br><span class="line">好可怕</span><br><span class="line">好可怕</span><br><span class="line">谁来帮帮我</span><br><span class="line">好难受</span><br><span class="line">我不想死</span><br><span class="line">麻理子、津度、知代子：</span><br><span class="line">你们要齐心协力，好好帮妈妈的忙</span><br><span class="line">爸爸是在太遗憾了，肯定无救了</span><br><span class="line">原因不明，已经5分钟了</span><br><span class="line">我这辈子再也不想坐飞机了</span><br><span class="line">你们求神保佑我吧</span><br><span class="line">机内好像什么东西爆炸了似的</span><br><span class="line">冒出了浓雾，飞机正在下降</span><br><span class="line">没想到昨天的晚餐是与你们的最后一顿饭</span><br><span class="line">孩子的妈，遇到这种事令人遗憾</span><br><span class="line">永别了，孩子的事就拜托你了</span><br><span class="line">现在是6点30分，飞机盘旋急剧下降</span><br><span class="line">到今天为止，我的人生是幸福的，感谢你</span><br></pre></td></tr></table></figure>
+
+<h1 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h1><ul>
+<li>细节至关重要，重视细节可以化险为夷，忽视细节可以酿造出世纪性悲剧。</li>
+<li>时间就是生命，而我们生活中的每一项工作/学习/任务都是需要时间的付出，换而言之我们的人生也就是一趟航班，上面满载的是我们的时间，是我们的生命。</li>
+<li>作为我们人生这趟航班的机长，发展出一套完善的自我监控指标和自动报警系统，帮助我们做出最佳决策；与他人合作，时刻保持清醒头脑，塔台有可能不可靠，你的引路人也有可能是个洗脑者；不断累积总结内化经验，面对人生重大危机/转折是，要沉着冷静，要尽办法夺回掌握人生航班的控制权，远离危险；如果大环境对你不友好，直接远离它！强调你要有远见，牺牲当下精神的组织，远离它！时刻把你当作耗材的集体，远离它！永远保持清醒头脑！</li>
+<li>有生之年去趟日本</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>记录一次内存泄露定位</title>
+    <url>/2020/12/29/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%AE%9A%E4%BD%8D/</url>
+    <content><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>这次问题的出现是公司另外一个项目组同事遇到的。当时情况是大约晚上9点左右grafana发出某个服务出现假死状态，研发人员立即登上服务器检查，发现服务器cpu满载，于是就尝试jstack 查看服务进程的堆栈情况，发现已经无法连接了，查看不到堆栈信息；无奈只能从业务日志入手，发现零星的error日志，分别是上午9点左右，在error日志附近都是写库的日志，明显能看到写库的时间在变长，20多秒/30多秒零星出现。然后立马想到的是有可能是出现了60秒导致了中断异常导致某个地方出现内存泄露，致使cpu满载，jstack 无法查看，顺着error 日志的堆栈信息发现类似以下代码</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Queue queue=new LinkedBlockingQueue();</span><br><span class="line"></span><br><span class="line">public void consume() &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            consumeSomething();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">        System.out.println(&quot;遇到异常了：&quot;+e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void consumeSomething() throws InterruptedException &#123;</span><br><span class="line">        if(queue.isEmpty())&#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(&quot;i have consume &quot;+queue.peek());</span><br><span class="line">        if(RandomUtils.nextInt(0,10)==5)&#123;</span><br><span class="line">            throw new InterruptedException(&quot;test&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line">private void produce()&#123;</span><br><span class="line">    while (true)&#123;</span><br><span class="line">            queue.add(RandomUtils.nextInt());</span><br><span class="line">        try &#123;</span><br><span class="line">            TimeUnit.SECONDS.sleep(1);</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    OutMemoryTest outMemoryTest = new OutMemoryTest();</span><br><span class="line">    new Thread(()-&gt;outMemoryTest.produce()).start();</span><br><span class="line">    new Thread(()-&gt;outMemoryTest.consume()).start();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>大致意思是一个生产者源源不断的往队列放入消息，另外一个消费者不停的消费该队列。正常情况是没问题的，但当特殊情况18行代码(模拟数据库超时中断异常)成真时，try……catch在while 外面捕获，导致跳出while循环，消费者终止了消费，然而生产者依旧在不断生产数据，出现积压泄露，进而导致一系列假死状态</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
+  </entry>
+  <entry>
+    <title>线上debug流程</title>
+    <url>/2022/03/30/%E7%BA%BF%E4%B8%8Adebug%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h1><p>我们有时碰到线上的一些问题，例如进程是否卡住了，输入输出不合预期，cpu负载飙升，GC太频繁</p>
+<h1 id="bebug-模版"><a href="#bebug-模版" class="headerlink" title="bebug 模版"></a>bebug 模版</h1><ul>
+<li>根据现有的日志分析</li>
+<li>查看进程中各个线程工作情况<ul>
+<li>top -Hp pid</li>
+<li>jstack pid</li>
+</ul>
+</li>
+<li>查看网络链接情况<ul>
+<li>netstat -antp|grep pid</li>
+<li>dstat 查看网络流量情况</li>
+</ul>
+</li>
+<li>查看内存使用情况<ul>
+<li>profile</li>
+</ul>
+</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>长头发的十二种自然疗法</title>
+    <url>/2022/03/08/%E9%95%BF%E5%A4%B4%E5%8F%91%E7%9A%84%E5%8D%81%E4%BA%8C%E7%A7%8D%E8%87%AA%E7%84%B6%E7%96%97%E6%B3%95/</url>
+    <content><![CDATA[<h1 id="两个重要的事实"><a href="#两个重要的事实" class="headerlink" title="两个重要的事实"></a>两个重要的事实</h1><ul>
+<li>头发常受洗澡时不断冲水，水中含有的氟化物容易让人掉发，长粉刺；氟化物抑制甲状腺<ul>
+<li>使用能过滤氟化物的淋浴喷头</li>
+</ul>
+</li>
+<li>头发91%是蛋白质组成，硫酸盐会破坏蛋白质结构<ul>
+<li>使用不含硫酸盐的洗发水</li>
+</ul>
+</li>
+<li>双氢</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>领域驱动中的结构</title>
+    <url>/2019/08/30/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E4%B8%8E%E5%BA%94%E7%94%A8%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%8C%BA%E5%88%AB/</url>
+    <content><![CDATA[<h1 id="缘由"><a href="#缘由" class="headerlink" title="缘由"></a>缘由</h1><p>在实行DDD 领域驱动开发的过程中，需要面对的问题有： 如何分结构？在项目中怎样的包结构能够适用于领域驱动？应该怎样决定该段代码合适的位置？</p>
+<h1 id="战略结构"><a href="#战略结构" class="headerlink" title="战略结构"></a>战略结构</h1>]]></content>
+  </entry>
+  <entry>
+    <title>交换两变量的值</title>
+    <url>/2020/12/29/%E4%BA%A4%E6%8D%A2%E4%B8%A4%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/</url>
+    <content><![CDATA[<h3 id="方式一"><a href="#方式一" class="headerlink" title="方式一"></a>方式一</h3><ul>
+<li><p>采用第三个变量作为中间存储值来实现</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public void testSwap01(int a,int b)&#123;</span><br><span class="line">    int c=a;</span><br><span class="line">    a=b;</span><br><span class="line">    b=c;</span><br><span class="line">    System.out.println(&quot;a=&quot;+a);</span><br><span class="line">    System.out.println(&quot;b=&quot;+b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="方式二"><a href="#方式二" class="headerlink" title="方式二"></a>方式二</h3><ul>
+<li><p>采用异或的逻辑运算，a^a=0</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public void testSwap02(int a, int b)&#123;</span><br><span class="line">    a=a^b;</span><br><span class="line">    b=a^b;</span><br><span class="line">    a=a^b;</span><br><span class="line">    System.out.println(&quot;a=&quot;+a);</span><br><span class="line">    System.out.println(&quot;b=&quot;+b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+]]></content>
   </entry>
 </search>
