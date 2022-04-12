@@ -11,7 +11,7 @@
         name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1"
       />
-      <title>Archives |  ELIZWY</title>
+      <title>可变参数的一次空指针异常复盘 |  ELIZWY</title>
   <meta name="generator" content="hexo-theme-ayer">
       
       <link rel="shortcut icon" href="/favicon.ico" />
@@ -45,226 +45,191 @@
       
     <main class="content on">
       <section class="outer">
-  
-  
-  <article class="articles">
+  <article
+  id="post-可变参数的一次空指针异常复盘"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
     
-    
-    <h1 class="page-type-title">Archives</h1>
-    
-    
-  
-  
-  
-  
-  
-  
-  <div class="archives-wrap">
-    <div class="archive-year-wrap">
-      <a href="/archives/2021" class="archive-year">2021</a>
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  可变参数的一次空指针异常复盘
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2022/04/12/%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E7%9A%84%E4%B8%80%E6%AC%A1%E7%A9%BA%E6%8C%87%E9%92%88%E5%BC%82%E5%B8%B8%E5%A4%8D%E7%9B%98/" class="article-date">
+  <time datetime="2022-04-12T13:05:50.000Z" itemprop="datePublished">2022-04-12</time>
+</a>   
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> Word count:</span>
+            <span class="post-count">465</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> Reading time≈</span>
+            <span class="post-count">1 min</span>
+        </span>
+    </span>
+</div>
+ 
     </div>
-    <div class="archives">
       
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2021/07/18/M1%E8%8A%AF%E7%89%87%E5%AE%89%E8%A3%85homebrew%E7%9A%84%E5%9D%91%E8%AE%B0%E5%BD%95/" class="archive-article-date">
-  <time datetime="2021-07-18T06:59:35.000Z" itemprop="datePublished">07/18</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2021/07/18/M1%E8%8A%AF%E7%89%87%E5%AE%89%E8%A3%85homebrew%E7%9A%84%E5%9D%91%E8%AE%B0%E5%BD%95/"
-    >M1芯片安装homebrew后无法正常安装软件记录</a> 
-</h2>
- 
+    <div class="tocbot"></div>
 
-    </header>
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2021/01/06/httpCilent%E7%9A%84timeout%E8%AE%BE%E7%BD%AE/" class="archive-article-date">
-  <time datetime="2021-01-06T14:03:57.000Z" itemprop="datePublished">01/06</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2021/01/06/httpCilent%E7%9A%84timeout%E8%AE%BE%E7%BD%AE/"
-    >httpCilent的timeout设置</a> 
-</h2>
- 
 
-    </header>
-    
-    
-  </div>
-</article>
-      
-  
-  
-  
-  </div>
-  </div>
-  
-  
-  <div class="archives-wrap">
-    <div class="archive-year-wrap">
-      <a href="/archives/2020" class="archive-year">2020</a>
-    </div>
-    <div class="archives">
-      
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/12/29/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%AE%9A%E4%BD%8D/" class="archive-article-date">
-  <time datetime="2020-12-29T15:00:28.000Z" itemprop="datePublished">12/29</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2020/12/29/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%AE%9A%E4%BD%8D/"
-    >记录一次内存泄露定位</a> 
-</h2>
- 
 
-    </header>
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/12/29/%E4%BA%A4%E6%8D%A2%E4%B8%A4%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/" class="archive-article-date">
-  <time datetime="2020-12-29T14:31:39.000Z" itemprop="datePublished">12/29</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2020/12/29/%E4%BA%A4%E6%8D%A2%E4%B8%A4%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/"
-    >交换两变量的值</a> 
-</h2>
- 
 
-    </header>
-    
-    
-  </div>
-</article>
-      
   
-  
-  
-  </div>
-  </div>
-  
-  
-  <div class="archives-wrap">
-    <div class="archive-year-wrap">
-      <a href="/archives/2019" class="archive-year">2019</a>
-    </div>
-    <div class="archives">
-      
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2019/09/11/java%E5%BC%82%E5%B8%B8%E5%8F%97%E6%8E%A7%E5%BC%82%E5%B8%B8%E4%B8%8E%E9%9D%9E%E5%8F%97%E6%8E%A7%E5%BC%82%E5%B8%B8/" class="archive-article-date">
-  <time datetime="2019-09-11T03:28:59.000Z" itemprop="datePublished">09/11</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
        
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2019/09/11/java%E5%BC%82%E5%B8%B8%E5%8F%97%E6%8E%A7%E5%BC%82%E5%B8%B8%E4%B8%8E%E9%9D%9E%E5%8F%97%E6%8E%A7%E5%BC%82%E5%B8%B8/"
-    >java异常受控异常与非受控异常</a> 
-</h2>
- 
+  <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>在一次业务实现中，对落盘日志中增加个监测字段，由于一个计划中的监测链接可能是多个，故在一个方法中使用了可变参数接收监测链接，然后做处理。在处理的过程中导致null 异常，导致日志落盘失败，这在日志系统中较为致命，故此复盘总结。</p>
+<h1 id="现场模拟"><a href="#现场模拟" class="headerlink" title="现场模拟"></a>现场模拟</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public class VariableParamTest &#123;</span><br><span class="line">    private static String a = null;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        final VariableParamTest paramTest = new VariableParamTest();</span><br><span class="line"></span><br><span class="line">        paramTest.test(null);</span><br><span class="line">        paramTest.test(a);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private void test(String... str) &#123;</span><br><span class="line">        System.out.println(str);</span><br><span class="line">        if (str == null) &#123;</span><br><span class="line">            System.out.println(&quot;检测到null&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-    </header>
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2019/08/30/jpa%20%E5%8F%8C%E5%90%91%E5%85%B3%E8%81%94%E5%AF%BC%E8%87%B4%E7%9A%84%E5%A0%86%E6%A0%88%E6%BA%A2%E5%87%BA/" class="archive-article-date">
-  <time datetime="2019-08-30T01:56:11.000Z" itemprop="datePublished">08/30</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2019/08/30/jpa%20%E5%8F%8C%E5%90%91%E5%85%B3%E8%81%94%E5%AF%BC%E8%87%B4%E7%9A%84%E5%A0%86%E6%A0%88%E6%BA%A2%E5%87%BA/"
-    >jpa 双向关联导致的堆栈溢出</a> 
-</h2>
- 
+<h1 id="现场结果"><a href="#现场结果" class="headerlink" title="现场结果"></a>现场结果</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">null</span><br><span class="line">检测到null</span><br><span class="line">[Ljava.lang.String;@2be94b0f</span><br></pre></td></tr></table></figure>
 
-    </header>
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2019/08/30/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E4%B8%8E%E5%BA%94%E7%94%A8%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%8C%BA%E5%88%AB/" class="archive-article-date">
-  <time datetime="2019-08-30T01:56:11.000Z" itemprop="datePublished">08/30</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2019/08/30/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E4%B8%8E%E5%BA%94%E7%94%A8%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%8C%BA%E5%88%AB/"
-    >领域驱动中的结构</a> 
-</h2>
+<h1 id="结果分析"><a href="#结果分析" class="headerlink" title="结果分析"></a>结果分析</h1><ul>
+<li>可变参数实际上是语法糖，java在运行时将该参数编译成一个数组形式，所以能看到结果的第三行输出的方法签名是一个字符串数组</li>
+<li>编译器在进行构建数组的过程中，会进行类型匹配，如果是非String类型的将会报错，这个在编辑器的时候就能被发现</li>
+<li>参数的其实是一个引用地址值，null直接传递编译器不会进行转化。但如果是a=null，传入a，那么编译器收到的正常的地址值，就进行正常转化成[null] 形式</li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>对于一个数组结构的入参判定不能仅仅停留在CollectionUtils.isEmpty层面，需要针对其中每个元素进行null判定，考虑到[3,null,null]这种类似情况</li>
+<li>在做单元测试时需要反复测试边界条件，确保所有的边界条件都测试到</li>
+<li>反复阅读代码，思考各种可能的情况，并把可能的情况都图形可视化</li>
+</ul>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://www.runoob.com/w3cnote/java-varargs-parameter.html">Java 可变参数 | 菜鸟教程 (runoob.com)</a></li>
+</ul>
  
-
-    </header>
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2019/08/24/%E3%80%8A%E9%AB%98%E6%95%88%E4%BC%91%E6%81%AF%E3%80%8B%20%E8%AF%BB%E5%90%8E%E6%84%9F/" class="archive-article-date">
-  <time datetime="2019-08-24T12:10:30.000Z" itemprop="datePublished">08/24</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2019/08/24/%E3%80%8A%E9%AB%98%E6%95%88%E4%BC%91%E6%81%AF%E3%80%8B%20%E8%AF%BB%E5%90%8E%E6%84%9F/"
-    >《高效休息》 读后感</a> 
-</h2>
- 
-
-    </header>
-    
-    
-  </div>
-</article>
-      
+      <!-- reward -->
       
     </div>
-  </div>
-  
-  
-
-  
-  <nav class="page-nav">
     
-    <a class="extend prev" rel="prev" href="/archives/">上一页</a><a class="page-number" href="/archives/">1</a><span class="page-number current">2</span>
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>Copyright： </strong>
+          
+          Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source.
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2022/04/12/%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E7%9A%84%E4%B8%80%E6%AC%A1%E7%A9%BA%E6%8C%87%E9%92%88%E5%BC%82%E5%B8%B8%E5%A4%8D%E7%9B%98/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/2022/03/30/rfc1/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">rfc1</div>
+      </a>
+    
   </nav>
-  
+
+   
+ 
+   
+<div class="gitalk" id="gitalk-container"></div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css">
+
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
+
+<script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: '31a4cf64dd00099e49ad',
+    clientSecret: 'db6cbf4ebe9bb2434bd9447d2fd65a1f1d90f896',
+    repo: 'elizwy.github.io',
+    owner: 'elizwy',
+    admin: ['elizwy'],
+    // id: location.pathname,      // Ensure uniqueness and length less than 50
+    id: md5(location.pathname),
+    distractionFreeMode: false,  // Facebook-like distraction free mode
+    pagerDirection: 'last'
+  })
+
+  gitalk.render('gitalk-container')
+</script>
+
+     
+</article>
+
 </section>
       <footer class="footer">
   <div class="outer">
@@ -383,6 +348,22 @@
 <script src="/js/lazyload.min.js"></script>
 
 <!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
 <link
