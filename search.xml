@@ -18,6 +18,28 @@
       </tags>
   </entry>
   <entry>
+    <title>jpa 双向关联导致的堆栈溢出</title>
+    <url>/2019/08/30/jpa%20%E5%8F%8C%E5%90%91%E5%85%B3%E8%81%94%E5%AF%BC%E8%87%B4%E7%9A%84%E5%A0%86%E6%A0%88%E6%BA%A2%E5%87%BA/</url>
+    <content><![CDATA[<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>最近做权限的过程中， 角色和资源的关系是多对多的关系，采用@ManyToMany 注解，在使用双向的过程中出现了jpa 循环依赖导致堆栈溢出问题</p>
+<h1 id="实体"><a href="#实体" class="headerlink" title="实体"></a>实体</h1><ul>
+<li><p>Role</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public class Role extends BaseEntity &#123;</span><br><span class="line">    @Id</span><br><span class="line">    @GeneratedValue(strategy = GenerationType.IDENTITY)</span><br><span class="line">    private Long id;</span><br><span class="line">    @Column(name = &quot;role_name&quot;)</span><br><span class="line">    private String roleName;</span><br><span class="line">    @Column(name = &quot;status&quot;)</span><br><span class="line">    private String status;</span><br><span class="line">    /**</span><br><span class="line">     * 角色拥有的资源id</span><br><span class="line">     */</span><br><span class="line">    @Transient</span><br><span class="line">    private Set&lt;Integer&gt; resourceIds=new HashSet&lt;&gt;();</span><br><span class="line">    /**</span><br><span class="line">     * 角色拥有的资源</span><br><span class="line">     */</span><br><span class="line">    @ManyToMany(fetch=FetchType.EAGER)</span><br><span class="line">    @JoinTable(name=&quot;role_resource&quot;,joinColumns = @JoinColumn(name = &quot;role_id&quot;),inverseJoinColumns = @JoinColumn(name = &quot;resource_id&quot;))</span><br><span class="line">    private Set&lt;Resource&gt; resources=new HashSet&lt;&gt;();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>Resource</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">@Id</span><br><span class="line">    @GeneratedValue(strategy = GenerationType.IDENTITY)</span><br><span class="line">    private Integer id;</span><br><span class="line">    private String name;</span><br><span class="line">    @ManyToOne</span><br><span class="line">    @NotFound(action= NotFoundAction.IGNORE)</span><br><span class="line">    private Resource parent;</span><br><span class="line">    @OneToMany(mappedBy = &quot;parent&quot;)</span><br><span class="line">    @OrderBy(&quot;sort ASC&quot;)</span><br><span class="line">    private List&lt;Resource&gt; childs=new ArrayList&lt;&gt;();</span><br><span class="line">    private String url;</span><br><span class="line">    private String status;</span><br><span class="line">    private String icon;</span><br><span class="line">    private String title;</span><br><span class="line"></span><br><span class="line">    @Transient</span><br><span class="line">    private Integer parentId;</span><br><span class="line"></span><br><span class="line">    @ManyToMany(mappedBy = &quot;resources&quot;)</span><br><span class="line">    private Set&lt;Role&gt; role;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">java.lang.StackOverflowError: null</span><br><span class="line">	at com.mysql.jdbc.Util.handleNewInstance(Util.java:425)</span><br><span class="line">	at com.mysql.jdbc.PreparedStatement.getInstance(PreparedStatement.java:761)</span><br><span class="line">	at com.mysql.jdbc.ConnectionImpl.clientPrepareStatement(ConnectionImpl.java:1471)</span><br><span class="line">	at com.mysql.jdbc.ConnectionImpl.prepareStatement(ConnectionImpl.java:4167)</span><br><span class="line">	at com.mysql.jdbc.ConnectionImpl.prepareStatement(ConnectionImpl.java:4071)</span><br><span class="line">	at com.zaxxer.hikari.pool.ProxyConnection.prepareStatement(ProxyConnection.java:311)</span><br><span class="line">	at com.zaxxer.hikari.pool.HikariProxyConnection.prepareStatement(HikariProxyConnection.java)</span><br><span class="line">	at org.hibernate.engine.jdbc.internal.StatementPreparerImpl$5.doPrepare(StatementPreparerImpl.java:146)</span><br><span class="line">	at org.hibernate.engine.jdbc.internal.StatementPreparerImpl$StatementPreparationTemplate.prepareStatement(StatementPreparerImpl.java:172)</span><br><span class="line">	at org.hibernate.engine.jdbc.internal.StatementPreparerImpl.prepareQueryStatement(StatementPreparerImpl.java:148)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.prepareQueryStatement(AbstractLoadPlanBasedLoader.java:226)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.executeQueryStatement(AbstractLoadPlanBasedLoader.java:190)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.executeLoad(AbstractLoadPlanBasedLoader.java:121)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.executeLoad(AbstractLoadPlanBasedLoader.java:86)</span><br><span class="line">	at org.hibernate.loader.collection.plan.AbstractLoadPlanBasedCollectionInitializer.initialize(AbstractLoadPlanBasedCollectionInitializer.java:87)</span><br><span class="line">	at org.hibernate.persister.collection.AbstractCollectionPersister.initialize(AbstractCollectionPersister.java:691)</span><br><span class="line">	at org.hibernate.event.internal.DefaultInitializeCollectionEventListener.onInitializeCollection(DefaultInitializeCollectionEventListener.java:75)</span><br><span class="line">	at org.hibernate.internal.SessionImpl.initializeCollection(SessionImpl.java:2246)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection$4.doWork(AbstractPersistentCollection.java:580)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection.withTemporarySessionIfNeeded(AbstractPersistentCollection.java:262)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection.initialize(AbstractPersistentCollection.java:576)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection.read(AbstractPersistentCollection.java:147)</span><br><span class="line">	at org.hibernate.collection.internal.PersistentSet.iterator(PersistentSet.java:188)</span><br><span class="line">	at java.util.Spliterators$IteratorSpliterator.estimateSize(Spliterators.java:1821)</span><br><span class="line">	at java.util.Spliterator.getExactSizeIfKnown(Spliterator.java:408)</span><br><span class="line">	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:483)</span><br><span class="line">	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:474)</span><br><span class="line">	at java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:913)</span><br><span class="line">	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)</span><br><span class="line">	at java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:578)</span><br><span class="line">	at com.testin.user.admin.service.role.domain.Role.getResourceIds(Role.java:76)</span><br><span class="line">	at com.testin.user.admin.service.role.domain.Role.hashCode(Role.java:29)</span><br><span class="line">	at java.util.HashMap.hash(HashMap.java:339)</span><br><span class="line">	at java.util.HashMap.put(HashMap.java:607)</span><br><span class="line">	at java.util.HashSet.add(HashSet.java:220)</span><br><span class="line">	at java.util.AbstractCollection.addAll(AbstractCollection.java:352)</span><br><span class="line">	at org.hibernate.collection.internal.PersistentSet.endRead(PersistentSet.java:355)</span><br><span class="line">	at org.hibernate.engine.loading.internal.CollectionLoadContext.endLoadingCollection(CollectionLoadContext.java:236)</span><br><span class="line">	at org.hibernate.engine.loading.internal.CollectionLoadContext.endLoadingCollections(CollectionLoadContext.java:223)</span><br><span class="line">	at org.hibernate.engine.loading.internal.CollectionLoadContext.endLoadingCollections(CollectionLoadContext.java:196)</span><br><span class="line">	at org.hibernate.loader.plan.exec.process.internal.CollectionReferenceInitializerImpl.endLoading(CollectionReferenceInitializerImpl.java:154)</span><br><span class="line">	at org.hibernate.loader.plan.exec.process.internal.AbstractRowReader.finishLoadingCollections(AbstractRowReader.java:249)</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p> 从堆栈信息可以看出, 循环依赖的中间衔接点在hashCode，所以我们只需要尝试在被维护方复写hashCode 即可</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">    public int hashCode() &#123;</span><br><span class="line">        return Objects.hash(id);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <tags>
+        <tag>jpa</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>httpCilent的timeout设置</title>
     <url>/2021/01/06/httpCilent%E7%9A%84timeout%E8%AE%BE%E7%BD%AE/</url>
     <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>公司项目同事在使用httpClient向某个url post 数据时发现：大部分数据在1,2秒内对方url就会有响应，但是偶尔会出现需要等待10多分钟，甚至是30多分钟才能接收到对方返回的成功响应。使用httpClient 时使用的connectionTimeOut,socketTimeOut都设置在一分钟以内，按道理是不会等这么长的时间，应该早就报异常了，但是在等待30分钟之后还是能收到对方的成功响应，这个问题就一直困扰着他。</p>
@@ -52,87 +74,6 @@
       </tags>
   </entry>
   <entry>
-    <title>jpa 双向关联导致的堆栈溢出</title>
-    <url>/2019/08/30/jpa%20%E5%8F%8C%E5%90%91%E5%85%B3%E8%81%94%E5%AF%BC%E8%87%B4%E7%9A%84%E5%A0%86%E6%A0%88%E6%BA%A2%E5%87%BA/</url>
-    <content><![CDATA[<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>最近做权限的过程中， 角色和资源的关系是多对多的关系，采用@ManyToMany 注解，在使用双向的过程中出现了jpa 循环依赖导致堆栈溢出问题</p>
-<h1 id="实体"><a href="#实体" class="headerlink" title="实体"></a>实体</h1><ul>
-<li><p>Role</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public class Role extends BaseEntity &#123;</span><br><span class="line">    @Id</span><br><span class="line">    @GeneratedValue(strategy = GenerationType.IDENTITY)</span><br><span class="line">    private Long id;</span><br><span class="line">    @Column(name = &quot;role_name&quot;)</span><br><span class="line">    private String roleName;</span><br><span class="line">    @Column(name = &quot;status&quot;)</span><br><span class="line">    private String status;</span><br><span class="line">    /**</span><br><span class="line">     * 角色拥有的资源id</span><br><span class="line">     */</span><br><span class="line">    @Transient</span><br><span class="line">    private Set&lt;Integer&gt; resourceIds=new HashSet&lt;&gt;();</span><br><span class="line">    /**</span><br><span class="line">     * 角色拥有的资源</span><br><span class="line">     */</span><br><span class="line">    @ManyToMany(fetch=FetchType.EAGER)</span><br><span class="line">    @JoinTable(name=&quot;role_resource&quot;,joinColumns = @JoinColumn(name = &quot;role_id&quot;),inverseJoinColumns = @JoinColumn(name = &quot;resource_id&quot;))</span><br><span class="line">    private Set&lt;Resource&gt; resources=new HashSet&lt;&gt;();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
-<li><p>Resource</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">@Id</span><br><span class="line">    @GeneratedValue(strategy = GenerationType.IDENTITY)</span><br><span class="line">    private Integer id;</span><br><span class="line">    private String name;</span><br><span class="line">    @ManyToOne</span><br><span class="line">    @NotFound(action= NotFoundAction.IGNORE)</span><br><span class="line">    private Resource parent;</span><br><span class="line">    @OneToMany(mappedBy = &quot;parent&quot;)</span><br><span class="line">    @OrderBy(&quot;sort ASC&quot;)</span><br><span class="line">    private List&lt;Resource&gt; childs=new ArrayList&lt;&gt;();</span><br><span class="line">    private String url;</span><br><span class="line">    private String status;</span><br><span class="line">    private String icon;</span><br><span class="line">    private String title;</span><br><span class="line"></span><br><span class="line">    @Transient</span><br><span class="line">    private Integer parentId;</span><br><span class="line"></span><br><span class="line">    @ManyToMany(mappedBy = &quot;resources&quot;)</span><br><span class="line">    private Set&lt;Role&gt; role;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h1 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">java.lang.StackOverflowError: null</span><br><span class="line">	at com.mysql.jdbc.Util.handleNewInstance(Util.java:425)</span><br><span class="line">	at com.mysql.jdbc.PreparedStatement.getInstance(PreparedStatement.java:761)</span><br><span class="line">	at com.mysql.jdbc.ConnectionImpl.clientPrepareStatement(ConnectionImpl.java:1471)</span><br><span class="line">	at com.mysql.jdbc.ConnectionImpl.prepareStatement(ConnectionImpl.java:4167)</span><br><span class="line">	at com.mysql.jdbc.ConnectionImpl.prepareStatement(ConnectionImpl.java:4071)</span><br><span class="line">	at com.zaxxer.hikari.pool.ProxyConnection.prepareStatement(ProxyConnection.java:311)</span><br><span class="line">	at com.zaxxer.hikari.pool.HikariProxyConnection.prepareStatement(HikariProxyConnection.java)</span><br><span class="line">	at org.hibernate.engine.jdbc.internal.StatementPreparerImpl$5.doPrepare(StatementPreparerImpl.java:146)</span><br><span class="line">	at org.hibernate.engine.jdbc.internal.StatementPreparerImpl$StatementPreparationTemplate.prepareStatement(StatementPreparerImpl.java:172)</span><br><span class="line">	at org.hibernate.engine.jdbc.internal.StatementPreparerImpl.prepareQueryStatement(StatementPreparerImpl.java:148)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.prepareQueryStatement(AbstractLoadPlanBasedLoader.java:226)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.executeQueryStatement(AbstractLoadPlanBasedLoader.java:190)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.executeLoad(AbstractLoadPlanBasedLoader.java:121)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.executeLoad(AbstractLoadPlanBasedLoader.java:86)</span><br><span class="line">	at org.hibernate.loader.collection.plan.AbstractLoadPlanBasedCollectionInitializer.initialize(AbstractLoadPlanBasedCollectionInitializer.java:87)</span><br><span class="line">	at org.hibernate.persister.collection.AbstractCollectionPersister.initialize(AbstractCollectionPersister.java:691)</span><br><span class="line">	at org.hibernate.event.internal.DefaultInitializeCollectionEventListener.onInitializeCollection(DefaultInitializeCollectionEventListener.java:75)</span><br><span class="line">	at org.hibernate.internal.SessionImpl.initializeCollection(SessionImpl.java:2246)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection$4.doWork(AbstractPersistentCollection.java:580)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection.withTemporarySessionIfNeeded(AbstractPersistentCollection.java:262)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection.initialize(AbstractPersistentCollection.java:576)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection.read(AbstractPersistentCollection.java:147)</span><br><span class="line">	at org.hibernate.collection.internal.PersistentSet.iterator(PersistentSet.java:188)</span><br><span class="line">	at java.util.Spliterators$IteratorSpliterator.estimateSize(Spliterators.java:1821)</span><br><span class="line">	at java.util.Spliterator.getExactSizeIfKnown(Spliterator.java:408)</span><br><span class="line">	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:483)</span><br><span class="line">	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:474)</span><br><span class="line">	at java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:913)</span><br><span class="line">	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)</span><br><span class="line">	at java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:578)</span><br><span class="line">	at com.testin.user.admin.service.role.domain.Role.getResourceIds(Role.java:76)</span><br><span class="line">	at com.testin.user.admin.service.role.domain.Role.hashCode(Role.java:29)</span><br><span class="line">	at java.util.HashMap.hash(HashMap.java:339)</span><br><span class="line">	at java.util.HashMap.put(HashMap.java:607)</span><br><span class="line">	at java.util.HashSet.add(HashSet.java:220)</span><br><span class="line">	at java.util.AbstractCollection.addAll(AbstractCollection.java:352)</span><br><span class="line">	at org.hibernate.collection.internal.PersistentSet.endRead(PersistentSet.java:355)</span><br><span class="line">	at org.hibernate.engine.loading.internal.CollectionLoadContext.endLoadingCollection(CollectionLoadContext.java:236)</span><br><span class="line">	at org.hibernate.engine.loading.internal.CollectionLoadContext.endLoadingCollections(CollectionLoadContext.java:223)</span><br><span class="line">	at org.hibernate.engine.loading.internal.CollectionLoadContext.endLoadingCollections(CollectionLoadContext.java:196)</span><br><span class="line">	at org.hibernate.loader.plan.exec.process.internal.CollectionReferenceInitializerImpl.endLoading(CollectionReferenceInitializerImpl.java:154)</span><br><span class="line">	at org.hibernate.loader.plan.exec.process.internal.AbstractRowReader.finishLoadingCollections(AbstractRowReader.java:249)</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p> 从堆栈信息可以看出, 循环依赖的中间衔接点在hashCode，所以我们只需要尝试在被维护方复写hashCode 即可</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">    public int hashCode() &#123;</span><br><span class="line">        return Objects.hash(id);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <tags>
-        <tag>jpa</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>manjaro交互式脚本解决vpn冲突问题</title>
-    <url>/2021/07/19/manjaro%E4%BA%A4%E4%BA%92%E5%BC%8F%E8%84%9A%E6%9C%AC%E8%A7%A3%E5%86%B3vpn%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98/</url>
-    <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>工作之中需要链接各种vpn进入各个环境，由于家里和公司各自有一台电脑，回家时公司电脑通常是不会关机的，vpn也就一直连着，一旦出现了报警，家里电脑连上vpn就和公司电脑的vpn产生冲突，导致互相踢对方，连接不稳定。排查问题十分痛苦，只好回到公司追查问题。如果是家里电脑忘记退出vpn,结果更加痛苦。</p>
-<h1 id="环境条件"><a href="#环境条件" class="headerlink" title="环境条件"></a>环境条件</h1><ul>
-<li>manjaro操作系统</li>
-<li>openvpn3 </li>
-<li>expect</li>
-</ul>
-<h1 id="可行性解决方案"><a href="#可行性解决方案" class="headerlink" title="可行性解决方案"></a>可行性解决方案</h1><ol>
-<li>远程连接，家里电脑和公司电脑互相穿透。</li>
-<li>家里电脑和公司电脑都各自维护定时脚本</li>
-</ol>
-<h1 id="可行性分析"><a href="#可行性分析" class="headerlink" title="可行性分析"></a>可行性分析</h1><ul>
-<li><p>方案一</p>
-<ul>
-<li><p>优点</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">除了能解决vpn冲突问题，还能处理很多其他问题，资源共享等等</span><br></pre></td></tr></table></figure></li>
-<li><p>缺点</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">需要能有稳定的对外端口;暴露公网带来安全风险</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-<li><p>方案二</p>
-<ul>
-<li><p>优点</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">能解决vpn冲突问题，安全</span><br></pre></td></tr></table></figure></li>
-<li><p>缺点</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">比较固定，死板</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-</ul>
-<p>在平衡以上方案的优缺利弊，最终选择了方案二，安全胜于一切，其他的花里胡哨最终都是要乘以这个安全系数的，安全系数为0,其它都是白说。这就是君子不立危墙之下的道理。</p>
-<h1 id="执行步骤"><a href="#执行步骤" class="headerlink" title="执行步骤"></a>执行步骤</h1><ol>
-<li>编写vpn一键启动/关闭脚本</li>
-<li>加入crontab定时队列中</li>
-</ol>
-<h2 id="步骤1"><a href="#步骤1" class="headerlink" title="步骤1"></a>步骤1</h2><ul>
-<li><p>我采用的是openvpn3 来管理vpn，由于openvpn3每次启动需要一堆参数，而且笔者工作时设计多个vpn环境，每次启动也是重复工作，故编写了一个批量启动脚本</p>
-</li>
-<li><p>由于登陆每次都需要密码，且目前openvpn3没有找到可行性的记住密码功能，故采用expect脚本来完成交互式输入密码</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> vpnStart.tcl</span></span><br><span class="line"></span><br><span class="line">start()&#123;</span><br><span class="line">expect&lt;&lt;EOF</span><br><span class="line">spawn openvpn3 session-start -c /data/nutstore/TEST/config/aliyun/aliyun.ovpn</span><br><span class="line">expect  &quot;*key passphrase&quot; &#123;</span><br><span class="line">  send &quot;TEST\n&quot;</span><br><span class="line">&#125;</span><br><span class="line">expect eof</span><br><span class="line"></span><br><span class="line">spawn openvpn3 session-start -c /data/nutstore/TEST/config/TEST/TEST.ovpn</span><br><span class="line">expect  &quot;*key passphrase&quot; &#123;</span><br><span class="line">  send &quot;TEST\n&quot;</span><br><span class="line">&#125;</span><br><span class="line">expect eof</span><br><span class="line"></span><br><span class="line">EOF</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">stop()&#123;</span><br><span class="line"> for session in ` openvpn3 sessions-list|grep Path|awk -F &#x27;:&#x27; &#x27;&#123;print $2&#125;&#x27; `</span><br><span class="line"> do</span><br><span class="line">  openvpn3 session-manage -D -o $session</span><br><span class="line"> done</span><br><span class="line"> openvpn3 sessions-list</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if test $1 = &quot;start&quot;</span><br><span class="line">then</span><br><span class="line"> start</span><br><span class="line">elif test  $1=&quot;stop&quot;</span><br><span class="line">then  </span><br><span class="line"> stop</span><br><span class="line">else </span><br><span class="line"> echo &quot;noting to do&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
-</ul>
-<h2 id="步骤2"><a href="#步骤2" class="headerlink" title="步骤2"></a>步骤2</h2><ul>
-<li><p>加入crontab中，依据笔者的工作作息，设置为工作日12、13、21、22、23、24 关闭。这样一来，最多在家会存在半个小时的冲突时间，完全达到了我想要的效果</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">0 12,13,21,22,23,0 * * 1-5 ~/vpnStart.tcl stop</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p> 充分动手，利用liunx的高度定制性，为自己需求开发。关于expect相关语法和openvpn3相关语法请参考官方文档即可</p>
-]]></content>
-      <tags>
-        <tag>shell</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>manjaro彻底清除网易企业邮箱中的位于已删除文件夹下的文件</title>
-    <url>/2021/08/05/manjaro%E5%BD%BB%E5%BA%95%E6%B8%85%E9%99%A4%E7%BD%91%E6%98%93%E4%BC%81%E4%B8%9A%E9%82%AE%E7%AE%B1%E4%B8%AD%E7%9A%84%E4%BD%8D%E4%BA%8E%E5%B7%B2%E5%88%A0%E9%99%A4%E6%96%87%E4%BB%B6%E5%A4%B9%E4%B8%8B%E7%9A%84%E6%96%87%E4%BB%B6/</url>
-    <content><![CDATA[<hr>
-<p><a href="https://github.com/elizwy/tools/blob/main/shell/MailToolClean">工具链接</a></p>
-]]></content>
-  </entry>
-  <entry>
     <title>mysql round 遇到不精确值的处理</title>
     <url>/2021/07/22/mysql-round-%E9%81%87%E5%88%B0%E4%B8%8D%E7%B2%BE%E7%A1%AE%E5%80%BC%E7%9A%84%E5%A4%84%E7%90%86/</url>
     <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>　　笔者在处理报表sql时,碰到比率之类的指标需要进行四舍五入保留2位小数操作.按照惯例,round函数操作,但是在碰到如以下sql时出现结果不如预期想象</p>
@@ -165,161 +106,6 @@
       <tags>
         <tag>issue</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>rfc1</title>
-    <url>/2022/03/30/rfc1/</url>
-    <content><![CDATA[<center>
-  题目：主机软件
-
-  <center>作者：Steve Crocker
-
-  <center>安装地：加利福尼亚大学洛杉矶分校
-
-  <center>时间：1969/4/7
-
-
-
-<p>内容</p>
-<p>引言</p>
-<ol>
-<li>IMP软件综述<ol>
-<li>消息</li>
-<li>链接</li>
-<li>IMP 传输和错误检验</li>
-<li>IMP软件开放问题</li>
-</ol>
-</li>
-<li>主机到主机通信要求<ol>
-<li>简单使用</li>
-<li>深度使用</li>
-<li>错误检验</li>
-</ol>
-</li>
-<li>主机软件<ol>
-<li>建立链接</li>
-<li>高吞吐传输</li>
-<li>原语综述</li>
-<li>错误检验</li>
-<li>关闭链接</li>
-<li>开放问题</li>
-</ol>
-</li>
-<li>初始实验<ol>
-<li>实验1</li>
-<li>实验2</li>
-</ol>
-</li>
-</ol>
-<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>IMPs 和 各自主机中部分软件共同组成在ARPA网络中通信软件，BB&amp;N has specified the software of the IMPs and it is the responsibility of the HOST groups to agree on HOST software. </p>
-<p>During the summer of 1968, representatives from the initial four sites met several times to discuss the HOST software and initial experiments on the network.  There emerged from these meetings a working group of three, Steve Carr from Utah, Jeff Rulifson from SRI, and Steve Crocker of UCLA, who met during the fall and winter.  The most recent meeting was in the last week of March in Utah.  Also present was Bill Duvall of SRI who has recently started working with Jeff Rulifson.</p>
-<p>Somewhat independently, Gerard DeLoche of UCLA has been working on the HOST-IMP interface.</p>
-<p>I present here some of the tentative agreements reached and some of the open questions encountered.  Very little of what is here is firm and reactions are expected.</p>
-<h1 id="IMP软件综述"><a href="#IMP软件综述" class="headerlink" title="IMP软件综述"></a>IMP软件综述</h1><h2 id="消息"><a href="#消息" class="headerlink" title="消息"></a>消息</h2><p>在主机之间按包传送的信息称为消息，一条消息加上消息头在任何流中都不能超过8080bit。消息头一般占16bit，主要包含以下信息：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">目的地址	5bits</span><br><span class="line">链接		 8bits</span><br><span class="line">追踪 	1bit</span><br><span class="line">spare		2bits</span><br></pre></td></tr></table></figure>
-
-<p>目标地址是目标主机的一串数字代号，代表消息的传递到的终点。追踪位代表着消息的状态，这个状态会发送到nmc(网络测量中心)，spare bit 无使用</p>
-<p>链接是一个imps中的特殊字段，用来处理各种阻塞情况。功能主要如下：每对主机链接是一个32位全双工链接，消息能够由任意一端发起。imps对链接做了一些严格要求，一个主机发送完一条消息后必须等待目标主机允许发送下一条消息的消息才能发送下一条消息.这个限制能够防止一台主机在一条链接上发送太多消息从而导致目标主机阻塞，这是因为我们发现目标主机只能同时处理1，2条链接，可能没有能力同时处理32条链接，所以主机之间需要就这方面就行协调。</p>
-<p>链接主要有以下几个重要的特征：它们永久在线与它们数目永远是32的倍数</p>
-<p>永久在线意味着imps随时能够传递消息，imps中不存在开始/结束这个概念，所以在imps中链接是无状态的（这和查询imps上一条链接是不同概念的）</p>
-]]></content>
-      <tags>
-        <tag>翻译</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>《拯救记忆》读后感</title>
-    <url>/2022/02/27/%E3%80%8A%E6%8B%AF%E6%95%91%E8%AE%B0%E5%BF%86%E3%80%8B%E8%AF%BB%E5%90%8E%E6%84%9F/</url>
-    <content><![CDATA[<h1 id="大纲"><a href="#大纲" class="headerlink" title="大纲"></a>大纲</h1><p>![image-20220227155947736](/Users/zwyeli/Library/Application Support/typora-user-images/image-20220227155947736.png)</p>
-<ul>
-<li><p>背景</p>
-<p>Author: 丹尼尔·亚曼  译: 黎非凡<br>Background: 美国精神病学协会杰出成员<br>product date: 202104</p>
-</li>
-<li><p>为何会选择这本书</p>
-<ul>
-<li>最近刚刚把《心理学导论》，对人自身相关事物产生浓厚兴趣，联系到我自己在工作上经常容易忘记一些事情，这个让我有点苦恼。刚好在首都图书馆发现了这本书，便借来阅读一番</li>
-</ul>
-</li>
-<li><p>主要内容</p>
-<ul>
-<li>作者基于自己临床案例和研究，总结出一套关于记忆问题的判定标准和相应的治疗方案</li>
-<li>将自己的拯救记忆计划和传统针对阿尔茨海默症治疗方法对比，斥责传统治疗方法的无效及带来的副作用。</li>
-<li>作者将记忆模糊等问题定义为疾病，采用大脑SPECT扫描和MRI扫描来分别检测大脑的功能和结构问题。采用10个维度(血流量，退休/衰老，炎症，遗传，头部创伤，毒素，精神健康，免疫性疾病，神经激素，糖胖病，睡眠问题)来评估记忆情况。用案例故事一一举例相关维度出现的病症及相应的治疗措施。治疗措施主要分为：运动，食疗，保健品。</li>
-</ul>
-</li>
-<li><p>评价</p>
-<ul>
-<li>文中作者将记忆模糊定义为疾病这个举动让我想到了<a href="https://book.jd.com/writer/%E9%9F%A6%E6%81%A9%C2%B7%E9%9F%A6%E7%99%BB_1.html">韦恩·韦登</a>《心理学导论》中有一章批判思维关于定义的讨论。“定义”是一个比较重要但又是较为主观的，会牵涉到很多方面。在这篇文章里作者是一名精神病分析专家，自然将记忆问题定义为疾病是有利于自己的，一方面能突然自己研究的重要性，另一方面也能引起社会关注，增加记忆领域的经济和社会价值。</li>
-<li>文中作者有一句话让我突然眼前一新的感觉。 人一生要经历 出生，成长，衰老，疾病，死亡，这是自然规律，但是自然规律就是对的么？如果我们将衰老定义为一种病呢？ 这个脑洞很大，让我想到了无限可能</li>
-<li>书中每一个维度都有推荐保健品。</li>
-<li>这本书中曾多次推荐褪黑素营养品,但是最新科学研究已经实锤了褪黑素的各种副作用；</li>
-<li>书中建议 运动优先，学习新知识，学习音乐。我采纳接收，因为我喜欢^_^</li>
-</ul>
-</li>
-<li><p>我得到建议</p>
-<ul>
-<li>多喝水</li>
-<li>多做运动，尤其是球拍类运动</li>
-<li>每天花15分钟以上学习新知识，比如学习音乐，跳舞或者一门新的语言</li>
-<li>尝试每天禁食12～16小时</li>
-<li>爱护牙龈</li>
-<li>多摄入W-3脂肪酸和益生菌</li>
-<li>多食用有机蓝莓</li>
-<li>多摄入十字花科蔬菜</li>
-<li>多做负重练习</li>
-<li>入睡前一小时关掉所有电子产品</li>
-<li>打破常规，找一些新鲜的，有挑战性的而且自己也热爱的事情去做</li>
-<li>报名去听一节课或参与一次会议，主题是自己不熟悉而又感兴趣的内容</li>
-<li>尽快解决任何学习方面的问题</li>
-<li>晚上不可太晚吃东西</li>
-</ul>
-</li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>《高效休息》 读后感</title>
-    <url>/2019/08/24/%E3%80%8A%E9%AB%98%E6%95%88%E4%BC%91%E6%81%AF%E3%80%8B%20%E8%AF%BB%E5%90%8E%E6%84%9F/</url>
-    <content><![CDATA[<h1 id="缘由"><a href="#缘由" class="headerlink" title="缘由"></a>缘由</h1><p>​    我选择《高效休息》这本书的主要缘由是某个周五忘交电费结果4点多就热醒了，又恰逢前一天网上听闻了陆奇这个人的生活作息，于是就想亲身体验一把。可是我也有自知之明的，知道他能有这样的作息，肯定有充足的休息，于是就有阅读些“如何休息”类的书籍想法。</p>
-<h1 id="评价"><a href="#评价" class="headerlink" title="评价"></a>评价</h1><p>​    简单，易懂（总分总结构，加以小说类型叙述，带入性好），实操性强，很快就能看到良性反馈。</p>
-<h1 id="主要内容"><a href="#主要内容" class="headerlink" title="主要内容"></a>主要内容</h1><p>书的结构分为 前言，先睹为快，正念时刻，结语，特别附录</p>
-<ul>
-<li><p>前言</p>
-<p>在前言中，该书指出DMN（预设模式网络，被认为是“大脑能量吞噬者”） 是造成人感觉累的主要原因，<br>而人感觉累主要是由于大脑疲劳。书中采用的解决方就是“正念”，也就是冥想，强调当下的感觉、体验，<br>用以解除大脑疲劳，获得休息。</p>
-</li>
-<li><p>先睹为快</p>
-<p>介绍了7个休息法，分别是 正念呼吸法，动态冥想，压力呼吸法，”猴子思维“消除法，RAIN法，温柔的慈<br>悲心，扫描全身法。 贯穿这七个方法的核心就是呼吸， 呼吸是意识的锚，注意呼吸就是为了将注意力集<br>中在当下，这就是正念呼吸法，整本书的精髓之所在了。</p>
-</li>
-<li><p>正念时刻</p>
-<p>该部分采用小说似的情节，讲述作者留学耶鲁大学精神医学系时，因为学习的压力产生的疲劳感而求助“尤<br>达”大师，尤达大师用正念思想帮助作者解决了当前的疲劳的情况，随便用正念思想帮助作者伯父的“当下<br>百吉果“ 摆脱困境。</p>
-</li>
-<li><p>结语</p>
-<p>从doing 到being,价值观从”任务导向型”生活 转为 “向成为什么” ，这一点也与《高效能人士的七个<br>习惯中的 以终为始 和要事第一 有着相同的含义</p>
-</li>
-<li><p>特别语录</p>
-<p>美国精神科医生推荐的五日简单休息法，于较长假期中实现较为好</p>
-</li>
-</ul>
-<h1 id="感悟"><a href="#感悟" class="headerlink" title="感悟"></a>感悟</h1><p>​    书中讲的正念思想来源于东方的佛教思想中，而佛教有助于心境平静，休息这一点我其实在高中时期就已经感受到了。在高二的一段黑暗时期，我曾执着于“人是如何入睡的”而导致精神崩溃，现在回想起来，也感觉有点发笑，当时自己也是在注意呼吸的，快入睡时而被“原来是这样入睡的”杂念给干扰，然后就是各种回忆，这也许就是我比别人能记得小时候更多的事 缘由吧。</p>
-<p>​    现在回想起来，当时就差一个步骤了，书中处理“猴子思维” 这个杂念是缓慢拉回到呼吸，而我当时的做法是猛然拉回到呼吸上，这一点就导致了我精神几乎崩溃。幸而当初有爱看书的习惯，在“三味书屋” 里淘到一本 佛教小故事的集的《禅思》，这本小册子都快翻烂了，现今依旧被珍藏在我家里的书桌上。再之后，我也有点开窍了，接触到了冥想，每天晚饭时期都会找个空荡无人的地方冥思会。到了高三因为学业繁忙，渐渐忘却了这种思想，如今又再次相遇，如果把思想比作人的话，恐怕此刻得泪眼朦胧了吧。当初不作一声告别，从此人海茫茫，杳无音信，穿越世间沉浮十几载，物事人非，耗尽半生追寻，突然在拐角的角落再次相遇，才发现，原来是你就是我要穷尽一生要找的那个人。</p>
-<p>​    有点跑题了，正念=冥想=当下=呼吸</p>
-]]></content>
-      <tags>
-        <tag>读后感</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>交换两变量的值</title>
-    <url>/2020/12/29/%E4%BA%A4%E6%8D%A2%E4%B8%A4%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/</url>
-    <content><![CDATA[<h3 id="方式一"><a href="#方式一" class="headerlink" title="方式一"></a>方式一</h3><ul>
-<li><p>采用第三个变量作为中间存储值来实现</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public void testSwap01(int a,int b)&#123;</span><br><span class="line">    int c=a;</span><br><span class="line">    a=b;</span><br><span class="line">    b=c;</span><br><span class="line">    System.out.println(&quot;a=&quot;+a);</span><br><span class="line">    System.out.println(&quot;b=&quot;+b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h3 id="方式二"><a href="#方式二" class="headerlink" title="方式二"></a>方式二</h3><ul>
-<li><p>采用异或的逻辑运算，a^a=0</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public void testSwap02(int a, int b)&#123;</span><br><span class="line">    a=a^b;</span><br><span class="line">    b=a^b;</span><br><span class="line">    a=a^b;</span><br><span class="line">    System.out.println(&quot;a=&quot;+a);</span><br><span class="line">    System.out.println(&quot;b=&quot;+b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-]]></content>
   </entry>
   <entry>
     <title>《抗衰老计划》读后感</title>
@@ -381,6 +167,115 @@
 ]]></content>
   </entry>
   <entry>
+    <title>manjaro彻底清除网易企业邮箱中的位于已删除文件夹下的文件</title>
+    <url>/2021/08/05/manjaro%E5%BD%BB%E5%BA%95%E6%B8%85%E9%99%A4%E7%BD%91%E6%98%93%E4%BC%81%E4%B8%9A%E9%82%AE%E7%AE%B1%E4%B8%AD%E7%9A%84%E4%BD%8D%E4%BA%8E%E5%B7%B2%E5%88%A0%E9%99%A4%E6%96%87%E4%BB%B6%E5%A4%B9%E4%B8%8B%E7%9A%84%E6%96%87%E4%BB%B6/</url>
+    <content><![CDATA[<hr>
+<p><a href="https://github.com/elizwy/tools/blob/main/shell/MailToolClean">工具链接</a></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>《拯救记忆》读后感</title>
+    <url>/2022/02/27/%E3%80%8A%E6%8B%AF%E6%95%91%E8%AE%B0%E5%BF%86%E3%80%8B%E8%AF%BB%E5%90%8E%E6%84%9F/</url>
+    <content><![CDATA[<h1 id="大纲"><a href="#大纲" class="headerlink" title="大纲"></a>大纲</h1><p>![image-20220227155947736](/Users/zwyeli/Library/Application Support/typora-user-images/image-20220227155947736.png)</p>
+<ul>
+<li><p>背景</p>
+<p>Author: 丹尼尔·亚曼  译: 黎非凡<br>Background: 美国精神病学协会杰出成员<br>product date: 202104</p>
+</li>
+<li><p>为何会选择这本书</p>
+<ul>
+<li>最近刚刚把《心理学导论》，对人自身相关事物产生浓厚兴趣，联系到我自己在工作上经常容易忘记一些事情，这个让我有点苦恼。刚好在首都图书馆发现了这本书，便借来阅读一番</li>
+</ul>
+</li>
+<li><p>主要内容</p>
+<ul>
+<li>作者基于自己临床案例和研究，总结出一套关于记忆问题的判定标准和相应的治疗方案</li>
+<li>将自己的拯救记忆计划和传统针对阿尔茨海默症治疗方法对比，斥责传统治疗方法的无效及带来的副作用。</li>
+<li>作者将记忆模糊等问题定义为疾病，采用大脑SPECT扫描和MRI扫描来分别检测大脑的功能和结构问题。采用10个维度(血流量，退休/衰老，炎症，遗传，头部创伤，毒素，精神健康，免疫性疾病，神经激素，糖胖病，睡眠问题)来评估记忆情况。用案例故事一一举例相关维度出现的病症及相应的治疗措施。治疗措施主要分为：运动，食疗，保健品。</li>
+</ul>
+</li>
+<li><p>评价</p>
+<ul>
+<li>文中作者将记忆模糊定义为疾病这个举动让我想到了<a href="https://book.jd.com/writer/%E9%9F%A6%E6%81%A9%C2%B7%E9%9F%A6%E7%99%BB_1.html">韦恩·韦登</a>《心理学导论》中有一章批判思维关于定义的讨论。“定义”是一个比较重要但又是较为主观的，会牵涉到很多方面。在这篇文章里作者是一名精神病分析专家，自然将记忆问题定义为疾病是有利于自己的，一方面能突然自己研究的重要性，另一方面也能引起社会关注，增加记忆领域的经济和社会价值。</li>
+<li>文中作者有一句话让我突然眼前一新的感觉。 人一生要经历 出生，成长，衰老，疾病，死亡，这是自然规律，但是自然规律就是对的么？如果我们将衰老定义为一种病呢？ 这个脑洞很大，让我想到了无限可能</li>
+<li>书中每一个维度都有推荐保健品。</li>
+<li>这本书中曾多次推荐褪黑素营养品,但是最新科学研究已经实锤了褪黑素的各种副作用；</li>
+<li>书中建议 运动优先，学习新知识，学习音乐。我采纳接收，因为我喜欢^_^</li>
+</ul>
+</li>
+<li><p>我得到建议</p>
+<ul>
+<li>多喝水</li>
+<li>多做运动，尤其是球拍类运动</li>
+<li>每天花15分钟以上学习新知识，比如学习音乐，跳舞或者一门新的语言</li>
+<li>尝试每天禁食12～16小时</li>
+<li>爱护牙龈</li>
+<li>多摄入W-3脂肪酸和益生菌</li>
+<li>多食用有机蓝莓</li>
+<li>多摄入十字花科蔬菜</li>
+<li>多做负重练习</li>
+<li>入睡前一小时关掉所有电子产品</li>
+<li>打破常规，找一些新鲜的，有挑战性的而且自己也热爱的事情去做</li>
+<li>报名去听一节课或参与一次会议，主题是自己不熟悉而又感兴趣的内容</li>
+<li>尽快解决任何学习方面的问题</li>
+<li>晚上不可太晚吃东西</li>
+</ul>
+</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>manjaro交互式脚本解决vpn冲突问题</title>
+    <url>/2021/07/19/manjaro%E4%BA%A4%E4%BA%92%E5%BC%8F%E8%84%9A%E6%9C%AC%E8%A7%A3%E5%86%B3vpn%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>工作之中需要链接各种vpn进入各个环境，由于家里和公司各自有一台电脑，回家时公司电脑通常是不会关机的，vpn也就一直连着，一旦出现了报警，家里电脑连上vpn就和公司电脑的vpn产生冲突，导致互相踢对方，连接不稳定。排查问题十分痛苦，只好回到公司追查问题。如果是家里电脑忘记退出vpn,结果更加痛苦。</p>
+<h1 id="环境条件"><a href="#环境条件" class="headerlink" title="环境条件"></a>环境条件</h1><ul>
+<li>manjaro操作系统</li>
+<li>openvpn3 </li>
+<li>expect</li>
+</ul>
+<h1 id="可行性解决方案"><a href="#可行性解决方案" class="headerlink" title="可行性解决方案"></a>可行性解决方案</h1><ol>
+<li>远程连接，家里电脑和公司电脑互相穿透。</li>
+<li>家里电脑和公司电脑都各自维护定时脚本</li>
+</ol>
+<h1 id="可行性分析"><a href="#可行性分析" class="headerlink" title="可行性分析"></a>可行性分析</h1><ul>
+<li><p>方案一</p>
+<ul>
+<li><p>优点</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">除了能解决vpn冲突问题，还能处理很多其他问题，资源共享等等</span><br></pre></td></tr></table></figure></li>
+<li><p>缺点</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">需要能有稳定的对外端口;暴露公网带来安全风险</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>方案二</p>
+<ul>
+<li><p>优点</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">能解决vpn冲突问题，安全</span><br></pre></td></tr></table></figure></li>
+<li><p>缺点</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">比较固定，死板</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<p>在平衡以上方案的优缺利弊，最终选择了方案二，安全胜于一切，其他的花里胡哨最终都是要乘以这个安全系数的，安全系数为0,其它都是白说。这就是君子不立危墙之下的道理。</p>
+<h1 id="执行步骤"><a href="#执行步骤" class="headerlink" title="执行步骤"></a>执行步骤</h1><ol>
+<li>编写vpn一键启动/关闭脚本</li>
+<li>加入crontab定时队列中</li>
+</ol>
+<h2 id="步骤1"><a href="#步骤1" class="headerlink" title="步骤1"></a>步骤1</h2><ul>
+<li><p>我采用的是openvpn3 来管理vpn，由于openvpn3每次启动需要一堆参数，而且笔者工作时设计多个vpn环境，每次启动也是重复工作，故编写了一个批量启动脚本</p>
+</li>
+<li><p>由于登陆每次都需要密码，且目前openvpn3没有找到可行性的记住密码功能，故采用expect脚本来完成交互式输入密码</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> vpnStart.tcl</span></span><br><span class="line"></span><br><span class="line">start()&#123;</span><br><span class="line">expect&lt;&lt;EOF</span><br><span class="line">spawn openvpn3 session-start -c /data/nutstore/TEST/config/aliyun/aliyun.ovpn</span><br><span class="line">expect  &quot;*key passphrase&quot; &#123;</span><br><span class="line">  send &quot;TEST\n&quot;</span><br><span class="line">&#125;</span><br><span class="line">expect eof</span><br><span class="line"></span><br><span class="line">spawn openvpn3 session-start -c /data/nutstore/TEST/config/TEST/TEST.ovpn</span><br><span class="line">expect  &quot;*key passphrase&quot; &#123;</span><br><span class="line">  send &quot;TEST\n&quot;</span><br><span class="line">&#125;</span><br><span class="line">expect eof</span><br><span class="line"></span><br><span class="line">EOF</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">stop()&#123;</span><br><span class="line"> for session in ` openvpn3 sessions-list|grep Path|awk -F &#x27;:&#x27; &#x27;&#123;print $2&#125;&#x27; `</span><br><span class="line"> do</span><br><span class="line">  openvpn3 session-manage -D -o $session</span><br><span class="line"> done</span><br><span class="line"> openvpn3 sessions-list</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if test $1 = &quot;start&quot;</span><br><span class="line">then</span><br><span class="line"> start</span><br><span class="line">elif test  $1=&quot;stop&quot;</span><br><span class="line">then  </span><br><span class="line"> stop</span><br><span class="line">else </span><br><span class="line"> echo &quot;noting to do&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="步骤2"><a href="#步骤2" class="headerlink" title="步骤2"></a>步骤2</h2><ul>
+<li><p>加入crontab中，依据笔者的工作作息，设置为工作日12、13、21、22、23、24 关闭。这样一来，最多在家会存在半个小时的冲突时间，完全达到了我想要的效果</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">0 12,13,21,22,23,0 * * 1-5 ~/vpnStart.tcl stop</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p> 充分动手，利用liunx的高度定制性，为自己需求开发。关于expect相关语法和openvpn3相关语法请参考官方文档即可</p>
+]]></content>
+      <tags>
+        <tag>shell</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>可变参数的一次空指针异常复盘</title>
     <url>/2022/04/12/%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E7%9A%84%E4%B8%80%E6%AC%A1%E7%A9%BA%E6%8C%87%E9%92%88%E5%BC%82%E5%B8%B8%E5%A4%8D%E7%9B%98/</url>
     <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>在一次业务实现中，对落盘日志中增加个监测字段，由于一个计划中的监测链接可能是多个，故在一个方法中使用了可变参数接收监测链接，然后做处理。在处理的过程中导致null 异常，导致日志落盘失败，这在日志系统中较为致命，故此复盘总结。</p>
@@ -400,29 +295,6 @@
 </ul>
 <h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
 <li><a href="https://www.runoob.com/w3cnote/java-varargs-parameter.html">Java 可变参数 | 菜鸟教程 (runoob.com)</a></li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>线上debug流程</title>
-    <url>/2022/03/30/%E7%BA%BF%E4%B8%8Adebug%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h1 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h1><p>我们有时碰到线上的一些问题，例如进程是否卡住了，输入输出不合预期，cpu负载飙升，GC太频繁</p>
-<h1 id="bebug-模版"><a href="#bebug-模版" class="headerlink" title="bebug 模版"></a>bebug 模版</h1><ul>
-<li>根据现有的日志分析</li>
-<li>查看进程中各个线程工作情况<ul>
-<li>top -Hp pid</li>
-<li>jstack pid</li>
-</ul>
-</li>
-<li>查看网络链接情况<ul>
-<li>netstat -antp|grep pid</li>
-<li>dstat 查看网络流量情况</li>
-</ul>
-</li>
-<li>查看内存使用情况<ul>
-<li>profile</li>
-</ul>
-</li>
 </ul>
 ]]></content>
   </entry>
@@ -453,6 +325,60 @@
 <li>时间就是生命，而我们生活中的每一项工作/学习/任务都是需要时间的付出，换而言之我们的人生也就是一趟航班，上面满载的是我们的时间，是我们的生命。</li>
 <li>作为我们人生这趟航班的机长，发展出一套完善的自我监控指标和自动报警系统，帮助我们做出最佳决策；与他人合作，时刻保持清醒头脑，塔台有可能不可靠，你的引路人也有可能是个洗脑者；不断累积总结内化经验，面对人生重大危机/转折是，要沉着冷静，要尽办法夺回掌握人生航班的控制权，远离危险；如果大环境对你不友好，直接远离它！强调你要有远见，牺牲当下精神的组织，远离它！时刻把你当作耗材的集体，远离它！永远保持清醒头脑！</li>
 <li>有生之年去趟日本</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>《高效休息》 读后感</title>
+    <url>/2019/08/24/%E3%80%8A%E9%AB%98%E6%95%88%E4%BC%91%E6%81%AF%E3%80%8B%20%E8%AF%BB%E5%90%8E%E6%84%9F/</url>
+    <content><![CDATA[<h1 id="缘由"><a href="#缘由" class="headerlink" title="缘由"></a>缘由</h1><p>​    我选择《高效休息》这本书的主要缘由是某个周五忘交电费结果4点多就热醒了，又恰逢前一天网上听闻了陆奇这个人的生活作息，于是就想亲身体验一把。可是我也有自知之明的，知道他能有这样的作息，肯定有充足的休息，于是就有阅读些“如何休息”类的书籍想法。</p>
+<h1 id="评价"><a href="#评价" class="headerlink" title="评价"></a>评价</h1><p>​    简单，易懂（总分总结构，加以小说类型叙述，带入性好），实操性强，很快就能看到良性反馈。</p>
+<h1 id="主要内容"><a href="#主要内容" class="headerlink" title="主要内容"></a>主要内容</h1><p>书的结构分为 前言，先睹为快，正念时刻，结语，特别附录</p>
+<ul>
+<li><p>前言</p>
+<p>在前言中，该书指出DMN（预设模式网络，被认为是“大脑能量吞噬者”） 是造成人感觉累的主要原因，<br>而人感觉累主要是由于大脑疲劳。书中采用的解决方就是“正念”，也就是冥想，强调当下的感觉、体验，<br>用以解除大脑疲劳，获得休息。</p>
+</li>
+<li><p>先睹为快</p>
+<p>介绍了7个休息法，分别是 正念呼吸法，动态冥想，压力呼吸法，”猴子思维“消除法，RAIN法，温柔的慈<br>悲心，扫描全身法。 贯穿这七个方法的核心就是呼吸， 呼吸是意识的锚，注意呼吸就是为了将注意力集<br>中在当下，这就是正念呼吸法，整本书的精髓之所在了。</p>
+</li>
+<li><p>正念时刻</p>
+<p>该部分采用小说似的情节，讲述作者留学耶鲁大学精神医学系时，因为学习的压力产生的疲劳感而求助“尤<br>达”大师，尤达大师用正念思想帮助作者解决了当前的疲劳的情况，随便用正念思想帮助作者伯父的“当下<br>百吉果“ 摆脱困境。</p>
+</li>
+<li><p>结语</p>
+<p>从doing 到being,价值观从”任务导向型”生活 转为 “向成为什么” ，这一点也与《高效能人士的七个<br>习惯中的 以终为始 和要事第一 有着相同的含义</p>
+</li>
+<li><p>特别语录</p>
+<p>美国精神科医生推荐的五日简单休息法，于较长假期中实现较为好</p>
+</li>
+</ul>
+<h1 id="感悟"><a href="#感悟" class="headerlink" title="感悟"></a>感悟</h1><p>​    书中讲的正念思想来源于东方的佛教思想中，而佛教有助于心境平静，休息这一点我其实在高中时期就已经感受到了。在高二的一段黑暗时期，我曾执着于“人是如何入睡的”而导致精神崩溃，现在回想起来，也感觉有点发笑，当时自己也是在注意呼吸的，快入睡时而被“原来是这样入睡的”杂念给干扰，然后就是各种回忆，这也许就是我比别人能记得小时候更多的事 缘由吧。</p>
+<p>​    现在回想起来，当时就差一个步骤了，书中处理“猴子思维” 这个杂念是缓慢拉回到呼吸，而我当时的做法是猛然拉回到呼吸上，这一点就导致了我精神几乎崩溃。幸而当初有爱看书的习惯，在“三味书屋” 里淘到一本 佛教小故事的集的《禅思》，这本小册子都快翻烂了，现今依旧被珍藏在我家里的书桌上。再之后，我也有点开窍了，接触到了冥想，每天晚饭时期都会找个空荡无人的地方冥思会。到了高三因为学业繁忙，渐渐忘却了这种思想，如今又再次相遇，如果把思想比作人的话，恐怕此刻得泪眼朦胧了吧。当初不作一声告别，从此人海茫茫，杳无音信，穿越世间沉浮十几载，物事人非，耗尽半生追寻，突然在拐角的角落再次相遇，才发现，原来是你就是我要穷尽一生要找的那个人。</p>
+<p>​    有点跑题了，正念=冥想=当下=呼吸</p>
+]]></content>
+      <tags>
+        <tag>读后感</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>线上debug流程</title>
+    <url>/2022/03/30/%E7%BA%BF%E4%B8%8Adebug%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h1><p>我们有时碰到线上的一些问题，例如进程是否卡住了，输入输出不合预期，cpu负载飙升，GC太频繁</p>
+<h1 id="bebug-模版"><a href="#bebug-模版" class="headerlink" title="bebug 模版"></a>bebug 模版</h1><ul>
+<li>根据现有的日志分析</li>
+<li>查看进程中各个线程工作情况<ul>
+<li>top -Hp pid</li>
+<li>jstack pid</li>
+</ul>
+</li>
+<li>查看网络链接情况<ul>
+<li>netstat -antp|grep pid</li>
+<li>dstat 查看网络流量情况</li>
+</ul>
+</li>
+<li>查看内存使用情况<ul>
+<li>profile</li>
+</ul>
+</li>
 </ul>
 ]]></content>
   </entry>
@@ -512,6 +438,28 @@
 ]]></content>
   </entry>
   <entry>
+    <title>记录一次内存泄露定位</title>
+    <url>/2020/12/29/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%AE%9A%E4%BD%8D/</url>
+    <content><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>这次问题的出现是公司另外一个项目组同事遇到的。当时情况是大约晚上9点左右grafana发出某个服务出现假死状态，研发人员立即登上服务器检查，发现服务器cpu满载，于是就尝试jstack 查看服务进程的堆栈情况，发现已经无法连接了，查看不到堆栈信息；无奈只能从业务日志入手，发现零星的error日志，分别是上午9点左右，在error日志附近都是写库的日志，明显能看到写库的时间在变长，20多秒/30多秒零星出现。然后立马想到的是有可能是出现了60秒导致了中断异常导致某个地方出现内存泄露，致使cpu满载，jstack 无法查看，顺着error 日志的堆栈信息发现类似以下代码</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Queue queue=new LinkedBlockingQueue();</span><br><span class="line"></span><br><span class="line">public void consume() &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            consumeSomething();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">        System.out.println(&quot;遇到异常了：&quot;+e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void consumeSomething() throws InterruptedException &#123;</span><br><span class="line">        if(queue.isEmpty())&#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(&quot;i have consume &quot;+queue.peek());</span><br><span class="line">        if(RandomUtils.nextInt(0,10)==5)&#123;</span><br><span class="line">            throw new InterruptedException(&quot;test&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line">private void produce()&#123;</span><br><span class="line">    while (true)&#123;</span><br><span class="line">            queue.add(RandomUtils.nextInt());</span><br><span class="line">        try &#123;</span><br><span class="line">            TimeUnit.SECONDS.sleep(1);</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    OutMemoryTest outMemoryTest = new OutMemoryTest();</span><br><span class="line">    new Thread(()-&gt;outMemoryTest.produce()).start();</span><br><span class="line">    new Thread(()-&gt;outMemoryTest.consume()).start();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>大致意思是一个生产者源源不断的往队列放入消息，另外一个消费者不停的消费该队列。正常情况是没问题的，但当特殊情况18行代码(模拟数据库超时中断异常)成真时，try……catch在while 外面捕获，导致跳出while循环，消费者终止了消费，然而生产者依旧在不断生产数据，出现积压泄露，进而导致一系列假死状态</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
+  </entry>
+  <entry>
+    <title>交换两变量的值</title>
+    <url>/2020/12/29/%E4%BA%A4%E6%8D%A2%E4%B8%A4%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/</url>
+    <content><![CDATA[<h3 id="方式一"><a href="#方式一" class="headerlink" title="方式一"></a>方式一</h3><ul>
+<li><p>采用第三个变量作为中间存储值来实现</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public void testSwap01(int a,int b)&#123;</span><br><span class="line">    int c=a;</span><br><span class="line">    a=b;</span><br><span class="line">    b=c;</span><br><span class="line">    System.out.println(&quot;a=&quot;+a);</span><br><span class="line">    System.out.println(&quot;b=&quot;+b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="方式二"><a href="#方式二" class="headerlink" title="方式二"></a>方式二</h3><ul>
+<li><p>采用异或的逻辑运算，a^a=0</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public void testSwap02(int a, int b)&#123;</span><br><span class="line">    a=a^b;</span><br><span class="line">    b=a^b;</span><br><span class="line">    a=a^b;</span><br><span class="line">    System.out.println(&quot;a=&quot;+a);</span><br><span class="line">    System.out.println(&quot;b=&quot;+b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
     <title>长头发的十二种自然疗法</title>
     <url>/2022/03/08/%E9%95%BF%E5%A4%B4%E5%8F%91%E7%9A%84%E5%8D%81%E4%BA%8C%E7%A7%8D%E8%87%AA%E7%84%B6%E7%96%97%E6%B3%95/</url>
     <content><![CDATA[<h1 id="两个重要的事实"><a href="#两个重要的事实" class="headerlink" title="两个重要的事实"></a>两个重要的事实</h1><ul>
@@ -532,14 +480,5 @@
     <url>/2019/08/30/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E4%B8%8E%E5%BA%94%E7%94%A8%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%8C%BA%E5%88%AB/</url>
     <content><![CDATA[<h1 id="缘由"><a href="#缘由" class="headerlink" title="缘由"></a>缘由</h1><p>在实行DDD 领域驱动开发的过程中，需要面对的问题有： 如何分结构？在项目中怎样的包结构能够适用于领域驱动？应该怎样决定该段代码合适的位置？</p>
 <h1 id="战略结构"><a href="#战略结构" class="headerlink" title="战略结构"></a>战略结构</h1>]]></content>
-  </entry>
-  <entry>
-    <title>记录一次内存泄露定位</title>
-    <url>/2020/12/29/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%AE%9A%E4%BD%8D/</url>
-    <content><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>这次问题的出现是公司另外一个项目组同事遇到的。当时情况是大约晚上9点左右grafana发出某个服务出现假死状态，研发人员立即登上服务器检查，发现服务器cpu满载，于是就尝试jstack 查看服务进程的堆栈情况，发现已经无法连接了，查看不到堆栈信息；无奈只能从业务日志入手，发现零星的error日志，分别是上午9点左右，在error日志附近都是写库的日志，明显能看到写库的时间在变长，20多秒/30多秒零星出现。然后立马想到的是有可能是出现了60秒导致了中断异常导致某个地方出现内存泄露，致使cpu满载，jstack 无法查看，顺着error 日志的堆栈信息发现类似以下代码</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Queue queue=new LinkedBlockingQueue();</span><br><span class="line"></span><br><span class="line">public void consume() &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            consumeSomething();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">        System.out.println(&quot;遇到异常了：&quot;+e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void consumeSomething() throws InterruptedException &#123;</span><br><span class="line">        if(queue.isEmpty())&#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(&quot;i have consume &quot;+queue.peek());</span><br><span class="line">        if(RandomUtils.nextInt(0,10)==5)&#123;</span><br><span class="line">            throw new InterruptedException(&quot;test&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line">private void produce()&#123;</span><br><span class="line">    while (true)&#123;</span><br><span class="line">            queue.add(RandomUtils.nextInt());</span><br><span class="line">        try &#123;</span><br><span class="line">            TimeUnit.SECONDS.sleep(1);</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    OutMemoryTest outMemoryTest = new OutMemoryTest();</span><br><span class="line">    new Thread(()-&gt;outMemoryTest.produce()).start();</span><br><span class="line">    new Thread(()-&gt;outMemoryTest.consume()).start();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>大致意思是一个生产者源源不断的往队列放入消息，另外一个消费者不停的消费该队列。正常情况是没问题的，但当特殊情况18行代码(模拟数据库超时中断异常)成真时，try……catch在while 外面捕获，导致跳出while循环，消费者终止了消费，然而生产者依旧在不断生产数据，出现积压泄露，进而导致一系列假死状态</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
   </entry>
 </search>
