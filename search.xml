@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Rust miniserve 构建文件服务器</title>
+    <url>/2022/07/18/Rust-miniserve-%E6%9E%84%E5%BB%BA%E6%96%87%E4%BB%B6%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>历史项目中有一个对外提供文件下载的服务，由于当初并没有给多个消费者，使用频率极低，故只是简单采用python -m SimpleHttpServer 方式提供文件下载功能。后来接手过来也没有注意，随着项目的慢慢用起来，就发现一个问题，python这种方式底层是单线程。严重影响文件下载。故考虑采用其他方案替换。</p>
+<p>方案一： tomcat 提供文件服务</p>
+<p>方案二： nginx 提供文件服务</p>
+<p>方案三： Rust 的miniserve 提供文件服务</p>
+<p>最终采用方案三，因该改方案提供简单授权机制，url混淆，证书认证，界面好看点。还有就是rust即将引入liunx阵营，提前看看源码了解下</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>httpCilent的timeout设置</title>
+    <url>/2021/01/06/httpCilent%E7%9A%84timeout%E8%AE%BE%E7%BD%AE/</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>公司项目同事在使用httpClient向某个url post 数据时发现：大部分数据在1,2秒内对方url就会有响应，但是偶尔会出现需要等待10多分钟，甚至是30多分钟才能接收到对方返回的成功响应。使用httpClient 时使用的connectionTimeOut,socketTimeOut都设置在一分钟以内，按道理是不会等这么长的时间，应该早就报异常了，但是在等待30分钟之后还是能收到对方的成功响应，这个问题就一直困扰着他。</p>
+<h3 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h3><p>其实他当时post文件都是在10m左右，按照计算机网络的通信协议，http协议是基于tcp协议的，tcp 和udp 协议除了前者是稳定传输，后者是非稳定传输；还有一个特点就是udp是不会对应用层的数据进行任何处理，拆分的，直接包上自己的udp头就发出去(其实超过了2^16-20-8 自己还是要拆包的)，而tcp是基于字节流传输的，是会拆分的。而socketTimeOut 指的是两个数据包的间隔，这样一来，我拆分出10个包，每个包从发出到接收到的ack包之间间隔只要在一分钟内就不会抛异常，总的传输时间在10分钟也不会抛异常</p>
+<h3 id="处理"><a href="#处理" class="headerlink" title="处理"></a>处理</h3><ol>
+<li>加大带宽</li>
+<li>每次发送异步判断耗时，耗时超过一定时间就重试或者其他逻辑</li>
+</ol>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p> 计算机网络和httpclient 底层原理未弄清</p>
+<p>5bnktj7l</p>
+]]></content>
+  </entry>
+  <entry>
     <title>M1芯片安装homebrew后无法正常安装软件记录</title>
     <url>/2021/07/18/M1%E8%8A%AF%E7%89%87%E5%AE%89%E8%A3%85homebrew%E7%9A%84%E5%9D%91%E8%AE%B0%E5%BD%95/</url>
     <content><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>苹果最新的芯片M1安装homebrew包管理器采用<a href="https://brew.sh/">官网</a>的命令,结果遇到了1.无法进行任何软件安装.2.安装软件遇到报错信息</p>
@@ -37,26 +60,6 @@
       <tags>
         <tag>java</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>manjaro彻底清除网易企业邮箱中的位于已删除文件夹下的文件</title>
-    <url>/2021/08/05/manjaro%E5%BD%BB%E5%BA%95%E6%B8%85%E9%99%A4%E7%BD%91%E6%98%93%E4%BC%81%E4%B8%9A%E9%82%AE%E7%AE%B1%E4%B8%AD%E7%9A%84%E4%BD%8D%E4%BA%8E%E5%B7%B2%E5%88%A0%E9%99%A4%E6%96%87%E4%BB%B6%E5%A4%B9%E4%B8%8B%E7%9A%84%E6%96%87%E4%BB%B6/</url>
-    <content><![CDATA[<hr>
-<p><a href="https://github.com/elizwy/tools/blob/main/shell/MailToolClean">工具链接</a></p>
-]]></content>
-  </entry>
-  <entry>
-    <title>httpCilent的timeout设置</title>
-    <url>/2021/01/06/httpCilent%E7%9A%84timeout%E8%AE%BE%E7%BD%AE/</url>
-    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>公司项目同事在使用httpClient向某个url post 数据时发现：大部分数据在1,2秒内对方url就会有响应，但是偶尔会出现需要等待10多分钟，甚至是30多分钟才能接收到对方返回的成功响应。使用httpClient 时使用的connectionTimeOut,socketTimeOut都设置在一分钟以内，按道理是不会等这么长的时间，应该早就报异常了，但是在等待30分钟之后还是能收到对方的成功响应，这个问题就一直困扰着他。</p>
-<h3 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h3><p>其实他当时post文件都是在10m左右，按照计算机网络的通信协议，http协议是基于tcp协议的，tcp 和udp 协议除了前者是稳定传输，后者是非稳定传输；还有一个特点就是udp是不会对应用层的数据进行任何处理，拆分的，直接包上自己的udp头就发出去(其实超过了2^16-20-8 自己还是要拆包的)，而tcp是基于字节流传输的，是会拆分的。而socketTimeOut 指的是两个数据包的间隔，这样一来，我拆分出10个包，每个包从发出到接收到的ack包之间间隔只要在一分钟内就不会抛异常，总的传输时间在10分钟也不会抛异常</p>
-<h3 id="处理"><a href="#处理" class="headerlink" title="处理"></a>处理</h3><ol>
-<li>加大带宽</li>
-<li>每次发送异步判断耗时，耗时超过一定时间就重试或者其他逻辑</li>
-</ol>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p> 计算机网络和httpclient 底层原理未弄清</p>
-<p>5bnktj7l</p>
-]]></content>
   </entry>
   <entry>
     <title>jpa 双向关联导致的堆栈溢出</title>
@@ -133,14 +136,45 @@
       </tags>
   </entry>
   <entry>
-    <title>Rust miniserve 构建文件服务器</title>
-    <url>/2022/07/18/Rust-miniserve-%E6%9E%84%E5%BB%BA%E6%96%87%E4%BB%B6%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
-    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>历史项目中有一个对外提供文件下载的服务，由于当初并没有给多个消费者，使用频率极低，故只是简单采用python -m SimpleHttpServer 方式提供文件下载功能。后来接手过来也没有注意，随着项目的慢慢用起来，就发现一个问题，python这种方式底层是单线程。严重影响文件下载。故考虑采用其他方案替换。</p>
-<p>方案一： tomcat 提供文件服务</p>
-<p>方案二： nginx 提供文件服务</p>
-<p>方案三： Rust 的miniserve 提供文件服务</p>
-<p>最终采用方案三，因该改方案提供简单授权机制，url混淆，证书认证，界面好看点。还有就是rust即将引入liunx阵营，提前看看源码了解下</p>
+    <title>manjaro彻底清除网易企业邮箱中的位于已删除文件夹下的文件</title>
+    <url>/2021/08/05/manjaro%E5%BD%BB%E5%BA%95%E6%B8%85%E9%99%A4%E7%BD%91%E6%98%93%E4%BC%81%E4%B8%9A%E9%82%AE%E7%AE%B1%E4%B8%AD%E7%9A%84%E4%BD%8D%E4%BA%8E%E5%B7%B2%E5%88%A0%E9%99%A4%E6%96%87%E4%BB%B6%E5%A4%B9%E4%B8%8B%E7%9A%84%E6%96%87%E4%BB%B6/</url>
+    <content><![CDATA[<hr>
+<p><a href="https://github.com/elizwy/tools/blob/main/shell/MailToolClean">工具链接</a></p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>mysql round 遇到不精确值的处理</title>
+    <url>/2021/07/22/mysql-round-%E9%81%87%E5%88%B0%E4%B8%8D%E7%B2%BE%E7%A1%AE%E5%80%BC%E7%9A%84%E5%A4%84%E7%90%86/</url>
+    <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>　　笔者在处理报表sql时,碰到比率之类的指标需要进行四舍五入保留2位小数操作.按照惯例,round函数操作,但是在碰到如以下sql时出现结果不如预期想象</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> <span class="keyword">create</span> <span class="keyword">table</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="keyword">Table</span>     <span class="operator">|</span> <span class="keyword">Create</span> <span class="keyword">Table</span>                                                                                                                                                                                                          <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> roundTest <span class="operator">|</span> <span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `roundTest` (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">10</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `cost` <span class="type">decimal</span>(<span class="number">10</span>,<span class="number">4</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `metrics_map` json <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`)</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB AUTO_INCREMENT<span class="operator">=</span><span class="number">2</span> <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8 <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">----+--------+--------------+</span></span><br><span class="line"><span class="operator">|</span> id <span class="operator">|</span> cost   <span class="operator">|</span> metrics_map  <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+--------+--------------+</span></span><br><span class="line"><span class="operator">|</span>  <span class="number">1</span> <span class="operator">|</span> <span class="number">2.0100</span> <span class="operator">|</span> &#123;&quot;count&quot;: <span class="number">2</span>&#125; <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+--------+--------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> round(cost<span class="operator">/</span>metrics_map<span class="operator">-</span><span class="operator">&gt;</span>&quot;$.count&quot;,<span class="number">2</span>) <span class="keyword">from</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> round(cost<span class="operator">/</span>metrics_map<span class="operator">-</span><span class="operator">&gt;</span>&quot;$.count&quot;,<span class="number">2</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                                 <span class="number">1.00</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p>可以看到,当使用round进行四舍五入时,期望结果是1.01,可实际结果是1.00</p>
+<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>造成这种结果其实是多方努力带来的,</p>
+<ol>
+<li>可以看到metric_map 是一个json类型,我们从中提取count字段,虽然官方文档没有明确表示返回类型是是什么,但是按到json存储方式,很有可能知道是字符类型,或者为未知类型.</li>
+<li>cost 是decimal 类型,属于精确类型, cost/metrics_map-&gt;”$.count” = 精确类型/未知类型(字符类型), 由于count是非精确类型,那么结果就必然是非精确类型.</li>
+<li>round 进行四舍五入时按照官方文档是有两种情形的<ol>
+<li><p>当对精确类型使用时,就是四舍五入</p>
+</li>
+<li><p>当对非精确类型使用时,结果将会偏向偶数结</p>
+<p><img src="/home/elizwy/.config/Typora/typora-user-images/image-20210723174310858.png" alt="image-20210723174310858"></p>
+</li>
+</ol>
+</li>
+</ol>
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p>使用cast^2^ 函数将count 转成精确类型即可.</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> round(<span class="built_in">sum</span>(cost)<span class="operator">*</span><span class="number">1.0</span><span class="operator">/</span><span class="built_in">cast</span>(<span class="built_in">sum</span>(metrics_map<span class="operator">-</span><span class="operator">&gt;</span><span class="string">&#x27;$.count&#x27;</span>)<span class="keyword">as</span> <span class="type">decimal</span>),<span class="number">2</span>) <span class="keyword">from</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> round(<span class="built_in">sum</span>(cost)<span class="operator">*</span><span class="number">1.0</span><span class="operator">/</span><span class="built_in">cast</span>(<span class="built_in">sum</span>(metrics_map<span class="operator">-</span><span class="operator">&gt;</span><span class="string">&#x27;$.count&#x27;</span>)<span class="keyword">as</span> <span class="type">decimal</span>),<span class="number">2</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                                                               <span class="number">1.01</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+
+
+<h6 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h6><ol>
+<li> <a href="https://dev.mysql.com/doc/refman/5.7/en/precision-math-rounding.html">Rounding Behavior</a></li>
+<li><a href="https://dev.mysql.com/doc/refman/5.7/en/cast-functions.html#function_cast"> Cast Functions and Operators</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>issue</tag>
+      </tags>
   </entry>
   <entry>
     <title>《抗衰老计划》读后感</title>
@@ -202,71 +236,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>mysql round 遇到不精确值的处理</title>
-    <url>/2021/07/22/mysql-round-%E9%81%87%E5%88%B0%E4%B8%8D%E7%B2%BE%E7%A1%AE%E5%80%BC%E7%9A%84%E5%A4%84%E7%90%86/</url>
-    <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>　　笔者在处理报表sql时,碰到比率之类的指标需要进行四舍五入保留2位小数操作.按照惯例,round函数操作,但是在碰到如以下sql时出现结果不如预期想象</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> <span class="keyword">create</span> <span class="keyword">table</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="keyword">Table</span>     <span class="operator">|</span> <span class="keyword">Create</span> <span class="keyword">Table</span>                                                                                                                                                                                                          <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> roundTest <span class="operator">|</span> <span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `roundTest` (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">10</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `cost` <span class="type">decimal</span>(<span class="number">10</span>,<span class="number">4</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `metrics_map` json <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`)</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB AUTO_INCREMENT<span class="operator">=</span><span class="number">2</span> <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8 <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">----+--------+--------------+</span></span><br><span class="line"><span class="operator">|</span> id <span class="operator">|</span> cost   <span class="operator">|</span> metrics_map  <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+--------+--------------+</span></span><br><span class="line"><span class="operator">|</span>  <span class="number">1</span> <span class="operator">|</span> <span class="number">2.0100</span> <span class="operator">|</span> &#123;&quot;count&quot;: <span class="number">2</span>&#125; <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+--------+--------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> round(cost<span class="operator">/</span>metrics_map<span class="operator">-</span><span class="operator">&gt;</span>&quot;$.count&quot;,<span class="number">2</span>) <span class="keyword">from</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> round(cost<span class="operator">/</span>metrics_map<span class="operator">-</span><span class="operator">&gt;</span>&quot;$.count&quot;,<span class="number">2</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                                 <span class="number">1.00</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-<p>可以看到,当使用round进行四舍五入时,期望结果是1.01,可实际结果是1.00</p>
-<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>造成这种结果其实是多方努力带来的,</p>
-<ol>
-<li>可以看到metric_map 是一个json类型,我们从中提取count字段,虽然官方文档没有明确表示返回类型是是什么,但是按到json存储方式,很有可能知道是字符类型,或者为未知类型.</li>
-<li>cost 是decimal 类型,属于精确类型, cost/metrics_map-&gt;”$.count” = 精确类型/未知类型(字符类型), 由于count是非精确类型,那么结果就必然是非精确类型.</li>
-<li>round 进行四舍五入时按照官方文档是有两种情形的<ol>
-<li><p>当对精确类型使用时,就是四舍五入</p>
-</li>
-<li><p>当对非精确类型使用时,结果将会偏向偶数结</p>
-<p><img src="/home/elizwy/.config/Typora/typora-user-images/image-20210723174310858.png" alt="image-20210723174310858"></p>
-</li>
-</ol>
-</li>
-</ol>
-<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p>使用cast^2^ 函数将count 转成精确类型即可.</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> round(<span class="built_in">sum</span>(cost)<span class="operator">*</span><span class="number">1.0</span><span class="operator">/</span><span class="built_in">cast</span>(<span class="built_in">sum</span>(metrics_map<span class="operator">-</span><span class="operator">&gt;</span><span class="string">&#x27;$.count&#x27;</span>)<span class="keyword">as</span> <span class="type">decimal</span>),<span class="number">2</span>) <span class="keyword">from</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> round(<span class="built_in">sum</span>(cost)<span class="operator">*</span><span class="number">1.0</span><span class="operator">/</span><span class="built_in">cast</span>(<span class="built_in">sum</span>(metrics_map<span class="operator">-</span><span class="operator">&gt;</span><span class="string">&#x27;$.count&#x27;</span>)<span class="keyword">as</span> <span class="type">decimal</span>),<span class="number">2</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                                                               <span class="number">1.01</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-
-
-<h6 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h6><ol>
-<li> <a href="https://dev.mysql.com/doc/refman/5.7/en/precision-math-rounding.html">Rounding Behavior</a></li>
-<li><a href="https://dev.mysql.com/doc/refman/5.7/en/cast-functions.html#function_cast"> Cast Functions and Operators</a></li>
-</ol>
-]]></content>
-      <tags>
-        <tag>issue</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>《高效休息》 读后感</title>
-    <url>/2019/08/24/%E3%80%8A%E9%AB%98%E6%95%88%E4%BC%91%E6%81%AF%E3%80%8B%20%E8%AF%BB%E5%90%8E%E6%84%9F/</url>
-    <content><![CDATA[<h1 id="缘由"><a href="#缘由" class="headerlink" title="缘由"></a>缘由</h1><p>​    我选择《高效休息》这本书的主要缘由是某个周五忘交电费结果4点多就热醒了，又恰逢前一天网上听闻了陆奇这个人的生活作息，于是就想亲身体验一把。可是我也有自知之明的，知道他能有这样的作息，肯定有充足的休息，于是就有阅读些“如何休息”类的书籍想法。</p>
-<h1 id="评价"><a href="#评价" class="headerlink" title="评价"></a>评价</h1><p>​    简单，易懂（总分总结构，加以小说类型叙述，带入性好），实操性强，很快就能看到良性反馈。</p>
-<h1 id="主要内容"><a href="#主要内容" class="headerlink" title="主要内容"></a>主要内容</h1><p>书的结构分为 前言，先睹为快，正念时刻，结语，特别附录</p>
-<ul>
-<li><p>前言</p>
-<p>在前言中，该书指出DMN（预设模式网络，被认为是“大脑能量吞噬者”） 是造成人感觉累的主要原因，<br>而人感觉累主要是由于大脑疲劳。书中采用的解决方就是“正念”，也就是冥想，强调当下的感觉、体验，<br>用以解除大脑疲劳，获得休息。</p>
-</li>
-<li><p>先睹为快</p>
-<p>介绍了7个休息法，分别是 正念呼吸法，动态冥想，压力呼吸法，”猴子思维“消除法，RAIN法，温柔的慈<br>悲心，扫描全身法。 贯穿这七个方法的核心就是呼吸， 呼吸是意识的锚，注意呼吸就是为了将注意力集<br>中在当下，这就是正念呼吸法，整本书的精髓之所在了。</p>
-</li>
-<li><p>正念时刻</p>
-<p>该部分采用小说似的情节，讲述作者留学耶鲁大学精神医学系时，因为学习的压力产生的疲劳感而求助“尤<br>达”大师，尤达大师用正念思想帮助作者解决了当前的疲劳的情况，随便用正念思想帮助作者伯父的“当下<br>百吉果“ 摆脱困境。</p>
-</li>
-<li><p>结语</p>
-<p>从doing 到being,价值观从”任务导向型”生活 转为 “向成为什么” ，这一点也与《高效能人士的七个<br>习惯中的 以终为始 和要事第一 有着相同的含义</p>
-</li>
-<li><p>特别语录</p>
-<p>美国精神科医生推荐的五日简单休息法，于较长假期中实现较为好</p>
-</li>
-</ul>
-<h1 id="感悟"><a href="#感悟" class="headerlink" title="感悟"></a>感悟</h1><p>​    书中讲的正念思想来源于东方的佛教思想中，而佛教有助于心境平静，休息这一点我其实在高中时期就已经感受到了。在高二的一段黑暗时期，我曾执着于“人是如何入睡的”而导致精神崩溃，现在回想起来，也感觉有点发笑，当时自己也是在注意呼吸的，快入睡时而被“原来是这样入睡的”杂念给干扰，然后就是各种回忆，这也许就是我比别人能记得小时候更多的事 缘由吧。</p>
-<p>​    现在回想起来，当时就差一个步骤了，书中处理“猴子思维” 这个杂念是缓慢拉回到呼吸，而我当时的做法是猛然拉回到呼吸上，这一点就导致了我精神几乎崩溃。幸而当初有爱看书的习惯，在“三味书屋” 里淘到一本 佛教小故事的集的《禅思》，这本小册子都快翻烂了，现今依旧被珍藏在我家里的书桌上。再之后，我也有点开窍了，接触到了冥想，每天晚饭时期都会找个空荡无人的地方冥思会。到了高三因为学业繁忙，渐渐忘却了这种思想，如今又再次相遇，如果把思想比作人的话，恐怕此刻得泪眼朦胧了吧。当初不作一声告别，从此人海茫茫，杳无音信，穿越世间沉浮十几载，物事人非，耗尽半生追寻，突然在拐角的角落再次相遇，才发现，原来是你就是我要穷尽一生要找的那个人。</p>
-<p>​    有点跑题了，正念=冥想=当下=呼吸</p>
-]]></content>
-      <tags>
-        <tag>读后感</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>《拯救记忆》读后感</title>
     <url>/2022/02/27/%E3%80%8A%E6%8B%AF%E6%95%91%E8%AE%B0%E5%BF%86%E3%80%8B%E8%AF%BB%E5%90%8E%E6%84%9F/</url>
     <content><![CDATA[<h1 id="大纲"><a href="#大纲" class="headerlink" title="大纲"></a>大纲</h1><p>![image-20220227155947736](/Users/zwyeli/Library/Application Support/typora-user-images/image-20220227155947736.png)</p>
@@ -317,6 +286,37 @@
 ]]></content>
   </entry>
   <entry>
+    <title>《高效休息》 读后感</title>
+    <url>/2019/08/24/%E3%80%8A%E9%AB%98%E6%95%88%E4%BC%91%E6%81%AF%E3%80%8B%20%E8%AF%BB%E5%90%8E%E6%84%9F/</url>
+    <content><![CDATA[<h1 id="缘由"><a href="#缘由" class="headerlink" title="缘由"></a>缘由</h1><p>​    我选择《高效休息》这本书的主要缘由是某个周五忘交电费结果4点多就热醒了，又恰逢前一天网上听闻了陆奇这个人的生活作息，于是就想亲身体验一把。可是我也有自知之明的，知道他能有这样的作息，肯定有充足的休息，于是就有阅读些“如何休息”类的书籍想法。</p>
+<h1 id="评价"><a href="#评价" class="headerlink" title="评价"></a>评价</h1><p>​    简单，易懂（总分总结构，加以小说类型叙述，带入性好），实操性强，很快就能看到良性反馈。</p>
+<h1 id="主要内容"><a href="#主要内容" class="headerlink" title="主要内容"></a>主要内容</h1><p>书的结构分为 前言，先睹为快，正念时刻，结语，特别附录</p>
+<ul>
+<li><p>前言</p>
+<p>在前言中，该书指出DMN（预设模式网络，被认为是“大脑能量吞噬者”） 是造成人感觉累的主要原因，<br>而人感觉累主要是由于大脑疲劳。书中采用的解决方就是“正念”，也就是冥想，强调当下的感觉、体验，<br>用以解除大脑疲劳，获得休息。</p>
+</li>
+<li><p>先睹为快</p>
+<p>介绍了7个休息法，分别是 正念呼吸法，动态冥想，压力呼吸法，”猴子思维“消除法，RAIN法，温柔的慈<br>悲心，扫描全身法。 贯穿这七个方法的核心就是呼吸， 呼吸是意识的锚，注意呼吸就是为了将注意力集<br>中在当下，这就是正念呼吸法，整本书的精髓之所在了。</p>
+</li>
+<li><p>正念时刻</p>
+<p>该部分采用小说似的情节，讲述作者留学耶鲁大学精神医学系时，因为学习的压力产生的疲劳感而求助“尤<br>达”大师，尤达大师用正念思想帮助作者解决了当前的疲劳的情况，随便用正念思想帮助作者伯父的“当下<br>百吉果“ 摆脱困境。</p>
+</li>
+<li><p>结语</p>
+<p>从doing 到being,价值观从”任务导向型”生活 转为 “向成为什么” ，这一点也与《高效能人士的七个<br>习惯中的 以终为始 和要事第一 有着相同的含义</p>
+</li>
+<li><p>特别语录</p>
+<p>美国精神科医生推荐的五日简单休息法，于较长假期中实现较为好</p>
+</li>
+</ul>
+<h1 id="感悟"><a href="#感悟" class="headerlink" title="感悟"></a>感悟</h1><p>​    书中讲的正念思想来源于东方的佛教思想中，而佛教有助于心境平静，休息这一点我其实在高中时期就已经感受到了。在高二的一段黑暗时期，我曾执着于“人是如何入睡的”而导致精神崩溃，现在回想起来，也感觉有点发笑，当时自己也是在注意呼吸的，快入睡时而被“原来是这样入睡的”杂念给干扰，然后就是各种回忆，这也许就是我比别人能记得小时候更多的事 缘由吧。</p>
+<p>​    现在回想起来，当时就差一个步骤了，书中处理“猴子思维” 这个杂念是缓慢拉回到呼吸，而我当时的做法是猛然拉回到呼吸上，这一点就导致了我精神几乎崩溃。幸而当初有爱看书的习惯，在“三味书屋” 里淘到一本 佛教小故事的集的《禅思》，这本小册子都快翻烂了，现今依旧被珍藏在我家里的书桌上。再之后，我也有点开窍了，接触到了冥想，每天晚饭时期都会找个空荡无人的地方冥思会。到了高三因为学业繁忙，渐渐忘却了这种思想，如今又再次相遇，如果把思想比作人的话，恐怕此刻得泪眼朦胧了吧。当初不作一声告别，从此人海茫茫，杳无音信，穿越世间沉浮十几载，物事人非，耗尽半生追寻，突然在拐角的角落再次相遇，才发现，原来是你就是我要穷尽一生要找的那个人。</p>
+<p>​    有点跑题了，正念=冥想=当下=呼吸</p>
+]]></content>
+      <tags>
+        <tag>读后感</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>交换两变量的值</title>
     <url>/2020/12/29/%E4%BA%A4%E6%8D%A2%E4%B8%A4%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/</url>
     <content><![CDATA[<h3 id="方式一"><a href="#方式一" class="headerlink" title="方式一"></a>方式一</h3><ul>
@@ -353,6 +353,23 @@
 ]]></content>
   </entry>
   <entry>
+    <title>漩涡矩阵</title>
+    <url>/2023/07/29/%E6%BC%A9%E6%B6%A1%E7%9F%A9%E9%98%B5/</url>
+    <content><![CDATA[<h1 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h1><p>给定一个n*m漩涡矩阵，矩阵按照顺序排列排定, 输出一个有序的一维数组</p>
+<p>例如：<br>array = [<br>    [1,  2,   3,  4],<br>    [12, 13,  14, 5],<br>    [11, 16,  15, 6],<br>    [10, 9,   8,  7]<br>]<br>output = [1,2,3,4,5,6,7,8,9,10,12,13,14]</p>
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><ol>
+<li>整体循环路径为<br>startRow, startColumn ———–》startRow, endColumn<br>^                                     |<br>|                                     |<br>|                                     v<br>endRow, startColumn &lt;———-  endRow, endColumn</li>
+<li>定义横坐标起点与终点,纵坐标的起点与终点</li>
+<li>每次遍历完一圈，更新上面4个坐标位置</li>
+<li>边界条件： 最后 向左或向上可能存在重复扫描</li>
+</ol>
+<h1 id="算法实现"><a href="#算法实现" class="headerlink" title="算法实现"></a>算法实现</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public static List&lt;Integer&gt; spiralTraverse(int[][] array) &#123;</span><br><span class="line">    // Write your code here.</span><br><span class="line">    int startRow = 0;</span><br><span class="line">    int startColumn=0;</span><br><span class="line">    int endRow = array.length -1;</span><br><span class="line">    int endColumn = array[0].length -1;</span><br><span class="line">    ArrayList&lt;Integer&gt; result = new ArrayList&lt;Integer&gt;();</span><br><span class="line"></span><br><span class="line">    while(startRow&lt;=endRow &amp;&amp; startColumn&lt;=endColumn)&#123;</span><br><span class="line">      System.out.println(startRow+&quot; &quot;+ startColumn+&quot; &quot;+ endColumn+&quot; &quot;+endRow);</span><br><span class="line">        </span><br><span class="line">        for(int i = startColumn; i&lt;= endColumn; i++)&#123;</span><br><span class="line">            result.add(array[startRow][i]);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        for(int i = startRow +1; i&lt;= endRow; i++)&#123;</span><br><span class="line">           result.add(array[i][endColumn]);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        for(int i = endColumn-1; i&gt;=startColumn; i--)&#123;</span><br><span class="line">          if(startRow == endRow) break;</span><br><span class="line">          result.add(array[endRow][i]);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        for(int i = endRow -1; i&gt; startRow; i--)&#123;</span><br><span class="line">          if(startColumn == endColumn) break;</span><br><span class="line">          result.add(array[i][startColumn]);</span><br><span class="line">        &#125;</span><br><span class="line">      startRow++;</span><br><span class="line">      endColumn --;˚</span><br><span class="line">      endRow--;</span><br><span class="line">      startColumn++;</span><br><span class="line">    &#125;</span><br><span class="line">    return result;</span><br><span class="line">  &#125;ß</span><br></pre></td></tr></table></figure>
+]]></content>
+      <tags>
+        <tag>algo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>空难感想</title>
     <url>/2022/03/27/%E7%A9%BA%E9%9A%BE%E6%84%9F%E6%83%B3/</url>
     <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>最近3.21东方航空空难事件触动了我的神经，以前不怎么关注也不怎么在意，随着步入社会，也坐过多次飞机，自然空难也就成了我关注的一个点。于是我就专门花了一晚上看了一些历史上的空难视频，这些视频主要是视频主根据公开的黑匣子语音和飞行数据的一个再现模拟。在这一晚上的观看和了解我也收获了一些成长</p>
@@ -379,6 +396,29 @@
 <li>时间就是生命，而我们生活中的每一项工作/学习/任务都是需要时间的付出，换而言之我们的人生也就是一趟航班，上面满载的是我们的时间，是我们的生命。</li>
 <li>作为我们人生这趟航班的机长，发展出一套完善的自我监控指标和自动报警系统，帮助我们做出最佳决策；与他人合作，时刻保持清醒头脑，塔台有可能不可靠，你的引路人也有可能是个洗脑者；不断累积总结内化经验，面对人生重大危机/转折是，要沉着冷静，要尽办法夺回掌握人生航班的控制权，远离危险；如果大环境对你不友好，直接远离它！强调你要有远见，牺牲当下精神的组织，远离它！时刻把你当作耗材的集体，远离它！永远保持清醒头脑！</li>
 <li>有生之年去趟日本</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>线上debug流程</title>
+    <url>/2022/03/30/%E7%BA%BF%E4%B8%8Adebug%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h1><p>我们有时碰到线上的一些问题，例如进程是否卡住了，输入输出不合预期，cpu负载飙升，GC太频繁</p>
+<h1 id="bebug-模版"><a href="#bebug-模版" class="headerlink" title="bebug 模版"></a>bebug 模版</h1><ul>
+<li>根据现有的日志分析</li>
+<li>查看进程中各个线程工作情况<ul>
+<li>top -Hp pid</li>
+<li>jstack pid</li>
+</ul>
+</li>
+<li>查看网络链接情况<ul>
+<li>netstat -antp|grep pid</li>
+<li>dstat 查看网络流量情况</li>
+</ul>
+</li>
+<li>查看内存使用情况<ul>
+<li>profile</li>
+</ul>
+</li>
 </ul>
 ]]></content>
   </entry>
@@ -438,29 +478,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>线上debug流程</title>
-    <url>/2022/03/30/%E7%BA%BF%E4%B8%8Adebug%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h1 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h1><p>我们有时碰到线上的一些问题，例如进程是否卡住了，输入输出不合预期，cpu负载飙升，GC太频繁</p>
-<h1 id="bebug-模版"><a href="#bebug-模版" class="headerlink" title="bebug 模版"></a>bebug 模版</h1><ul>
-<li>根据现有的日志分析</li>
-<li>查看进程中各个线程工作情况<ul>
-<li>top -Hp pid</li>
-<li>jstack pid</li>
-</ul>
-</li>
-<li>查看网络链接情况<ul>
-<li>netstat -antp|grep pid</li>
-<li>dstat 查看网络流量情况</li>
-</ul>
-</li>
-<li>查看内存使用情况<ul>
-<li>profile</li>
-</ul>
-</li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
     <title>记录一次内存泄露定位</title>
     <url>/2020/12/29/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%AE%9A%E4%BD%8D/</url>
     <content><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>这次问题的出现是公司另外一个项目组同事遇到的。当时情况是大约晚上9点左右grafana发出某个服务出现假死状态，研发人员立即登上服务器检查，发现服务器cpu满载，于是就尝试jstack 查看服务进程的堆栈情况，发现已经无法连接了，查看不到堆栈信息；无奈只能从业务日志入手，发现零星的error日志，分别是上午9点左右，在error日志附近都是写库的日志，明显能看到写库的时间在变长，20多秒/30多秒零星出现。然后立马想到的是有可能是出现了60秒导致了中断异常导致某个地方出现内存泄露，致使cpu满载，jstack 无法查看，顺着error 日志的堆栈信息发现类似以下代码</p>
@@ -470,10 +487,9 @@
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
   </entry>
   <entry>
-    <title>领域驱动中的结构</title>
-    <url>/2019/08/30/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E4%B8%8E%E5%BA%94%E7%94%A8%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%8C%BA%E5%88%AB/</url>
-    <content><![CDATA[<h1 id="缘由"><a href="#缘由" class="headerlink" title="缘由"></a>缘由</h1><p>在实行DDD 领域驱动开发的过程中，需要面对的问题有： 如何分结构？在项目中怎样的包结构能够适用于领域驱动？应该怎样决定该段代码合适的位置？</p>
-<h1 id="战略结构"><a href="#战略结构" class="headerlink" title="战略结构"></a>战略结构</h1>]]></content>
+    <title>记录一次线上卡顿发现与解决过程</title>
+    <url>/2023/01/30/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E7%BA%BF%E4%B8%8A%E5%8D%A1%E9%A1%BF%E5%8F%91%E7%8E%B0%E4%B8%8E%E8%A7%A3%E5%86%B3%E8%BF%87%E7%A8%8B/</url>
+    <content><![CDATA[]]></content>
   </entry>
   <entry>
     <title>长头发的十二种自然疗法</title>
@@ -490,5 +506,11 @@
 <li>双氢</li>
 </ul>
 ]]></content>
+  </entry>
+  <entry>
+    <title>领域驱动中的结构</title>
+    <url>/2019/08/30/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E4%B8%8E%E5%BA%94%E7%94%A8%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%8C%BA%E5%88%AB/</url>
+    <content><![CDATA[<h1 id="缘由"><a href="#缘由" class="headerlink" title="缘由"></a>缘由</h1><p>在实行DDD 领域驱动开发的过程中，需要面对的问题有： 如何分结构？在项目中怎样的包结构能够适用于领域驱动？应该怎样决定该段代码合适的位置？</p>
+<h1 id="战略结构"><a href="#战略结构" class="headerlink" title="战略结构"></a>战略结构</h1>]]></content>
   </entry>
 </search>
