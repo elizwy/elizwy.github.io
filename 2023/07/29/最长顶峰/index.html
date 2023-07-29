@@ -11,7 +11,7 @@
         name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1"
       />
-      <title> ELIZWY</title>
+      <title>最长顶峰 |  ELIZWY</title>
   <meta name="generator" content="hexo-theme-ayer">
       
       <link rel="shortcut icon" href="/favicon.ico" />
@@ -44,235 +44,183 @@
         style="position: fixed; left: 0px; top: 0px; z-index: 99999; pointer-events: none;"></canvas>
       
     <main class="content on">
-      
-<section class="cover">
+      <section class="outer">
+  <article
+  id="post-最长顶峰"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
     
-  <div class="cover-frame">
-    <div class="bg-box">
-      <img src="/images/cover1.jpg" alt="image frame" />
-    </div>
-    <div class="cover-inner text-center text-white">
-      <h1><a href="/">ELIZWY</a></h1>
-      <div id="subtitle-box">
-        
-        <span id="subtitle"></span>
-        
-      </div>
-      <div>
-        
-      </div>
-    </div>
-  </div>
-  <div class="cover-learn-more">
-    <a href="javascript:void(0)" class="anchor"><i class="ri-arrow-down-line"></i></a>
-  </div>
-</section>
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  最长顶峰
+</h1>
+ 
 
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2023/07/29/%E6%9C%80%E9%95%BF%E9%A1%B6%E5%B3%B0/" class="article-date">
+  <time datetime="2023-07-29T06:01:55.000Z" itemprop="datePublished">2023-07-29</time>
+</a>   
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> Word count:</span>
+            <span class="post-count">263</span>
+        </span>
+    </span>
 
-
-<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js"></script>
-
-
-<!-- Subtitle -->
-
-  <script>
-    try {
-      var typed = new Typed("#subtitle", {
-        strings: ['面朝大海，春暖花开', '未来不迎,当时不杂,过往不恋', '想要的都拥有，得不到的都释怀'],
-        startDelay: 0,
-        typeSpeed: 200,
-        loop: true,
-        backSpeed: 100,
-        showCursor: true
-      });
-    } catch (err) {
-      console.log(err)
-    }
-  </script>
-  
-<div id="main">
-  <section class="outer">
-  
-  
-  
-
-<div class="notice" style="margin-top:50px">
-    <i class="ri-heart-fill"></i>
-    <div class="notice-content" id="broad"></div>
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> Reading time≈</span>
+            <span class="post-count">1 min</span>
+        </span>
+    </span>
 </div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h1><p>输入一个整数数组， 返回最长顶峰长度。 顶峰定义： 最短长度为3， 顶点左边严格递增， 右边严格递减。</p>
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><ol>
+<li>以顶点划分递增区间和递减区间</li>
+<li>总区间结束标志： 1.遇到递增时, 存在上一个递增,递减区间，更新历史最长，递增/间区间长度归0 2. 遇到相等元素 3. 结尾递减区间结束</li>
+<li>边界条件: 数组长度低于3<h1 id="算法实现"><a href="#算法实现" class="headerlink" title="算法实现"></a>算法实现</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">if(array.length &lt;3)&#123;</span><br><span class="line">      return 0;</span><br><span class="line">    &#125;</span><br><span class="line">    int maxLength =0;</span><br><span class="line">    int iLength =0;</span><br><span class="line">    int dLength =0;</span><br><span class="line">    for(int i=1 ; i&lt; array.length; i++)&#123;</span><br><span class="line">      if(array[i] &gt; array[i-1])&#123;</span><br><span class="line">        if(iLength &gt;0 &amp;&amp; dLength &gt;0)&#123;</span><br><span class="line">          maxLength = Math.max(maxLength, iLength + dLength);</span><br><span class="line">          iLength =0;</span><br><span class="line">          dLength = 0;</span><br><span class="line">        &#125;</span><br><span class="line">        if(iLength ==0)&#123;</span><br><span class="line">          iLength =2;</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">          iLength ++;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;else if(array[i] &lt; array[i-1] &amp;&amp; iLength &gt;0)&#123;</span><br><span class="line">        dLength++;</span><br><span class="line">      &#125;else if(array[i] == array[i-1])&#123;</span><br><span class="line">        if(iLength &gt;0 &amp;&amp; dLength &gt;0)&#123;</span><br><span class="line">          maxLength = Math.max(maxLength, iLength + dLength);</span><br><span class="line">        &#125;</span><br><span class="line">        iLength =0;</span><br><span class="line">        dLength =0;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if(iLength &gt;0 &amp;&amp; dLength &gt;0)&#123;</span><br><span class="line">        maxLength = Math.max(maxLength, iLength + dLength);</span><br><span class="line">     &#125;</span><br><span class="line">    return maxLength;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>Copyright： </strong>
+          
+          Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source.
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2023/07/29/%E6%9C%80%E9%95%BF%E9%A1%B6%E5%B3%B0/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/algo/" rel="tag">algo</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/2023/07/29/%E6%BC%A9%E6%B6%A1%E7%9F%A9%E9%98%B5/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">漩涡矩阵</div>
+      </a>
+    
+  </nav>
+
+   
+ 
+   
+<div class="gitalk" id="gitalk-container"></div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css">
+
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
+
 <script type="text/javascript">
-    fetch('https://v1.hitokoto.cn')
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById("broad").innerHTML = data.hitokoto;
-        })
-        .catch(console.error)
+  var gitalk = new Gitalk({
+    clientID: '31a4cf64dd00099e49ad',
+    clientSecret: 'db6cbf4ebe9bb2434bd9447d2fd65a1f1d90f896',
+    repo: 'elizwy.github.io',
+    owner: 'elizwy',
+    admin: ['elizwy'],
+    // id: location.pathname,      // Ensure uniqueness and length less than 50
+    id: md5(location.pathname),
+    distractionFreeMode: false,  // Facebook-like distraction free mode
+    pagerDirection: 'last'
+  })
+
+  gitalk.render('gitalk-container')
 </script>
 
-<style>
-    .notice {
-        padding: 20px;
-        border: 1px dashed #e6e6e6;
-        color: #969696;
-        position: relative;
-        display: inline-block;
-        width: 100%;
-        background: #fbfbfb50;
-        border-radius: 10px;
-    }
-
-    .notice i {
-        float: left;
-        color: #999;
-        font-size: 16px;
-        padding-right: 10px;
-        vertical-align: middle;
-        margin-top: -2px;
-    }
-
-    .notice-content {
-        display: initial;
-        vertical-align: middle;
-    }
-</style>
-  
-  <article class="articles">
-    
-    
-    
-    
-    <article
-  id="post-领域驱动与应用服务的区别"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2019/08/30/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E4%B8%8E%E5%BA%94%E7%94%A8%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%8C%BA%E5%88%AB/"
-    >领域驱动中的结构</a> 
-</h2>
- 
-
-      
-    </header>
      
-    <div class="article-meta">
-      <a href="/2019/08/30/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E4%B8%8E%E5%BA%94%E7%94%A8%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%8C%BA%E5%88%AB/" class="article-date">
-  <time datetime="2019-08-30T01:56:11.000Z" itemprop="datePublished">2019-08-30</time>
-</a>    
-    </div>
-      
-    <div class="article-entry" itemprop="articleBody">
-       
-  <h1 id="缘由"><a href="#缘由" class="headerlink" title="缘由"></a>缘由</h1><p>在实行DDD 领域驱动开发的过程中，需要面对的问题有： 如何分结构？在项目中怎样的包结构能够适用于领域驱动？应该怎样决定该段代码合适的位置？</p>
-<h1 id="战略结构"><a href="#战略结构" class="headerlink" title="战略结构"></a>战略结构</h1> 
-      <!-- reward -->
-      
-    </div>
-    
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
-    </footer>
-  </div>
-
-    
- 
-    
 </article>
 
-    
-    <article
-  id="post-《高效休息》 读后感"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2019/08/24/%E3%80%8A%E9%AB%98%E6%95%88%E4%BC%91%E6%81%AF%E3%80%8B%20%E8%AF%BB%E5%90%8E%E6%84%9F/"
-    >《高效休息》 读后感</a> 
-</h2>
- 
-
-      
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2019/08/24/%E3%80%8A%E9%AB%98%E6%95%88%E4%BC%91%E6%81%AF%E3%80%8B%20%E8%AF%BB%E5%90%8E%E6%84%9F/" class="article-date">
-  <time datetime="2019-08-24T12:10:30.000Z" itemprop="datePublished">2019-08-24</time>
-</a>    
-    </div>
-      
-    <div class="article-entry" itemprop="articleBody">
-       
-  <h1 id="缘由"><a href="#缘由" class="headerlink" title="缘由"></a>缘由</h1><p>​    我选择《高效休息》这本书的主要缘由是某个周五忘交电费结果4点多就热醒了，又恰逢前一天网上听闻了陆奇这个人的生活作息，于是就想亲身体验一把。可是我也有自知之明的，知道他能有这样的作息，肯定有充足的休息，于是就有阅读些“如何休息”类的书籍想法。</p>
-<h1 id="评价"><a href="#评价" class="headerlink" title="评价"></a>评价</h1><p>​    简单，易懂（总分总结构，加以小说类型叙述，带入性好），实操性强，很快就能看到良性反馈。</p>
-<h1 id="主要内容"><a href="#主要内容" class="headerlink" title="主要内容"></a>主要内容</h1><p>书的结构分为 前言，先睹为快，正念时刻，结语，特别附录</p>
-<ul>
-<li><p>前言</p>
-<p>在前言中，该书指出DMN（预设模式网络，被认为是“大脑能量吞噬者”） 是造成人感觉累的主要原因，<br>而人感觉累主要是由于大脑疲劳。书中采用的解决方就是“正念”，也就是冥想，强调当下的感觉、体验，<br>用以解除大脑疲劳，获得休息。</p>
-</li>
-<li><p>先睹为快</p>
-<p>介绍了7个休息法，分别是 正念呼吸法，动态冥想，压力呼吸法，”猴子思维“消除法，RAIN法，温柔的慈<br>悲心，扫描全身法。 贯穿这七个方法的核心就是呼吸， 呼吸是意识的锚，注意呼吸就是为了将注意力集<br>中在当下，这就是正念呼吸法，整本书的精髓之所在了。</p>
-</li>
-<li><p>正念时刻</p>
-<p>该部分采用小说似的情节，讲述作者留学耶鲁大学精神医学系时，因为学习的压力产生的疲劳感而求助“尤<br>达”大师，尤达大师用正念思想帮助作者解决了当前的疲劳的情况，随便用正念思想帮助作者伯父的“当下<br>百吉果“ 摆脱困境。</p>
-</li>
-<li><p>结语</p>
-<p>从doing 到being,价值观从”任务导向型”生活 转为 “向成为什么” ，这一点也与《高效能人士的七个<br>习惯中的 以终为始 和要事第一 有着相同的含义</p>
-</li>
-<li><p>特别语录</p>
-<p>美国精神科医生推荐的五日简单休息法，于较长假期中实现较为好</p>
-</li>
-</ul>
-<h1 id="感悟"><a href="#感悟" class="headerlink" title="感悟"></a>感悟</h1><p>​    书中讲的正念思想来源于东方的佛教思想中，而佛教有助于心境平静，休息这一点我其实在高中时期就已经感受到了。在高二的一段黑暗时期，我曾执着于“人是如何入睡的”而导致精神崩溃，现在回想起来，也感觉有点发笑，当时自己也是在注意呼吸的，快入睡时而被“原来是这样入睡的”杂念给干扰，然后就是各种回忆，这也许就是我比别人能记得小时候更多的事 缘由吧。</p>
-<p>​    现在回想起来，当时就差一个步骤了，书中处理“猴子思维” 这个杂念是缓慢拉回到呼吸，而我当时的做法是猛然拉回到呼吸上，这一点就导致了我精神几乎崩溃。幸而当初有爱看书的习惯，在“三味书屋” 里淘到一本 佛教小故事的集的《禅思》，这本小册子都快翻烂了，现今依旧被珍藏在我家里的书桌上。再之后，我也有点开窍了，接触到了冥想，每天晚饭时期都会找个空荡无人的地方冥思会。到了高三因为学业繁忙，渐渐忘却了这种思想，如今又再次相遇，如果把思想比作人的话，恐怕此刻得泪眼朦胧了吧。当初不作一声告别，从此人海茫茫，杳无音信，穿越世间沉浮十几载，物事人非，耗尽半生追寻，突然在拐角的角落再次相遇，才发现，原来是你就是我要穷尽一生要找的那个人。</p>
-<p>​    有点跑题了，正念=冥想=当下=呼吸</p>
- 
-      <!-- reward -->
-      
-    </div>
-    
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E5%90%8E%E6%84%9F/" rel="tag">读后感</a></li></ul>
-
-    </footer>
-  </div>
-
-    
- 
-    
-</article>
-
-    
-  </article>
-  
-
-  
-  <nav class="page-nav">
-    
-    <a class="extend prev" rel="prev" href="/page/2/">上一页</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
-  </nav>
-  
 </section>
-</div>
-
       <footer class="footer">
   <div class="outer">
     <ul>
@@ -390,6 +338,22 @@
 <script src="/js/lazyload.min.js"></script>
 
 <!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
 <link

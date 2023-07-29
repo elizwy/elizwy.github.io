@@ -142,6 +142,61 @@
     
     
     <article
+  id="post-最长顶峰"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2023/07/29/%E6%9C%80%E9%95%BF%E9%A1%B6%E5%B3%B0/"
+    >最长顶峰</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2023/07/29/%E6%9C%80%E9%95%BF%E9%A1%B6%E5%B3%B0/" class="article-date">
+  <time datetime="2023-07-29T06:01:55.000Z" itemprop="datePublished">2023-07-29</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h1><p>输入一个整数数组， 返回最长顶峰长度。 顶峰定义： 最短长度为3， 顶点左边严格递增， 右边严格递减。</p>
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><ol>
+<li>以顶点划分递增区间和递减区间</li>
+<li>总区间结束标志： 1.遇到递增时, 存在上一个递增,递减区间，更新历史最长，递增/间区间长度归0 2. 遇到相等元素 3. 结尾递减区间结束</li>
+<li>边界条件: 数组长度低于3<h1 id="算法实现"><a href="#算法实现" class="headerlink" title="算法实现"></a>算法实现</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">if(array.length &lt;3)&#123;</span><br><span class="line">      return 0;</span><br><span class="line">    &#125;</span><br><span class="line">    int maxLength =0;</span><br><span class="line">    int iLength =0;</span><br><span class="line">    int dLength =0;</span><br><span class="line">    for(int i=1 ; i&lt; array.length; i++)&#123;</span><br><span class="line">      if(array[i] &gt; array[i-1])&#123;</span><br><span class="line">        if(iLength &gt;0 &amp;&amp; dLength &gt;0)&#123;</span><br><span class="line">          maxLength = Math.max(maxLength, iLength + dLength);</span><br><span class="line">          iLength =0;</span><br><span class="line">          dLength = 0;</span><br><span class="line">        &#125;</span><br><span class="line">        if(iLength ==0)&#123;</span><br><span class="line">          iLength =2;</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">          iLength ++;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;else if(array[i] &lt; array[i-1] &amp;&amp; iLength &gt;0)&#123;</span><br><span class="line">        dLength++;</span><br><span class="line">      &#125;else if(array[i] == array[i-1])&#123;</span><br><span class="line">        if(iLength &gt;0 &amp;&amp; dLength &gt;0)&#123;</span><br><span class="line">          maxLength = Math.max(maxLength, iLength + dLength);</span><br><span class="line">        &#125;</span><br><span class="line">        iLength =0;</span><br><span class="line">        dLength =0;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if(iLength &gt;0 &amp;&amp; dLength &gt;0)&#123;</span><br><span class="line">        maxLength = Math.max(maxLength, iLength + dLength);</span><br><span class="line">     &#125;</span><br><span class="line">    return maxLength;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/algo/" rel="tag">algo</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
   id="post-漩涡矩阵"
   class="article article-type-post"
   itemscope
@@ -177,7 +232,7 @@
 <li>每次遍历完一圈，更新上面4个坐标位置</li>
 <li>边界条件： 最后 向左或向上可能存在重复扫描</li>
 </ol>
-<h1 id="算法实现"><a href="#算法实现" class="headerlink" title="算法实现"></a>算法实现</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">public static List&lt;Integer&gt; spiralTraverse(int[][] array) &#123;</span><br><span class="line">    // Write your code here.</span><br><span class="line">    int startRow = 0;</span><br><span class="line">    int startColumn=0;</span><br><span class="line">    int endRow = array.length -1;</span><br><span class="line">    int endColumn = array[0].length -1;</span><br><span class="line">    ArrayList&lt;Integer&gt; result = new ArrayList&lt;Integer&gt;();</span><br><span class="line"></span><br><span class="line">    while(startRow&lt;=endRow &amp;&amp; startColumn&lt;=endColumn)&#123;</span><br><span class="line">      System.out.println(startRow+&quot; &quot;+ startColumn+&quot; &quot;+ endColumn+&quot; &quot;+endRow);</span><br><span class="line">        </span><br><span class="line">        for(int i = startColumn; i&lt;= endColumn; i++)&#123;</span><br><span class="line">            result.add(array[startRow][i]);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        for(int i = startRow +1; i&lt;= endRow; i++)&#123;</span><br><span class="line">           result.add(array[i][endColumn]);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        for(int i = endColumn-1; i&gt;=startColumn; i--)&#123;</span><br><span class="line">          if(startRow == endRow) break;</span><br><span class="line">          result.add(array[endRow][i]);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        for(int i = endRow -1; i&gt; startRow; i--)&#123;</span><br><span class="line">          if(startColumn == endColumn) break;</span><br><span class="line">          result.add(array[i][startColumn]);</span><br><span class="line">        &#125;</span><br><span class="line">      startRow++;</span><br><span class="line">      endColumn --;˚</span><br><span class="line">      endRow--;</span><br><span class="line">      startColumn++;</span><br><span class="line">    &#125;</span><br><span class="line">    return result;</span><br><span class="line">  &#125;ß</span><br></pre></td></tr></table></figure>
+<h1 id="算法实现"><a href="#算法实现" class="headerlink" title="算法实现"></a>算法实现</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">public static List&lt;Integer&gt; spiralTraverse(int[][] array) &#123;</span><br><span class="line">    // Write your code here.</span><br><span class="line">    int startRow = 0;</span><br><span class="line">    int startColumn=0;</span><br><span class="line">    int endRow = array.length -1;</span><br><span class="line">    int endColumn = array[0].length -1;</span><br><span class="line">    ArrayList&lt;Integer&gt; result = new ArrayList&lt;Integer&gt;();</span><br><span class="line"></span><br><span class="line">    while(startRow&lt;=endRow &amp;&amp; startColumn&lt;=endColumn)&#123;</span><br><span class="line">      System.out.println(startRow+&quot; &quot;+ startColumn+&quot; &quot;+ endColumn+&quot; &quot;+endRow);</span><br><span class="line">        </span><br><span class="line">        for(int i = startColumn; i&lt;= endColumn; i++)&#123;</span><br><span class="line">            result.add(array[startRow][i]);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        for(int i = startRow +1; i&lt;= endRow; i++)&#123;</span><br><span class="line">           result.add(array[i][endColumn]);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        for(int i = endColumn-1; i&gt;=startColumn; i--)&#123;</span><br><span class="line">          if(startRow == endRow) break;</span><br><span class="line">          result.add(array[endRow][i]);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        for(int i = endRow -1; i&gt; startRow; i--)&#123;</span><br><span class="line">          if(startColumn == endColumn) break;</span><br><span class="line">          result.add(array[i][startColumn]);</span><br><span class="line">        &#125;</span><br><span class="line">      startRow++;</span><br><span class="line">      endColumn --;</span><br><span class="line">      endRow--;</span><br><span class="line">      startColumn++;</span><br><span class="line">    &#125;</span><br><span class="line">    return result;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
  
       <!-- reward -->
       
@@ -736,98 +791,6 @@
 <li>不知道是翻译问题，还是原作者问题。书中将载脂蛋白A定义为 一种非常黏的低密度载脂蛋白胆固醇。医学百科中定义载脂蛋白A(HDL)是高密度载脂蛋白胆固醇，属于好的胆固醇；载脂蛋白B(LDL)是低密度载脂蛋白胆固醇，属于坏的胆固醇。</li>
 <li>文中引用到其他人的说法和观点，没有参考文献和来源，确认费劲</li>
 <li>这本书和《拯救记忆》中类似，推荐褪黑素</li>
-</ul>
- 
-      <!-- reward -->
-      
-    </div>
-    
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
-    </footer>
-  </div>
-
-    
- 
-    
-</article>
-
-    
-    <article
-  id="post-《拯救记忆》读后感"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2022/02/27/%E3%80%8A%E6%8B%AF%E6%95%91%E8%AE%B0%E5%BF%86%E3%80%8B%E8%AF%BB%E5%90%8E%E6%84%9F/"
-    >《拯救记忆》读后感</a> 
-</h2>
- 
-
-      
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2022/02/27/%E3%80%8A%E6%8B%AF%E6%95%91%E8%AE%B0%E5%BF%86%E3%80%8B%E8%AF%BB%E5%90%8E%E6%84%9F/" class="article-date">
-  <time datetime="2022-02-27T07:27:00.000Z" itemprop="datePublished">2022-02-27</time>
-</a>    
-    </div>
-      
-    <div class="article-entry" itemprop="articleBody">
-       
-  <h1 id="大纲"><a href="#大纲" class="headerlink" title="大纲"></a>大纲</h1><p>![image-20220227155947736](/Users/zwyeli/Library/Application Support/typora-user-images/image-20220227155947736.png)</p>
-<ul>
-<li><p>背景</p>
-<p>Author: 丹尼尔·亚曼  译: 黎非凡<br>Background: 美国精神病学协会杰出成员<br>product date: 202104</p>
-</li>
-<li><p>为何会选择这本书</p>
-<ul>
-<li>最近刚刚把《心理学导论》，对人自身相关事物产生浓厚兴趣，联系到我自己在工作上经常容易忘记一些事情，这个让我有点苦恼。刚好在首都图书馆发现了这本书，便借来阅读一番</li>
-</ul>
-</li>
-<li><p>主要内容</p>
-<ul>
-<li>作者基于自己临床案例和研究，总结出一套关于记忆问题的判定标准和相应的治疗方案</li>
-<li>将自己的拯救记忆计划和传统针对阿尔茨海默症治疗方法对比，斥责传统治疗方法的无效及带来的副作用。</li>
-<li>作者将记忆模糊等问题定义为疾病，采用大脑SPECT扫描和MRI扫描来分别检测大脑的功能和结构问题。采用10个维度(血流量，退休/衰老，炎症，遗传，头部创伤，毒素，精神健康，免疫性疾病，神经激素，糖胖病，睡眠问题)来评估记忆情况。用案例故事一一举例相关维度出现的病症及相应的治疗措施。治疗措施主要分为：运动，食疗，保健品。</li>
-</ul>
-</li>
-<li><p>评价</p>
-<ul>
-<li>文中作者将记忆模糊定义为疾病这个举动让我想到了<a target="_blank" rel="noopener" href="https://book.jd.com/writer/%E9%9F%A6%E6%81%A9%C2%B7%E9%9F%A6%E7%99%BB_1.html">韦恩·韦登</a>《心理学导论》中有一章批判思维关于定义的讨论。“定义”是一个比较重要但又是较为主观的，会牵涉到很多方面。在这篇文章里作者是一名精神病分析专家，自然将记忆问题定义为疾病是有利于自己的，一方面能突然自己研究的重要性，另一方面也能引起社会关注，增加记忆领域的经济和社会价值。</li>
-<li>文中作者有一句话让我突然眼前一新的感觉。 人一生要经历 出生，成长，衰老，疾病，死亡，这是自然规律，但是自然规律就是对的么？如果我们将衰老定义为一种病呢？ 这个脑洞很大，让我想到了无限可能</li>
-<li>书中每一个维度都有推荐保健品。</li>
-<li>这本书中曾多次推荐褪黑素营养品,但是最新科学研究已经实锤了褪黑素的各种副作用；</li>
-<li>书中建议 运动优先，学习新知识，学习音乐。我采纳接收，因为我喜欢^_^</li>
-</ul>
-</li>
-<li><p>我得到建议</p>
-<ul>
-<li>多喝水</li>
-<li>多做运动，尤其是球拍类运动</li>
-<li>每天花15分钟以上学习新知识，比如学习音乐，跳舞或者一门新的语言</li>
-<li>尝试每天禁食12～16小时</li>
-<li>爱护牙龈</li>
-<li>多摄入W-3脂肪酸和益生菌</li>
-<li>多食用有机蓝莓</li>
-<li>多摄入十字花科蔬菜</li>
-<li>多做负重练习</li>
-<li>入睡前一小时关掉所有电子产品</li>
-<li>打破常规，找一些新鲜的，有挑战性的而且自己也热爱的事情去做</li>
-<li>报名去听一节课或参与一次会议，主题是自己不熟悉而又感兴趣的内容</li>
-<li>尽快解决任何学习方面的问题</li>
-<li>晚上不可太晚吃东西</li>
-</ul>
-</li>
 </ul>
  
       <!-- reward -->
