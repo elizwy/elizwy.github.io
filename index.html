@@ -142,6 +142,203 @@
     
     
     <article
+  id="post-java中自动装箱与拆箱"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2023/08/04/java%E4%B8%AD%E8%87%AA%E5%8A%A8%E8%A3%85%E7%AE%B1%E4%B8%8E%E6%8B%86%E7%AE%B1/"
+    >java中自动装箱与拆箱</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2023/08/04/java%E4%B8%AD%E8%87%AA%E5%8A%A8%E8%A3%85%E7%AE%B1%E4%B8%8E%E6%8B%86%E7%AE%B1/" class="article-date">
+  <time datetime="2023-08-04T01:11:35.000Z" itemprop="datePublished">2023-08-04</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>java中为了提高效率引入基本数据类型，这些基本数据类型是参考C++方式，用在栈上存储的方式替代在堆上创建，提高内存分配效率与减少垃圾回收的消耗。<br>由于java本身是面向对象语言，在集合等某些场景只能存在对象，故java提供了自动拆箱与装箱功能，减少开发者的手动转化。</p>
+<h1 id="何为装箱与拆箱"><a href="#何为装箱与拆箱" class="headerlink" title="何为装箱与拆箱"></a>何为装箱与拆箱</h1><p>装箱： 将int值转化成Integer对象操作,就是调用<code>Integer.valueOf(a)</code>这一方法。自动装箱就是：不用开发人员编写这一段代码，编译器编译时看情况(放入集合中)<br>主动帮我们增加这一行代码<br>拆箱： 本质上就是调用<code>a.intValue()</code>这一方法。自动装箱就是：不用开发人员编写这一段代码，编译器编译时看情况(进行运算时)<br>主动帮我们增加这一行代码</p>
+<h1 id="装箱与拆箱底层实现"><a href="#装箱与拆箱底层实现" class="headerlink" title="装箱与拆箱底层实现"></a>装箱与拆箱底层实现</h1><p>装箱：<br><img src="img.png" alt="img.png"><br>可以看到这里面对于-128 -&gt; IntegerCache.high 的值装箱时会使用到缓存, 而这个区间外的，每次装箱会产生一个新对象。<br>IntegerCache.high 默认值为127， 可以通过</p>
+<p>拆箱：</p>
+<p><img src="img_1.png" alt="img_1.png"></p>
+<p>拆箱就更简单，直接返回对象中的成员变量即可。</p>
+<h1 id="实际运用"><a href="#实际运用" class="headerlink" title="实际运用"></a>实际运用</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">private static void test1() &#123;</span><br><span class="line">	Integer i1 = 40;</span><br><span class="line">	Integer i2 =40;</span><br><span class="line">	Integer i3 =0;</span><br><span class="line">	Integer i4 = new Integer(40);</span><br><span class="line">	Integer i5 = new Integer(0);</span><br><span class="line">	Integer i6 = Integer.valueOf(40);</span><br><span class="line">	System.out.println(i1 == i2);       //1. true  有缓存 位于-128 -》127缓存</span><br><span class="line">	System.out.println(i1 == i2 + i3);  //2. true  拆箱</span><br><span class="line">	System.out.println(i1 == i4);       //3. false</span><br><span class="line">	System.out.println(i1 == i4 + i5);  //4. true  拆箱</span><br><span class="line">	System.out.println(i1 == i6);       //5. true</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static void test2() &#123;</span><br><span class="line">	Integer i1 = 200;</span><br><span class="line">	Integer i2 = 200;</span><br><span class="line">	Integer i3 =0;</span><br><span class="line">	Integer i4 = new Integer(200);</span><br><span class="line">	Integer i5 = new Integer(0);</span><br><span class="line">	Integer i6 = Integer.valueOf(200);</span><br><span class="line">	System.out.println(i1 == i2);      //6. false 超出-128 -》127缓存</span><br><span class="line">	System.out.println(i1 == i2 + i3); //7. true  拆箱</span><br><span class="line">	System.out.println(i1 == i4);      //8. false </span><br><span class="line">	System.out.println(i1 == i4 + i5); //9. true  拆箱</span><br><span class="line">	System.out.println(i1 == i6);      //10. false </span><br><span class="line">	 </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>字节码层面<br><img src="img_5.png" alt="img_5.png"></p>
+<p>可以看到 i1 == i2 + i3 时进行拆箱，拆箱完后属于基本数据类型，java中基本类型的 == 是直接比对其值的，所以会相等。</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
+  id="post-深入了解Optional"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2023/08/03/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3Optional/"
+    >深入了解Optional</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2023/08/03/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3Optional/" class="article-date">
+  <time datetime="2023-08-03T03:13:47.000Z" itemprop="datePublished">2023-08-03</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+   
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
+  id="post-生产者与消费者模型"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2023/08/02/%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B/"
+    >生产者与消费者模型</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2023/08/02/%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B/" class="article-date">
+  <time datetime="2023-08-02T02:07:41.000Z" itemprop="datePublished">2023-08-02</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+   
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
+  id="post-深入理解网络编程"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2023/07/31/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"
+    >深入理解网络编程</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2023/07/31/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" class="article-date">
+  <time datetime="2023-07-31T06:46:53.000Z" itemprop="datePublished">2023-07-31</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+   
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
   id="post-最长顶峰"
   class="article article-type-post"
   itemscope
@@ -173,8 +370,9 @@
 <h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><ol>
 <li>以顶点划分递增区间和递减区间</li>
 <li>总区间结束标志： 1.遇到递增时, 存在上一个递增,递减区间，更新历史最长，递增/间区间长度归0 2. 遇到相等元素 3. 结尾递减区间结束</li>
-<li>边界条件: 数组长度低于3<h1 id="算法实现"><a href="#算法实现" class="headerlink" title="算法实现"></a>算法实现</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">if(array.length &lt;3)&#123;</span><br><span class="line">      return 0;</span><br><span class="line">    &#125;</span><br><span class="line">    int maxLength =0;</span><br><span class="line">    int iLength =0;</span><br><span class="line">    int dLength =0;</span><br><span class="line">    for(int i=1 ; i&lt; array.length; i++)&#123;</span><br><span class="line">      if(array[i] &gt; array[i-1])&#123;</span><br><span class="line">        if(iLength &gt;0 &amp;&amp; dLength &gt;0)&#123;</span><br><span class="line">          maxLength = Math.max(maxLength, iLength + dLength);</span><br><span class="line">          iLength =0;</span><br><span class="line">          dLength = 0;</span><br><span class="line">        &#125;</span><br><span class="line">        if(iLength ==0)&#123;</span><br><span class="line">          iLength =2;</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">          iLength ++;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;else if(array[i] &lt; array[i-1] &amp;&amp; iLength &gt;0)&#123;</span><br><span class="line">        dLength++;</span><br><span class="line">      &#125;else if(array[i] == array[i-1])&#123;</span><br><span class="line">        if(iLength &gt;0 &amp;&amp; dLength &gt;0)&#123;</span><br><span class="line">          maxLength = Math.max(maxLength, iLength + dLength);</span><br><span class="line">        &#125;</span><br><span class="line">        iLength =0;</span><br><span class="line">        dLength =0;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if(iLength &gt;0 &amp;&amp; dLength &gt;0)&#123;</span><br><span class="line">        maxLength = Math.max(maxLength, iLength + dLength);</span><br><span class="line">     &#125;</span><br><span class="line">    return maxLength;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></li>
+<li>边界条件: 数组长度低于3</li>
 </ol>
+<h1 id="算法实现"><a href="#算法实现" class="headerlink" title="算法实现"></a>算法实现</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">if(array.length &lt;3)&#123;</span><br><span class="line">      return 0;</span><br><span class="line">    &#125;</span><br><span class="line">    int maxLength =0;</span><br><span class="line">    int iLength =0;</span><br><span class="line">    int dLength =0;</span><br><span class="line">    for(int i=1 ; i&lt; array.length; i++)&#123;</span><br><span class="line">      if(array[i] &gt; array[i-1])&#123;</span><br><span class="line">        if(iLength &gt;0 &amp;&amp; dLength &gt;0)&#123;</span><br><span class="line">          maxLength = Math.max(maxLength, iLength + dLength);</span><br><span class="line">          iLength =0;</span><br><span class="line">          dLength = 0;</span><br><span class="line">        &#125;</span><br><span class="line">        if(iLength ==0)&#123;</span><br><span class="line">          iLength =2;</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">          iLength ++;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;else if(array[i] &lt; array[i-1] &amp;&amp; iLength &gt;0)&#123;</span><br><span class="line">        dLength++;</span><br><span class="line">      &#125;else if(array[i] == array[i-1])&#123;</span><br><span class="line">        if(iLength &gt;0 &amp;&amp; dLength &gt;0)&#123;</span><br><span class="line">          maxLength = Math.max(maxLength, iLength + dLength);</span><br><span class="line">        &#125;</span><br><span class="line">        iLength =0;</span><br><span class="line">        dLength =0;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if(iLength &gt;0 &amp;&amp; dLength &gt;0)&#123;</span><br><span class="line">        maxLength = Math.max(maxLength, iLength + dLength);</span><br><span class="line">     &#125;</span><br><span class="line">    return maxLength;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
  
       <!-- reward -->
       
@@ -495,302 +693,6 @@
 </ul>
 <h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
 <li><a target="_blank" rel="noopener" href="https://www.runoob.com/w3cnote/java-varargs-parameter.html">Java 可变参数 | 菜鸟教程 (runoob.com)</a></li>
-</ul>
- 
-      <!-- reward -->
-      
-    </div>
-    
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
-    </footer>
-  </div>
-
-    
- 
-    
-</article>
-
-    
-    <article
-  id="post-线上debug流程"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2022/03/30/%E7%BA%BF%E4%B8%8Adebug%E6%B5%81%E7%A8%8B/"
-    >线上debug流程</a> 
-</h2>
- 
-
-      
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2022/03/30/%E7%BA%BF%E4%B8%8Adebug%E6%B5%81%E7%A8%8B/" class="article-date">
-  <time datetime="2022-03-30T11:41:45.000Z" itemprop="datePublished">2022-03-30</time>
-</a>    
-    </div>
-      
-    <div class="article-entry" itemprop="articleBody">
-       
-  <h1 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h1><p>我们有时碰到线上的一些问题，例如进程是否卡住了，输入输出不合预期，cpu负载飙升，GC太频繁</p>
-<h1 id="bebug-模版"><a href="#bebug-模版" class="headerlink" title="bebug 模版"></a>bebug 模版</h1><ul>
-<li>根据现有的日志分析</li>
-<li>查看进程中各个线程工作情况<ul>
-<li>top -Hp pid</li>
-<li>jstack pid</li>
-</ul>
-</li>
-<li>查看网络链接情况<ul>
-<li>netstat -antp|grep pid</li>
-<li>dstat 查看网络流量情况</li>
-</ul>
-</li>
-<li>查看内存使用情况<ul>
-<li>profile</li>
-</ul>
-</li>
-</ul>
- 
-      <!-- reward -->
-      
-    </div>
-    
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
-    </footer>
-  </div>
-
-    
- 
-    
-</article>
-
-    
-    <article
-  id="post-空难感想"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2022/03/27/%E7%A9%BA%E9%9A%BE%E6%84%9F%E6%83%B3/"
-    >空难感想</a> 
-</h2>
- 
-
-      
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2022/03/27/%E7%A9%BA%E9%9A%BE%E6%84%9F%E6%83%B3/" class="article-date">
-  <time datetime="2022-03-27T07:25:38.000Z" itemprop="datePublished">2022-03-27</time>
-</a>    
-    </div>
-      
-    <div class="article-entry" itemprop="articleBody">
-       
-  <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>最近3.21东方航空空难事件触动了我的神经，以前不怎么关注也不怎么在意，随着步入社会，也坐过多次飞机，自然空难也就成了我关注的一个点。于是我就专门花了一晚上看了一些历史上的空难视频，这些视频主要是视频主根据公开的黑匣子语音和飞行数据的一个再现模拟。在这一晚上的观看和了解我也收获了一些成长</p>
-<h1 id="空难原因"><a href="#空难原因" class="headerlink" title="空难原因"></a>空难原因</h1><ul>
-<li>机组人员操作不规范，实际经验不足，能力水平不够(南航地勤人员贿赂当是机长，暴雨天气落地发生海豚跳；国际航线机长英文水平不过关，盲猜塔台指令)，过劳操作，外界压力(波兰政府前去俄罗斯参加卡庭纪念日损失80%政府精要)，精神崩溃(炒股亏损)，突然死亡</li>
-<li>塔台人员不足，（瑞士空管局导致空中两机相撞）,经验不足，瞎指挥</li>
-<li>维修人员：取巧维护，疏忽细节，产生细节破坏(引擎脱离)</li>
-<li>制造商：产品不合格(钢管厚度不一致)</li>
-<li>航空公司：对机组人员反馈不够重视</li>
-<li>乘客：非法携带违禁品（台湾明星携带汽油）</li>
-</ul>
-<h1 id="化险为夷要素"><a href="#化险为夷要素" class="headerlink" title="化险为夷要素"></a>化险为夷要素</h1><ul>
-<li>未起飞</li>
-<li>已落地</li>
-<li>机长经验丰富，当机果断；塔台全力配合</li>
-</ul>
-<h1 id="感动"><a href="#感动" class="headerlink" title="感动"></a>感动</h1><p>日本123航班空难事件是一个印象最深也是落泪的一次事件，飞机在死亡边缘线挣扎30多分钟内时间内，乘客们留下的遗书让我不禁潸然泪下。遗书中有人遗憾，好想能继续活；有人对妻子，对孩子说对不起了，不能继续陪他们走下去了，很自责把剩下的事抛给他们了。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">飞机的氧气面罩突然就掉下来了</span><br><span class="line">飞机开始下降</span><br><span class="line">知子，哲也，爸爸妈妈就拜托你们了</span><br><span class="line">哲也 要加油</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">好可怕</span><br><span class="line">好可怕</span><br><span class="line">好可怕</span><br><span class="line">谁来帮帮我</span><br><span class="line">好难受</span><br><span class="line">我不想死</span><br><span class="line">麻理子、津度、知代子：</span><br><span class="line">你们要齐心协力，好好帮妈妈的忙</span><br><span class="line">爸爸是在太遗憾了，肯定无救了</span><br><span class="line">原因不明，已经5分钟了</span><br><span class="line">我这辈子再也不想坐飞机了</span><br><span class="line">你们求神保佑我吧</span><br><span class="line">机内好像什么东西爆炸了似的</span><br><span class="line">冒出了浓雾，飞机正在下降</span><br><span class="line">没想到昨天的晚餐是与你们的最后一顿饭</span><br><span class="line">孩子的妈，遇到这种事令人遗憾</span><br><span class="line">永别了，孩子的事就拜托你了</span><br><span class="line">现在是6点30分，飞机盘旋急剧下降</span><br><span class="line">到今天为止，我的人生是幸福的，感谢你</span><br></pre></td></tr></table></figure>
-
-<h1 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h1><ul>
-<li>细节至关重要，重视细节可以化险为夷，忽视细节可以酿造出世纪性悲剧。</li>
-<li>时间就是生命，而我们生活中的每一项工作/学习/任务都是需要时间的付出，换而言之我们的人生也就是一趟航班，上面满载的是我们的时间，是我们的生命。</li>
-<li>作为我们人生这趟航班的机长，发展出一套完善的自我监控指标和自动报警系统，帮助我们做出最佳决策；与他人合作，时刻保持清醒头脑，塔台有可能不可靠，你的引路人也有可能是个洗脑者；不断累积总结内化经验，面对人生重大危机/转折是，要沉着冷静，要尽办法夺回掌握人生航班的控制权，远离危险；如果大环境对你不友好，直接远离它！强调你要有远见，牺牲当下精神的组织，远离它！时刻把你当作耗材的集体，远离它！永远保持清醒头脑！</li>
-<li>有生之年去趟日本</li>
-</ul>
- 
-      <!-- reward -->
-      
-    </div>
-    
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
-    </footer>
-  </div>
-
-    
- 
-    
-</article>
-
-    
-    <article
-  id="post-长头发的十二种自然疗法"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2022/03/08/%E9%95%BF%E5%A4%B4%E5%8F%91%E7%9A%84%E5%8D%81%E4%BA%8C%E7%A7%8D%E8%87%AA%E7%84%B6%E7%96%97%E6%B3%95/"
-    >长头发的十二种自然疗法</a> 
-</h2>
- 
-
-      
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2022/03/08/%E9%95%BF%E5%A4%B4%E5%8F%91%E7%9A%84%E5%8D%81%E4%BA%8C%E7%A7%8D%E8%87%AA%E7%84%B6%E7%96%97%E6%B3%95/" class="article-date">
-  <time datetime="2022-03-08T07:56:09.000Z" itemprop="datePublished">2022-03-08</time>
-</a>    
-    </div>
-      
-    <div class="article-entry" itemprop="articleBody">
-       
-  <h1 id="两个重要的事实"><a href="#两个重要的事实" class="headerlink" title="两个重要的事实"></a>两个重要的事实</h1><ul>
-<li>头发常受洗澡时不断冲水，水中含有的氟化物容易让人掉发，长粉刺；氟化物抑制甲状腺<ul>
-<li>使用能过滤氟化物的淋浴喷头</li>
-</ul>
-</li>
-<li>头发91%是蛋白质组成，硫酸盐会破坏蛋白质结构<ul>
-<li>使用不含硫酸盐的洗发水</li>
-</ul>
-</li>
-<li>双氢</li>
-</ul>
- 
-      <!-- reward -->
-      
-    </div>
-    
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
-    </footer>
-  </div>
-
-    
- 
-    
-</article>
-
-    
-    <article
-  id="post-《抗衰老计划》读后感"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2022/03/06/%E3%80%8A%E6%8A%97%E8%A1%B0%E8%80%81%E8%AE%A1%E5%88%92%E3%80%8B%E8%AF%BB%E5%90%8E%E6%84%9F/"
-    >《抗衰老计划》读后感</a> 
-</h2>
- 
-
-      
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2022/03/06/%E3%80%8A%E6%8A%97%E8%A1%B0%E8%80%81%E8%AE%A1%E5%88%92%E3%80%8B%E8%AF%BB%E5%90%8E%E6%84%9F/" class="article-date">
-  <time datetime="2022-03-06T07:11:39.000Z" itemprop="datePublished">2022-03-06</time>
-</a>    
-    </div>
-      
-    <div class="article-entry" itemprop="articleBody">
-       
-  <h1 id="金句"><a href="#金句" class="headerlink" title="金句"></a>金句</h1><ul>
-<li>我们所谓的衰老在大多数情况下就是疾病的一种表现，普遍存在的慢性疾病不断地侵蚀我们的身体，使我们普遍地接受这种衰退是”变老“的结果</li>
-<li>抗衰老有两种途径：逆转疾病进程 和 武装自己消除早期的疾病隐患</li>
-<li>抗衰老三种武器：饮食，补充营养物和锻炼身体</li>
-<li>抵抗衰老要从抵抗传统的错误教导开始</li>
-<li>胆固醇是蜡状的，不溶于水；血液成分主要是水，身体用蛋白质吧胆固醇覆盖后在血液中输送，这些蛋白质载体被称为载脂蛋白</li>
-<li>绿茶中的生物类黄酮消灭自由基的能力是维生素E的25倍，是维生素C的100倍</li>
-<li>生物类黄酮：茶，洋葱，大蒜</li>
-<li>游泳，散步，瑜伽，和其他更缓慢，温和的方式作为锻炼。过度锻炼或剧烈锻炼会产生大量自由基。推荐健美操和力量操</li>
-<li>糖类是健康的克星，需要坚决抵制</li>
-<li>多吃鸡蛋，番茄</li>
-<li>线粒体的DNA和细胞核中DNA是独立的，线粒体的DNA是环状的，无保护层，易受自由基的攻击</li>
-</ul>
-<h1 id="收获-amp-评价"><a href="#收获-amp-评价" class="headerlink" title="收获&amp;评价"></a>收获&amp;评价</h1><p>这本书和《拯救记忆》类似，都属于营养学类书籍。《拯救记忆》的关注点是大脑，记忆。这本书囊括《拯救》讨论范围，依靠人体血液的指标，讨论了包括主要的心脏病，糖尿病，高血压，阿尔茨海默症。</p>
-<h3 id="心脏疾病关键因素："><a href="#心脏疾病关键因素：" class="headerlink" title="心脏疾病关键因素："></a>心脏疾病关键因素：</h3><ul>
-<li>高水平的低密度载脂蛋白和高甘油三脂肪组合<ul>
-<li>原理：两种物质都特别黏稠；容易引发动脉粥样硬状化</li>
-<li>原因：摄入过多糖类（作者限制糖类进食观察血脂中两者组合比例下降，反推出来的）</li>
-</ul>
-</li>
-<li>高水平的同形半胱氨酸<ul>
-<li>原理： 导致染色体损害程度增加，尚不清楚如何损害动脉</li>
-<li>原因： 缺乏叶酸和维B会导致无法合成足量的清除同形半胱氨酸的酶</li>
-</ul>
-</li>
-</ul>
-<h3 id="衰老理论："><a href="#衰老理论：" class="headerlink" title="衰老理论："></a>衰老理论：</h3><ul>
-<li><p>糖</p>
-<ul>
-<li>糖基化改变蛋白质结构，破坏胶原蛋白的弹力；破坏抗氧化物生产酶；直接和DNA结合损害细胞，导致其无法复制或复制紊乱发生癌变</li>
-<li>引发胰岛素抵抗和葡糖糖耐受异常，从而导致高血压；高水平胰岛素抑制脱氢表雄酮合成</li>
-</ul>
-</li>
-<li><p>自由基理论</p>
-<ul>
-<li>预防：食用富含抗氧化物的食物和补充剂</li>
-</ul>
-</li>
-</ul>
-<h3 id="拯救"><a href="#拯救" class="headerlink" title="拯救"></a>拯救</h3><ul>
-<li>抗氧化剂<ul>
-<li>维e，c，硫辛酸，硒</li>
-</ul>
-</li>
-<li>抗氧化酶<ul>
-<li>辅酶Q10（心脏细胞中参与线粒体能量的生产和运输，同时消灭能量产生过程出现的自由基，保护线粒体）</li>
-</ul>
-</li>
-</ul>
-<h1 id="缺陷"><a href="#缺陷" class="headerlink" title="缺陷"></a>缺陷</h1><ul>
-<li>不知道是翻译问题，还是原作者问题。书中将载脂蛋白A定义为 一种非常黏的低密度载脂蛋白胆固醇。医学百科中定义载脂蛋白A(HDL)是高密度载脂蛋白胆固醇，属于好的胆固醇；载脂蛋白B(LDL)是低密度载脂蛋白胆固醇，属于坏的胆固醇。</li>
-<li>文中引用到其他人的说法和观点，没有参考文献和来源，确认费劲</li>
-<li>这本书和《拯救记忆》中类似，推荐褪黑素</li>
 </ul>
  
       <!-- reward -->

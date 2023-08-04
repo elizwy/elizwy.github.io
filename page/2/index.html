@@ -142,6 +142,302 @@
     
     
     <article
+  id="post-线上debug流程"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2022/03/30/%E7%BA%BF%E4%B8%8Adebug%E6%B5%81%E7%A8%8B/"
+    >线上debug流程</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2022/03/30/%E7%BA%BF%E4%B8%8Adebug%E6%B5%81%E7%A8%8B/" class="article-date">
+  <time datetime="2022-03-30T11:41:45.000Z" itemprop="datePublished">2022-03-30</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h1><p>我们有时碰到线上的一些问题，例如进程是否卡住了，输入输出不合预期，cpu负载飙升，GC太频繁</p>
+<h1 id="bebug-模版"><a href="#bebug-模版" class="headerlink" title="bebug 模版"></a>bebug 模版</h1><ul>
+<li>根据现有的日志分析</li>
+<li>查看进程中各个线程工作情况<ul>
+<li>top -Hp pid</li>
+<li>jstack pid</li>
+</ul>
+</li>
+<li>查看网络链接情况<ul>
+<li>netstat -antp|grep pid</li>
+<li>dstat 查看网络流量情况</li>
+</ul>
+</li>
+<li>查看内存使用情况<ul>
+<li>profile</li>
+</ul>
+</li>
+</ul>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
+  id="post-空难感想"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2022/03/27/%E7%A9%BA%E9%9A%BE%E6%84%9F%E6%83%B3/"
+    >空难感想</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2022/03/27/%E7%A9%BA%E9%9A%BE%E6%84%9F%E6%83%B3/" class="article-date">
+  <time datetime="2022-03-27T07:25:38.000Z" itemprop="datePublished">2022-03-27</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>最近3.21东方航空空难事件触动了我的神经，以前不怎么关注也不怎么在意，随着步入社会，也坐过多次飞机，自然空难也就成了我关注的一个点。于是我就专门花了一晚上看了一些历史上的空难视频，这些视频主要是视频主根据公开的黑匣子语音和飞行数据的一个再现模拟。在这一晚上的观看和了解我也收获了一些成长</p>
+<h1 id="空难原因"><a href="#空难原因" class="headerlink" title="空难原因"></a>空难原因</h1><ul>
+<li>机组人员操作不规范，实际经验不足，能力水平不够(南航地勤人员贿赂当是机长，暴雨天气落地发生海豚跳；国际航线机长英文水平不过关，盲猜塔台指令)，过劳操作，外界压力(波兰政府前去俄罗斯参加卡庭纪念日损失80%政府精要)，精神崩溃(炒股亏损)，突然死亡</li>
+<li>塔台人员不足，（瑞士空管局导致空中两机相撞）,经验不足，瞎指挥</li>
+<li>维修人员：取巧维护，疏忽细节，产生细节破坏(引擎脱离)</li>
+<li>制造商：产品不合格(钢管厚度不一致)</li>
+<li>航空公司：对机组人员反馈不够重视</li>
+<li>乘客：非法携带违禁品（台湾明星携带汽油）</li>
+</ul>
+<h1 id="化险为夷要素"><a href="#化险为夷要素" class="headerlink" title="化险为夷要素"></a>化险为夷要素</h1><ul>
+<li>未起飞</li>
+<li>已落地</li>
+<li>机长经验丰富，当机果断；塔台全力配合</li>
+</ul>
+<h1 id="感动"><a href="#感动" class="headerlink" title="感动"></a>感动</h1><p>日本123航班空难事件是一个印象最深也是落泪的一次事件，飞机在死亡边缘线挣扎30多分钟内时间内，乘客们留下的遗书让我不禁潸然泪下。遗书中有人遗憾，好想能继续活；有人对妻子，对孩子说对不起了，不能继续陪他们走下去了，很自责把剩下的事抛给他们了。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">飞机的氧气面罩突然就掉下来了</span><br><span class="line">飞机开始下降</span><br><span class="line">知子，哲也，爸爸妈妈就拜托你们了</span><br><span class="line">哲也 要加油</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">好可怕</span><br><span class="line">好可怕</span><br><span class="line">好可怕</span><br><span class="line">谁来帮帮我</span><br><span class="line">好难受</span><br><span class="line">我不想死</span><br><span class="line">麻理子、津度、知代子：</span><br><span class="line">你们要齐心协力，好好帮妈妈的忙</span><br><span class="line">爸爸是在太遗憾了，肯定无救了</span><br><span class="line">原因不明，已经5分钟了</span><br><span class="line">我这辈子再也不想坐飞机了</span><br><span class="line">你们求神保佑我吧</span><br><span class="line">机内好像什么东西爆炸了似的</span><br><span class="line">冒出了浓雾，飞机正在下降</span><br><span class="line">没想到昨天的晚餐是与你们的最后一顿饭</span><br><span class="line">孩子的妈，遇到这种事令人遗憾</span><br><span class="line">永别了，孩子的事就拜托你了</span><br><span class="line">现在是6点30分，飞机盘旋急剧下降</span><br><span class="line">到今天为止，我的人生是幸福的，感谢你</span><br></pre></td></tr></table></figure>
+
+<h1 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h1><ul>
+<li>细节至关重要，重视细节可以化险为夷，忽视细节可以酿造出世纪性悲剧。</li>
+<li>时间就是生命，而我们生活中的每一项工作/学习/任务都是需要时间的付出，换而言之我们的人生也就是一趟航班，上面满载的是我们的时间，是我们的生命。</li>
+<li>作为我们人生这趟航班的机长，发展出一套完善的自我监控指标和自动报警系统，帮助我们做出最佳决策；与他人合作，时刻保持清醒头脑，塔台有可能不可靠，你的引路人也有可能是个洗脑者；不断累积总结内化经验，面对人生重大危机/转折是，要沉着冷静，要尽办法夺回掌握人生航班的控制权，远离危险；如果大环境对你不友好，直接远离它！强调你要有远见，牺牲当下精神的组织，远离它！时刻把你当作耗材的集体，远离它！永远保持清醒头脑！</li>
+<li>有生之年去趟日本</li>
+</ul>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
+  id="post-长头发的十二种自然疗法"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2022/03/08/%E9%95%BF%E5%A4%B4%E5%8F%91%E7%9A%84%E5%8D%81%E4%BA%8C%E7%A7%8D%E8%87%AA%E7%84%B6%E7%96%97%E6%B3%95/"
+    >长头发的十二种自然疗法</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2022/03/08/%E9%95%BF%E5%A4%B4%E5%8F%91%E7%9A%84%E5%8D%81%E4%BA%8C%E7%A7%8D%E8%87%AA%E7%84%B6%E7%96%97%E6%B3%95/" class="article-date">
+  <time datetime="2022-03-08T07:56:09.000Z" itemprop="datePublished">2022-03-08</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="两个重要的事实"><a href="#两个重要的事实" class="headerlink" title="两个重要的事实"></a>两个重要的事实</h1><ul>
+<li>头发常受洗澡时不断冲水，水中含有的氟化物容易让人掉发，长粉刺；氟化物抑制甲状腺<ul>
+<li>使用能过滤氟化物的淋浴喷头</li>
+</ul>
+</li>
+<li>头发91%是蛋白质组成，硫酸盐会破坏蛋白质结构<ul>
+<li>使用不含硫酸盐的洗发水</li>
+</ul>
+</li>
+<li>双氢</li>
+</ul>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
+  id="post-《抗衰老计划》读后感"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2022/03/06/%E3%80%8A%E6%8A%97%E8%A1%B0%E8%80%81%E8%AE%A1%E5%88%92%E3%80%8B%E8%AF%BB%E5%90%8E%E6%84%9F/"
+    >《抗衰老计划》读后感</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2022/03/06/%E3%80%8A%E6%8A%97%E8%A1%B0%E8%80%81%E8%AE%A1%E5%88%92%E3%80%8B%E8%AF%BB%E5%90%8E%E6%84%9F/" class="article-date">
+  <time datetime="2022-03-06T07:11:39.000Z" itemprop="datePublished">2022-03-06</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="金句"><a href="#金句" class="headerlink" title="金句"></a>金句</h1><ul>
+<li>我们所谓的衰老在大多数情况下就是疾病的一种表现，普遍存在的慢性疾病不断地侵蚀我们的身体，使我们普遍地接受这种衰退是”变老“的结果</li>
+<li>抗衰老有两种途径：逆转疾病进程 和 武装自己消除早期的疾病隐患</li>
+<li>抗衰老三种武器：饮食，补充营养物和锻炼身体</li>
+<li>抵抗衰老要从抵抗传统的错误教导开始</li>
+<li>胆固醇是蜡状的，不溶于水；血液成分主要是水，身体用蛋白质吧胆固醇覆盖后在血液中输送，这些蛋白质载体被称为载脂蛋白</li>
+<li>绿茶中的生物类黄酮消灭自由基的能力是维生素E的25倍，是维生素C的100倍</li>
+<li>生物类黄酮：茶，洋葱，大蒜</li>
+<li>游泳，散步，瑜伽，和其他更缓慢，温和的方式作为锻炼。过度锻炼或剧烈锻炼会产生大量自由基。推荐健美操和力量操</li>
+<li>糖类是健康的克星，需要坚决抵制</li>
+<li>多吃鸡蛋，番茄</li>
+<li>线粒体的DNA和细胞核中DNA是独立的，线粒体的DNA是环状的，无保护层，易受自由基的攻击</li>
+</ul>
+<h1 id="收获-amp-评价"><a href="#收获-amp-评价" class="headerlink" title="收获&amp;评价"></a>收获&amp;评价</h1><p>这本书和《拯救记忆》类似，都属于营养学类书籍。《拯救记忆》的关注点是大脑，记忆。这本书囊括《拯救》讨论范围，依靠人体血液的指标，讨论了包括主要的心脏病，糖尿病，高血压，阿尔茨海默症。</p>
+<h3 id="心脏疾病关键因素："><a href="#心脏疾病关键因素：" class="headerlink" title="心脏疾病关键因素："></a>心脏疾病关键因素：</h3><ul>
+<li>高水平的低密度载脂蛋白和高甘油三脂肪组合<ul>
+<li>原理：两种物质都特别黏稠；容易引发动脉粥样硬状化</li>
+<li>原因：摄入过多糖类（作者限制糖类进食观察血脂中两者组合比例下降，反推出来的）</li>
+</ul>
+</li>
+<li>高水平的同形半胱氨酸<ul>
+<li>原理： 导致染色体损害程度增加，尚不清楚如何损害动脉</li>
+<li>原因： 缺乏叶酸和维B会导致无法合成足量的清除同形半胱氨酸的酶</li>
+</ul>
+</li>
+</ul>
+<h3 id="衰老理论："><a href="#衰老理论：" class="headerlink" title="衰老理论："></a>衰老理论：</h3><ul>
+<li><p>糖</p>
+<ul>
+<li>糖基化改变蛋白质结构，破坏胶原蛋白的弹力；破坏抗氧化物生产酶；直接和DNA结合损害细胞，导致其无法复制或复制紊乱发生癌变</li>
+<li>引发胰岛素抵抗和葡糖糖耐受异常，从而导致高血压；高水平胰岛素抑制脱氢表雄酮合成</li>
+</ul>
+</li>
+<li><p>自由基理论</p>
+<ul>
+<li>预防：食用富含抗氧化物的食物和补充剂</li>
+</ul>
+</li>
+</ul>
+<h3 id="拯救"><a href="#拯救" class="headerlink" title="拯救"></a>拯救</h3><ul>
+<li>抗氧化剂<ul>
+<li>维e，c，硫辛酸，硒</li>
+</ul>
+</li>
+<li>抗氧化酶<ul>
+<li>辅酶Q10（心脏细胞中参与线粒体能量的生产和运输，同时消灭能量产生过程出现的自由基，保护线粒体）</li>
+</ul>
+</li>
+</ul>
+<h1 id="缺陷"><a href="#缺陷" class="headerlink" title="缺陷"></a>缺陷</h1><ul>
+<li>不知道是翻译问题，还是原作者问题。书中将载脂蛋白A定义为 一种非常黏的低密度载脂蛋白胆固醇。医学百科中定义载脂蛋白A(HDL)是高密度载脂蛋白胆固醇，属于好的胆固醇；载脂蛋白B(LDL)是低密度载脂蛋白胆固醇，属于坏的胆固醇。</li>
+<li>文中引用到其他人的说法和观点，没有参考文献和来源，确认费劲</li>
+<li>这本书和《拯救记忆》中类似，推荐褪黑素</li>
+</ul>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
   id="post-《拯救记忆》读后感"
   class="article article-type-post"
   itemscope
@@ -554,237 +850,6 @@
     
     <footer class="article-footer">
        
-    </footer>
-  </div>
-
-    
- 
-    
-</article>
-
-    
-    <article
-  id="post-记录一次内存泄露定位"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2020/12/29/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%AE%9A%E4%BD%8D/"
-    >记录一次内存泄露定位</a> 
-</h2>
- 
-
-      
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2020/12/29/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%AE%9A%E4%BD%8D/" class="article-date">
-  <time datetime="2020-12-29T15:00:28.000Z" itemprop="datePublished">2020-12-29</time>
-</a>    
-    </div>
-      
-    <div class="article-entry" itemprop="articleBody">
-       
-  <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>这次问题的出现是公司另外一个项目组同事遇到的。当时情况是大约晚上9点左右grafana发出某个服务出现假死状态，研发人员立即登上服务器检查，发现服务器cpu满载，于是就尝试jstack 查看服务进程的堆栈情况，发现已经无法连接了，查看不到堆栈信息；无奈只能从业务日志入手，发现零星的error日志，分别是上午9点左右，在error日志附近都是写库的日志，明显能看到写库的时间在变长，20多秒/30多秒零星出现。然后立马想到的是有可能是出现了60秒导致了中断异常导致某个地方出现内存泄露，致使cpu满载，jstack 无法查看，顺着error 日志的堆栈信息发现类似以下代码</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">Queue queue=new LinkedBlockingQueue();</span><br><span class="line"></span><br><span class="line">public void consume() &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            consumeSomething();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">        System.out.println(&quot;遇到异常了：&quot;+e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void consumeSomething() throws InterruptedException &#123;</span><br><span class="line">        if(queue.isEmpty())&#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(&quot;i have consume &quot;+queue.peek());</span><br><span class="line">        if(RandomUtils.nextInt(0,10)==5)&#123;</span><br><span class="line">            throw new InterruptedException(&quot;test&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line">private void produce()&#123;</span><br><span class="line">    while (true)&#123;</span><br><span class="line">            queue.add(RandomUtils.nextInt());</span><br><span class="line">        try &#123;</span><br><span class="line">            TimeUnit.SECONDS.sleep(1);</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    OutMemoryTest outMemoryTest = new OutMemoryTest();</span><br><span class="line">    new Thread(()-&gt;outMemoryTest.produce()).start();</span><br><span class="line">    new Thread(()-&gt;outMemoryTest.consume()).start();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>大致意思是一个生产者源源不断的往队列放入消息，另外一个消费者不停的消费该队列。正常情况是没问题的，但当特殊情况18行代码(模拟数据库超时中断异常)成真时，try……catch在while 外面捕获，导致跳出while循环，消费者终止了消费，然而生产者依旧在不断生产数据，出现积压泄露，进而导致一系列假死状态</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3> 
-      <!-- reward -->
-      
-    </div>
-    
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
-    </footer>
-  </div>
-
-    
- 
-    
-</article>
-
-    
-    <article
-  id="post-交换两变量的值"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2020/12/29/%E4%BA%A4%E6%8D%A2%E4%B8%A4%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/"
-    >交换两变量的值</a> 
-</h2>
- 
-
-      
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2020/12/29/%E4%BA%A4%E6%8D%A2%E4%B8%A4%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/" class="article-date">
-  <time datetime="2020-12-29T14:31:39.000Z" itemprop="datePublished">2020-12-29</time>
-</a>    
-    </div>
-      
-    <div class="article-entry" itemprop="articleBody">
-       
-  <h3 id="方式一"><a href="#方式一" class="headerlink" title="方式一"></a>方式一</h3><ul>
-<li><p>采用第三个变量作为中间存储值来实现</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public void testSwap01(int a,int b)&#123;</span><br><span class="line">    int c=a;</span><br><span class="line">    a=b;</span><br><span class="line">    b=c;</span><br><span class="line">    System.out.println(&quot;a=&quot;+a);</span><br><span class="line">    System.out.println(&quot;b=&quot;+b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h3 id="方式二"><a href="#方式二" class="headerlink" title="方式二"></a>方式二</h3><ul>
-<li><p>采用异或的逻辑运算，a^a=0</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public void testSwap02(int a, int b)&#123;</span><br><span class="line">    a=a^b;</span><br><span class="line">    b=a^b;</span><br><span class="line">    a=a^b;</span><br><span class="line">    System.out.println(&quot;a=&quot;+a);</span><br><span class="line">    System.out.println(&quot;b=&quot;+b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
- 
-      <!-- reward -->
-      
-    </div>
-    
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
-    </footer>
-  </div>
-
-    
- 
-    
-</article>
-
-    
-    <article
-  id="post-java异常受控异常与非受控异常"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2019/09/11/java%E5%BC%82%E5%B8%B8%E5%8F%97%E6%8E%A7%E5%BC%82%E5%B8%B8%E4%B8%8E%E9%9D%9E%E5%8F%97%E6%8E%A7%E5%BC%82%E5%B8%B8/"
-    >java异常受控异常与非受控异常</a> 
-</h2>
- 
-
-      
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2019/09/11/java%E5%BC%82%E5%B8%B8%E5%8F%97%E6%8E%A7%E5%BC%82%E5%B8%B8%E4%B8%8E%E9%9D%9E%E5%8F%97%E6%8E%A7%E5%BC%82%E5%B8%B8/" class="article-date">
-  <time datetime="2019-09-11T03:28:59.000Z" itemprop="datePublished">2019-09-11</time>
-</a>    
-    </div>
-      
-    <div class="article-entry" itemprop="articleBody">
-       
-  <h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>最近在参考《重构改善既有代码的设计》做重构的过程中，其中有两节小技巧是介绍如何处理java 中的错误。基于“代码的可理解性应该是我们虔诚追求的目标”采用以异常取代错误代码(310)，其中异常分为受控异常和非受控异常</p>
-<h1 id="java异常体系"><a href="#java异常体系" class="headerlink" title="java异常体系"></a>java异常体系</h1><p>![](/home/elizwy/文档/leaner/java/photo/java 异常体系.png)</p>
-<p>异常基类是Throwable,其下有两个子类，Error(系统错误)与Exception(系统异常)</p>
-<p>Exception 下分为RunTimeException(非受控、检查异常) 和非RuntimException(检查异常)</p>
-<h1 id="java-异常最好的实践"><a href="#java-异常最好的实践" class="headerlink" title="java 异常最好的实践"></a>java 异常最好的实践</h1><ol>
-<li>采用空对象代替返回null</li>
-<li>catch 里要写处理逻辑</li>
-<li>能抛受控异常就尽量不抛非受控异常</li>
-<li>不要让受控异常不加处理就抛到了前端</li>
-<li>数据库连接要关闭库</li>
-</ol>
-<h1 id="为何还要存在受控异常"><a href="#为何还要存在受控异常" class="headerlink" title="为何还要存在受控异常"></a>为何还要存在受控异常</h1><p>既然RunTimeException 能用来处理错误，而为何还要存在非受控异常，主要是为了让我们在请求了不存在的系统资源时，能够优雅的处理这种情况。另外能够使受限的资源得到尽早的释放</p>
-<p>更多资源参考：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/huajiezh/p/5236864.html">https://www.cnblogs.com/huajiezh/p/5236864.html</a></p>
- 
-      <!-- reward -->
-      
-    </div>
-    
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/" rel="tag">java</a></li></ul>
-
-    </footer>
-  </div>
-
-    
- 
-    
-</article>
-
-    
-    <article
-  id="post-jpa 双向关联导致的堆栈溢出"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2019/08/30/jpa%20%E5%8F%8C%E5%90%91%E5%85%B3%E8%81%94%E5%AF%BC%E8%87%B4%E7%9A%84%E5%A0%86%E6%A0%88%E6%BA%A2%E5%87%BA/"
-    >jpa 双向关联导致的堆栈溢出</a> 
-</h2>
- 
-
-      
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2019/08/30/jpa%20%E5%8F%8C%E5%90%91%E5%85%B3%E8%81%94%E5%AF%BC%E8%87%B4%E7%9A%84%E5%A0%86%E6%A0%88%E6%BA%A2%E5%87%BA/" class="article-date">
-  <time datetime="2019-08-30T01:56:11.000Z" itemprop="datePublished">2019-08-30</time>
-</a>    
-    </div>
-      
-    <div class="article-entry" itemprop="articleBody">
-       
-  <h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>最近做权限的过程中， 角色和资源的关系是多对多的关系，采用@ManyToMany 注解，在使用双向的过程中出现了jpa 循环依赖导致堆栈溢出问题</p>
-<h1 id="实体"><a href="#实体" class="headerlink" title="实体"></a>实体</h1><ul>
-<li><p>Role</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public class Role extends BaseEntity &#123;</span><br><span class="line">    @Id</span><br><span class="line">    @GeneratedValue(strategy = GenerationType.IDENTITY)</span><br><span class="line">    private Long id;</span><br><span class="line">    @Column(name = &quot;role_name&quot;)</span><br><span class="line">    private String roleName;</span><br><span class="line">    @Column(name = &quot;status&quot;)</span><br><span class="line">    private String status;</span><br><span class="line">    /**</span><br><span class="line">     * 角色拥有的资源id</span><br><span class="line">     */</span><br><span class="line">    @Transient</span><br><span class="line">    private Set&lt;Integer&gt; resourceIds=new HashSet&lt;&gt;();</span><br><span class="line">    /**</span><br><span class="line">     * 角色拥有的资源</span><br><span class="line">     */</span><br><span class="line">    @ManyToMany(fetch=FetchType.EAGER)</span><br><span class="line">    @JoinTable(name=&quot;role_resource&quot;,joinColumns = @JoinColumn(name = &quot;role_id&quot;),inverseJoinColumns = @JoinColumn(name = &quot;resource_id&quot;))</span><br><span class="line">    private Set&lt;Resource&gt; resources=new HashSet&lt;&gt;();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
-<li><p>Resource</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">@Id</span><br><span class="line">    @GeneratedValue(strategy = GenerationType.IDENTITY)</span><br><span class="line">    private Integer id;</span><br><span class="line">    private String name;</span><br><span class="line">    @ManyToOne</span><br><span class="line">    @NotFound(action= NotFoundAction.IGNORE)</span><br><span class="line">    private Resource parent;</span><br><span class="line">    @OneToMany(mappedBy = &quot;parent&quot;)</span><br><span class="line">    @OrderBy(&quot;sort ASC&quot;)</span><br><span class="line">    private List&lt;Resource&gt; childs=new ArrayList&lt;&gt;();</span><br><span class="line">    private String url;</span><br><span class="line">    private String status;</span><br><span class="line">    private String icon;</span><br><span class="line">    private String title;</span><br><span class="line"></span><br><span class="line">    @Transient</span><br><span class="line">    private Integer parentId;</span><br><span class="line"></span><br><span class="line">    @ManyToMany(mappedBy = &quot;resources&quot;)</span><br><span class="line">    private Set&lt;Role&gt; role;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h1 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">java.lang.StackOverflowError: null</span><br><span class="line">	at com.mysql.jdbc.Util.handleNewInstance(Util.java:425)</span><br><span class="line">	at com.mysql.jdbc.PreparedStatement.getInstance(PreparedStatement.java:761)</span><br><span class="line">	at com.mysql.jdbc.ConnectionImpl.clientPrepareStatement(ConnectionImpl.java:1471)</span><br><span class="line">	at com.mysql.jdbc.ConnectionImpl.prepareStatement(ConnectionImpl.java:4167)</span><br><span class="line">	at com.mysql.jdbc.ConnectionImpl.prepareStatement(ConnectionImpl.java:4071)</span><br><span class="line">	at com.zaxxer.hikari.pool.ProxyConnection.prepareStatement(ProxyConnection.java:311)</span><br><span class="line">	at com.zaxxer.hikari.pool.HikariProxyConnection.prepareStatement(HikariProxyConnection.java)</span><br><span class="line">	at org.hibernate.engine.jdbc.internal.StatementPreparerImpl$5.doPrepare(StatementPreparerImpl.java:146)</span><br><span class="line">	at org.hibernate.engine.jdbc.internal.StatementPreparerImpl$StatementPreparationTemplate.prepareStatement(StatementPreparerImpl.java:172)</span><br><span class="line">	at org.hibernate.engine.jdbc.internal.StatementPreparerImpl.prepareQueryStatement(StatementPreparerImpl.java:148)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.prepareQueryStatement(AbstractLoadPlanBasedLoader.java:226)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.executeQueryStatement(AbstractLoadPlanBasedLoader.java:190)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.executeLoad(AbstractLoadPlanBasedLoader.java:121)</span><br><span class="line">	at org.hibernate.loader.plan.exec.internal.AbstractLoadPlanBasedLoader.executeLoad(AbstractLoadPlanBasedLoader.java:86)</span><br><span class="line">	at org.hibernate.loader.collection.plan.AbstractLoadPlanBasedCollectionInitializer.initialize(AbstractLoadPlanBasedCollectionInitializer.java:87)</span><br><span class="line">	at org.hibernate.persister.collection.AbstractCollectionPersister.initialize(AbstractCollectionPersister.java:691)</span><br><span class="line">	at org.hibernate.event.internal.DefaultInitializeCollectionEventListener.onInitializeCollection(DefaultInitializeCollectionEventListener.java:75)</span><br><span class="line">	at org.hibernate.internal.SessionImpl.initializeCollection(SessionImpl.java:2246)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection$4.doWork(AbstractPersistentCollection.java:580)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection.withTemporarySessionIfNeeded(AbstractPersistentCollection.java:262)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection.initialize(AbstractPersistentCollection.java:576)</span><br><span class="line">	at org.hibernate.collection.internal.AbstractPersistentCollection.read(AbstractPersistentCollection.java:147)</span><br><span class="line">	at org.hibernate.collection.internal.PersistentSet.iterator(PersistentSet.java:188)</span><br><span class="line">	at java.util.Spliterators$IteratorSpliterator.estimateSize(Spliterators.java:1821)</span><br><span class="line">	at java.util.Spliterator.getExactSizeIfKnown(Spliterator.java:408)</span><br><span class="line">	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:483)</span><br><span class="line">	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:474)</span><br><span class="line">	at java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:913)</span><br><span class="line">	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)</span><br><span class="line">	at java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:578)</span><br><span class="line">	at com.testin.user.admin.service.role.domain.Role.getResourceIds(Role.java:76)</span><br><span class="line">	at com.testin.user.admin.service.role.domain.Role.hashCode(Role.java:29)</span><br><span class="line">	at java.util.HashMap.hash(HashMap.java:339)</span><br><span class="line">	at java.util.HashMap.put(HashMap.java:607)</span><br><span class="line">	at java.util.HashSet.add(HashSet.java:220)</span><br><span class="line">	at java.util.AbstractCollection.addAll(AbstractCollection.java:352)</span><br><span class="line">	at org.hibernate.collection.internal.PersistentSet.endRead(PersistentSet.java:355)</span><br><span class="line">	at org.hibernate.engine.loading.internal.CollectionLoadContext.endLoadingCollection(CollectionLoadContext.java:236)</span><br><span class="line">	at org.hibernate.engine.loading.internal.CollectionLoadContext.endLoadingCollections(CollectionLoadContext.java:223)</span><br><span class="line">	at org.hibernate.engine.loading.internal.CollectionLoadContext.endLoadingCollections(CollectionLoadContext.java:196)</span><br><span class="line">	at org.hibernate.loader.plan.exec.process.internal.CollectionReferenceInitializerImpl.endLoading(CollectionReferenceInitializerImpl.java:154)</span><br><span class="line">	at org.hibernate.loader.plan.exec.process.internal.AbstractRowReader.finishLoadingCollections(AbstractRowReader.java:249)</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p> 从堆栈信息可以看出, 循环依赖的中间衔接点在hashCode，所以我们只需要尝试在被维护方复写hashCode 即可</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">    public int hashCode() &#123;</span><br><span class="line">        return Objects.hash(id);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
- 
-      <!-- reward -->
-      
-    </div>
-    
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/jpa/" rel="tag">jpa</a></li></ul>
-
     </footer>
   </div>
 
