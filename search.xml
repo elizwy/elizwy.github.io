@@ -45,9 +45,9 @@
     <url>/2023/08/04/java%E4%B8%AD%E8%87%AA%E5%8A%A8%E8%A3%85%E7%AE%B1%E4%B8%8E%E6%8B%86%E7%AE%B1/</url>
     <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>java中为了提高效率引入基本数据类型，这些基本数据类型是参考C++方式，用在栈上存储的方式替代在堆上创建，提高内存分配效率与减少垃圾回收的消耗。<br>由于java本身是面向对象语言，在集合等某些场景只能存在对象，故java提供了自动拆箱与装箱功能，减少开发者的手动转化。</p>
 <h1 id="何为装箱与拆箱"><a href="#何为装箱与拆箱" class="headerlink" title="何为装箱与拆箱"></a>何为装箱与拆箱</h1><p>装箱： 将int值转化成Integer对象操作,就是调用<code>Integer.valueOf(a)</code>这一方法。自动装箱就是：不用开发人员编写这一段代码，编译器编译时看情况(放入集合中)<br>主动帮我们增加这一行代码<br>拆箱： 本质上就是调用<code>a.intValue()</code>这一方法。自动装箱就是：不用开发人员编写这一段代码，编译器编译时看情况(进行运算时)<br>主动帮我们增加这一行代码</p>
-<h1 id="装箱与拆箱底层实现"><a href="#装箱与拆箱底层实现" class="headerlink" title="装箱与拆箱底层实现"></a>装箱与拆箱底层实现</h1><p>装箱：<br><img src="http://117.72.11.95:8080/1691305774554.png" alt="1691305775188"><br>可以看到这里面对于-128 -&gt; IntegerCache.high 的值装箱时会使用到缓存, 而这个区间外的，每次装箱会产生一个新对象。<br>IntegerCache.high 默认值为127， 可以通过</p>
+<h1 id="装箱与拆箱底层实现"><a href="#装箱与拆箱底层实现" class="headerlink" title="装箱与拆箱底层实现"></a>装箱与拆箱底层实现</h1><p>装箱：<br><img src="http://117.72.11.95:8080/1691305774554.png" alt="装箱"><br>可以看到这里面对于-128 -&gt; IntegerCache.high 的值装箱时会使用到缓存, 而这个区间外的，每次装箱会产生一个新对象。<br>IntegerCache.high 默认值为127， 可以通过</p>
 <p>拆箱：</p>
-<p><img src="http://117.72.11.95:8080/1691305833592.png" alt="1691305834162"></p>
+<p><img src="http://117.72.11.95:8080/1691305833592.png" alt="拆箱"></p>
 <p>拆箱就更简单，直接返回对象中的成员变量即可。</p>
 <h1 id="实际运用"><a href="#实际运用" class="headerlink" title="实际运用"></a>实际运用</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">private static void test1() &#123;</span><br><span class="line">	Integer i1 = 40;</span><br><span class="line">	Integer i2 =40;</span><br><span class="line">	Integer i3 =0;</span><br><span class="line">	Integer i4 = new Integer(40);</span><br><span class="line">	Integer i5 = new Integer(0);</span><br><span class="line">	Integer i6 = Integer.valueOf(40);</span><br><span class="line">	System.out.println(i1 == i2);       //1. true  有缓存 位于-128 -》127缓存</span><br><span class="line">	System.out.println(i1 == i2 + i3);  //2. true  拆箱</span><br><span class="line">	System.out.println(i1 == i4);       //3. false</span><br><span class="line">	System.out.println(i1 == i4 + i5);  //4. true  拆箱</span><br><span class="line">	System.out.println(i1 == i6);       //5. true</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static void test2() &#123;</span><br><span class="line">	Integer i1 = 200;</span><br><span class="line">	Integer i2 = 200;</span><br><span class="line">	Integer i3 =0;</span><br><span class="line">	Integer i4 = new Integer(200);</span><br><span class="line">	Integer i5 = new Integer(0);</span><br><span class="line">	Integer i6 = Integer.valueOf(200);</span><br><span class="line">	System.out.println(i1 == i2);      //6. false 超出-128 -》127缓存</span><br><span class="line">	System.out.println(i1 == i2 + i3); //7. true  拆箱</span><br><span class="line">	System.out.println(i1 == i4);      //8. false </span><br><span class="line">	System.out.println(i1 == i4 + i5); //9. true  拆箱</span><br><span class="line">	System.out.println(i1 == i6);      //10. false </span><br><span class="line">	 </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>字节码层面<br><img src="img_5.png" alt="img_5.png"></p>
@@ -157,40 +157,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>mysql round 遇到不精确值的处理</title>
-    <url>/2021/07/22/mysql-round-%E9%81%87%E5%88%B0%E4%B8%8D%E7%B2%BE%E7%A1%AE%E5%80%BC%E7%9A%84%E5%A4%84%E7%90%86/</url>
-    <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>　　笔者在处理报表sql时,碰到比率之类的指标需要进行四舍五入保留2位小数操作.按照惯例,round函数操作,但是在碰到如以下sql时出现结果不如预期想象</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> <span class="keyword">create</span> <span class="keyword">table</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="keyword">Table</span>     <span class="operator">|</span> <span class="keyword">Create</span> <span class="keyword">Table</span>                                                                                                                                                                                                          <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> roundTest <span class="operator">|</span> <span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `roundTest` (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">10</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `cost` <span class="type">decimal</span>(<span class="number">10</span>,<span class="number">4</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `metrics_map` json <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`)</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB AUTO_INCREMENT<span class="operator">=</span><span class="number">2</span> <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8 <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">----+--------+--------------+</span></span><br><span class="line"><span class="operator">|</span> id <span class="operator">|</span> cost   <span class="operator">|</span> metrics_map  <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+--------+--------------+</span></span><br><span class="line"><span class="operator">|</span>  <span class="number">1</span> <span class="operator">|</span> <span class="number">2.0100</span> <span class="operator">|</span> &#123;&quot;count&quot;: <span class="number">2</span>&#125; <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+--------+--------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> round(cost<span class="operator">/</span>metrics_map<span class="operator">-</span><span class="operator">&gt;</span>&quot;$.count&quot;,<span class="number">2</span>) <span class="keyword">from</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> round(cost<span class="operator">/</span>metrics_map<span class="operator">-</span><span class="operator">&gt;</span>&quot;$.count&quot;,<span class="number">2</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                                 <span class="number">1.00</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-<p>可以看到,当使用round进行四舍五入时,期望结果是1.01,可实际结果是1.00</p>
-<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>造成这种结果其实是多方努力带来的,</p>
-<ol>
-<li>可以看到metric_map 是一个json类型,我们从中提取count字段,虽然官方文档没有明确表示返回类型是是什么,但是按到json存储方式,很有可能知道是字符类型,或者为未知类型.</li>
-<li>cost 是decimal 类型,属于精确类型, cost/metrics_map-&gt;”$.count” = 精确类型/未知类型(字符类型), 由于count是非精确类型,那么结果就必然是非精确类型.</li>
-<li>round 进行四舍五入时按照官方文档是有两种情形的<ol>
-<li><p>当对精确类型使用时,就是四舍五入</p>
-</li>
-<li><p>当对非精确类型使用时,结果将会偏向偶数结</p>
-<p><img src="/home/elizwy/.config/Typora/typora-user-images/image-20210723174310858.png" alt="image-20210723174310858"></p>
-</li>
-</ol>
-</li>
-</ol>
-<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p>使用cast^2^ 函数将count 转成精确类型即可.</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> round(<span class="built_in">sum</span>(cost)<span class="operator">*</span><span class="number">1.0</span><span class="operator">/</span><span class="built_in">cast</span>(<span class="built_in">sum</span>(metrics_map<span class="operator">-</span><span class="operator">&gt;</span><span class="string">&#x27;$.count&#x27;</span>)<span class="keyword">as</span> <span class="type">decimal</span>),<span class="number">2</span>) <span class="keyword">from</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> round(<span class="built_in">sum</span>(cost)<span class="operator">*</span><span class="number">1.0</span><span class="operator">/</span><span class="built_in">cast</span>(<span class="built_in">sum</span>(metrics_map<span class="operator">-</span><span class="operator">&gt;</span><span class="string">&#x27;$.count&#x27;</span>)<span class="keyword">as</span> <span class="type">decimal</span>),<span class="number">2</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                                                               <span class="number">1.01</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-
-
-<h6 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h6><ol>
-<li> <a href="https://dev.mysql.com/doc/refman/5.7/en/precision-math-rounding.html">Rounding Behavior</a></li>
-<li><a href="https://dev.mysql.com/doc/refman/5.7/en/cast-functions.html#function_cast"> Cast Functions and Operators</a></li>
-</ol>
-]]></content>
-      <tags>
-        <tag>issue</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>《抗衰老计划》读后感</title>
     <url>/2022/03/06/%E3%80%8A%E6%8A%97%E8%A1%B0%E8%80%81%E8%AE%A1%E5%88%92%E3%80%8B%E8%AF%BB%E5%90%8E%E6%84%9F/</url>
     <content><![CDATA[<h1 id="金句"><a href="#金句" class="headerlink" title="金句"></a>金句</h1><ul>
@@ -250,19 +216,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>交换两变量的值</title>
-    <url>/2020/12/29/%E4%BA%A4%E6%8D%A2%E4%B8%A4%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/</url>
-    <content><![CDATA[<h3 id="方式一"><a href="#方式一" class="headerlink" title="方式一"></a>方式一</h3><ul>
-<li><p>采用第三个变量作为中间存储值来实现</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public void testSwap01(int a,int b)&#123;</span><br><span class="line">    int c=a;</span><br><span class="line">    a=b;</span><br><span class="line">    b=c;</span><br><span class="line">    System.out.println(&quot;a=&quot;+a);</span><br><span class="line">    System.out.println(&quot;b=&quot;+b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h3 id="方式二"><a href="#方式二" class="headerlink" title="方式二"></a>方式二</h3><ul>
-<li><p>采用异或的逻辑运算，a^a=0</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public void testSwap02(int a, int b)&#123;</span><br><span class="line">    a=a^b;</span><br><span class="line">    b=a^b;</span><br><span class="line">    a=a^b;</span><br><span class="line">    System.out.println(&quot;a=&quot;+a);</span><br><span class="line">    System.out.println(&quot;b=&quot;+b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
     <title>《高效休息》 读后感</title>
     <url>/2019/08/24/%E3%80%8A%E9%AB%98%E6%95%88%E4%BC%91%E6%81%AF%E3%80%8B%20%E8%AF%BB%E5%90%8E%E6%84%9F/</url>
     <content><![CDATA[<h1 id="缘由"><a href="#缘由" class="headerlink" title="缘由"></a>缘由</h1><p>​    我选择《高效休息》这本书的主要缘由是某个周五忘交电费结果4点多就热醒了，又恰逢前一天网上听闻了陆奇这个人的生活作息，于是就想亲身体验一把。可是我也有自知之明的，知道他能有这样的作息，肯定有充足的休息，于是就有阅读些“如何休息”类的书籍想法。</p>
@@ -294,6 +247,40 @@
       </tags>
   </entry>
   <entry>
+    <title>mysql round 遇到不精确值的处理</title>
+    <url>/2021/07/22/mysql-round-%E9%81%87%E5%88%B0%E4%B8%8D%E7%B2%BE%E7%A1%AE%E5%80%BC%E7%9A%84%E5%A4%84%E7%90%86/</url>
+    <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>　　笔者在处理报表sql时,碰到比率之类的指标需要进行四舍五入保留2位小数操作.按照惯例,round函数操作,但是在碰到如以下sql时出现结果不如预期想象</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> <span class="keyword">create</span> <span class="keyword">table</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="keyword">Table</span>     <span class="operator">|</span> <span class="keyword">Create</span> <span class="keyword">Table</span>                                                                                                                                                                                                          <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> roundTest <span class="operator">|</span> <span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `roundTest` (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">10</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `cost` <span class="type">decimal</span>(<span class="number">10</span>,<span class="number">4</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `metrics_map` json <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`)</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB AUTO_INCREMENT<span class="operator">=</span><span class="number">2</span> <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8 <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">----+--------+--------------+</span></span><br><span class="line"><span class="operator">|</span> id <span class="operator">|</span> cost   <span class="operator">|</span> metrics_map  <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+--------+--------------+</span></span><br><span class="line"><span class="operator">|</span>  <span class="number">1</span> <span class="operator">|</span> <span class="number">2.0100</span> <span class="operator">|</span> &#123;&quot;count&quot;: <span class="number">2</span>&#125; <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----+--------+--------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> round(cost<span class="operator">/</span>metrics_map<span class="operator">-</span><span class="operator">&gt;</span>&quot;$.count&quot;,<span class="number">2</span>) <span class="keyword">from</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> round(cost<span class="operator">/</span>metrics_map<span class="operator">-</span><span class="operator">&gt;</span>&quot;$.count&quot;,<span class="number">2</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                                 <span class="number">1.00</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p>可以看到,当使用round进行四舍五入时,期望结果是1.01,可实际结果是1.00</p>
+<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>造成这种结果其实是多方努力带来的,</p>
+<ol>
+<li>可以看到metric_map 是一个json类型,我们从中提取count字段,虽然官方文档没有明确表示返回类型是是什么,但是按到json存储方式,很有可能知道是字符类型,或者为未知类型.</li>
+<li>cost 是decimal 类型,属于精确类型, cost/metrics_map-&gt;”$.count” = 精确类型/未知类型(字符类型), 由于count是非精确类型,那么结果就必然是非精确类型.</li>
+<li>round 进行四舍五入时按照官方文档是有两种情形的<ol>
+<li><p>当对精确类型使用时,就是四舍五入</p>
+</li>
+<li><p>当对非精确类型使用时,结果将会偏向偶数结</p>
+<p><img src="/home/elizwy/.config/Typora/typora-user-images/image-20210723174310858.png" alt="image-20210723174310858"></p>
+</li>
+</ol>
+</li>
+</ol>
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p>使用cast^2^ 函数将count 转成精确类型即可.</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> round(<span class="built_in">sum</span>(cost)<span class="operator">*</span><span class="number">1.0</span><span class="operator">/</span><span class="built_in">cast</span>(<span class="built_in">sum</span>(metrics_map<span class="operator">-</span><span class="operator">&gt;</span><span class="string">&#x27;$.count&#x27;</span>)<span class="keyword">as</span> <span class="type">decimal</span>),<span class="number">2</span>) <span class="keyword">from</span> roundTest;</span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> round(<span class="built_in">sum</span>(cost)<span class="operator">*</span><span class="number">1.0</span><span class="operator">/</span><span class="built_in">cast</span>(<span class="built_in">sum</span>(metrics_map<span class="operator">-</span><span class="operator">&gt;</span><span class="string">&#x27;$.count&#x27;</span>)<span class="keyword">as</span> <span class="type">decimal</span>),<span class="number">2</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                                                               <span class="number">1.01</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+
+
+<h6 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h6><ol>
+<li> <a href="https://dev.mysql.com/doc/refman/5.7/en/precision-math-rounding.html">Rounding Behavior</a></li>
+<li><a href="https://dev.mysql.com/doc/refman/5.7/en/cast-functions.html#function_cast"> Cast Functions and Operators</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>issue</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>可变参数的一次空指针异常复盘</title>
     <url>/2022/04/12/%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E7%9A%84%E4%B8%80%E6%AC%A1%E7%A9%BA%E6%8C%87%E9%92%88%E5%BC%82%E5%B8%B8%E5%A4%8D%E7%9B%98/</url>
     <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>在一次业务实现中，对落盘日志中增加个监测字段，由于一个计划中的监测链接可能是多个，故在一个方法中使用了可变参数接收监测链接，然后做处理。在处理的过程中导致null 异常，导致日志落盘失败，这在日志系统中较为致命，故此复盘总结。</p>
@@ -317,6 +304,19 @@
 ]]></content>
   </entry>
   <entry>
+    <title>交换两变量的值</title>
+    <url>/2020/12/29/%E4%BA%A4%E6%8D%A2%E4%B8%A4%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/</url>
+    <content><![CDATA[<h3 id="方式一"><a href="#方式一" class="headerlink" title="方式一"></a>方式一</h3><ul>
+<li><p>采用第三个变量作为中间存储值来实现</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public void testSwap01(int a,int b)&#123;</span><br><span class="line">    int c=a;</span><br><span class="line">    a=b;</span><br><span class="line">    b=c;</span><br><span class="line">    System.out.println(&quot;a=&quot;+a);</span><br><span class="line">    System.out.println(&quot;b=&quot;+b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="方式二"><a href="#方式二" class="headerlink" title="方式二"></a>方式二</h3><ul>
+<li><p>采用异或的逻辑运算，a^a=0</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public void testSwap02(int a, int b)&#123;</span><br><span class="line">    a=a^b;</span><br><span class="line">    b=a^b;</span><br><span class="line">    a=a^b;</span><br><span class="line">    System.out.println(&quot;a=&quot;+a);</span><br><span class="line">    System.out.println(&quot;b=&quot;+b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
     <title>最长顶峰</title>
     <url>/2023/07/29/%E6%9C%80%E9%95%BF%E9%A1%B6%E5%B3%B0/</url>
     <content><![CDATA[<h1 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h1><p>输入一个整数数组， 返回最长顶峰长度。 顶峰定义： 最短长度为3， 顶点左边严格递增， 右边严格递减。</p>
@@ -335,6 +335,23 @@
     <title>深入了解Optional</title>
     <url>/2023/08/03/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3Optional/</url>
     <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>漩涡矩阵</title>
+    <url>/2023/07/29/%E6%BC%A9%E6%B6%A1%E7%9F%A9%E9%98%B5/</url>
+    <content><![CDATA[<h1 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h1><p>给定一个n*m漩涡矩阵，矩阵按照顺序排列排定, 输出一个有序的一维数组</p>
+<p>例如：<br>array = [<br>    [1,  2,   3,  4],<br>    [12, 13,  14, 5],<br>    [11, 16,  15, 6],<br>    [10, 9,   8,  7]<br>]<br>output = [1,2,3,4,5,6,7,8,9,10,12,13,14]</p>
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><ol>
+<li>整体循环路径为<br>startRow, startColumn ———–》startRow, endColumn<br>^                                     |<br>|                                     |<br>|                                     v<br>endRow, startColumn &lt;———-  endRow, endColumn</li>
+<li>定义横坐标起点与终点,纵坐标的起点与终点</li>
+<li>每次遍历完一圈，更新上面4个坐标位置</li>
+<li>边界条件： 最后 向左或向上可能存在重复扫描</li>
+</ol>
+<h1 id="算法实现"><a href="#算法实现" class="headerlink" title="算法实现"></a>算法实现</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public static List&lt;Integer&gt; spiralTraverse(int[][] array) &#123;</span><br><span class="line">    // Write your code here.</span><br><span class="line">    int startRow = 0;</span><br><span class="line">    int startColumn=0;</span><br><span class="line">    int endRow = array.length -1;</span><br><span class="line">    int endColumn = array[0].length -1;</span><br><span class="line">    ArrayList&lt;Integer&gt; result = new ArrayList&lt;Integer&gt;();</span><br><span class="line"></span><br><span class="line">    while(startRow&lt;=endRow &amp;&amp; startColumn&lt;=endColumn)&#123;</span><br><span class="line">      System.out.println(startRow+&quot; &quot;+ startColumn+&quot; &quot;+ endColumn+&quot; &quot;+endRow);</span><br><span class="line">        </span><br><span class="line">        for(int i = startColumn; i&lt;= endColumn; i++)&#123;</span><br><span class="line">            result.add(array[startRow][i]);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        for(int i = startRow +1; i&lt;= endRow; i++)&#123;</span><br><span class="line">           result.add(array[i][endColumn]);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        for(int i = endColumn-1; i&gt;=startColumn; i--)&#123;</span><br><span class="line">          if(startRow == endRow) break;</span><br><span class="line">          result.add(array[endRow][i]);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        for(int i = endRow -1; i&gt; startRow; i--)&#123;</span><br><span class="line">          if(startColumn == endColumn) break;</span><br><span class="line">          result.add(array[i][startColumn]);</span><br><span class="line">        &#125;</span><br><span class="line">      startRow++;</span><br><span class="line">      endColumn --;</span><br><span class="line">      endRow--;</span><br><span class="line">      startColumn++;</span><br><span class="line">    &#125;</span><br><span class="line">    return result;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <tags>
+        <tag>algo</tag>
+      </tags>
   </entry>
   <entry>
     <title>《拯救记忆》读后感</title>
@@ -385,28 +402,6 @@
 </li>
 </ul>
 ]]></content>
-  </entry>
-  <entry>
-    <title>深入理解网络编程</title>
-    <url>/2023/07/31/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/</url>
-    <content><![CDATA[]]></content>
-  </entry>
-  <entry>
-    <title>漩涡矩阵</title>
-    <url>/2023/07/29/%E6%BC%A9%E6%B6%A1%E7%9F%A9%E9%98%B5/</url>
-    <content><![CDATA[<h1 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h1><p>给定一个n*m漩涡矩阵，矩阵按照顺序排列排定, 输出一个有序的一维数组</p>
-<p>例如：<br>array = [<br>    [1,  2,   3,  4],<br>    [12, 13,  14, 5],<br>    [11, 16,  15, 6],<br>    [10, 9,   8,  7]<br>]<br>output = [1,2,3,4,5,6,7,8,9,10,12,13,14]</p>
-<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><ol>
-<li>整体循环路径为<br>startRow, startColumn ———–》startRow, endColumn<br>^                                     |<br>|                                     |<br>|                                     v<br>endRow, startColumn &lt;———-  endRow, endColumn</li>
-<li>定义横坐标起点与终点,纵坐标的起点与终点</li>
-<li>每次遍历完一圈，更新上面4个坐标位置</li>
-<li>边界条件： 最后 向左或向上可能存在重复扫描</li>
-</ol>
-<h1 id="算法实现"><a href="#算法实现" class="headerlink" title="算法实现"></a>算法实现</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public static List&lt;Integer&gt; spiralTraverse(int[][] array) &#123;</span><br><span class="line">    // Write your code here.</span><br><span class="line">    int startRow = 0;</span><br><span class="line">    int startColumn=0;</span><br><span class="line">    int endRow = array.length -1;</span><br><span class="line">    int endColumn = array[0].length -1;</span><br><span class="line">    ArrayList&lt;Integer&gt; result = new ArrayList&lt;Integer&gt;();</span><br><span class="line"></span><br><span class="line">    while(startRow&lt;=endRow &amp;&amp; startColumn&lt;=endColumn)&#123;</span><br><span class="line">      System.out.println(startRow+&quot; &quot;+ startColumn+&quot; &quot;+ endColumn+&quot; &quot;+endRow);</span><br><span class="line">        </span><br><span class="line">        for(int i = startColumn; i&lt;= endColumn; i++)&#123;</span><br><span class="line">            result.add(array[startRow][i]);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        for(int i = startRow +1; i&lt;= endRow; i++)&#123;</span><br><span class="line">           result.add(array[i][endColumn]);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        for(int i = endColumn-1; i&gt;=startColumn; i--)&#123;</span><br><span class="line">          if(startRow == endRow) break;</span><br><span class="line">          result.add(array[endRow][i]);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        for(int i = endRow -1; i&gt; startRow; i--)&#123;</span><br><span class="line">          if(startColumn == endColumn) break;</span><br><span class="line">          result.add(array[i][startColumn]);</span><br><span class="line">        &#125;</span><br><span class="line">      startRow++;</span><br><span class="line">      endColumn --;</span><br><span class="line">      endRow--;</span><br><span class="line">      startColumn++;</span><br><span class="line">    &#125;</span><br><span class="line">    return result;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <tags>
-        <tag>algo</tag>
-      </tags>
   </entry>
   <entry>
     <title>生产者与消费者模型</title>
@@ -467,6 +462,42 @@
 ]]></content>
   </entry>
   <entry>
+    <title>记录一次内存泄露定位</title>
+    <url>/2020/12/29/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%AE%9A%E4%BD%8D/</url>
+    <content><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>这次问题的出现是公司另外一个项目组同事遇到的。当时情况是大约晚上9点左右grafana发出某个服务出现假死状态，研发人员立即登上服务器检查，发现服务器cpu满载，于是就尝试jstack 查看服务进程的堆栈情况，发现已经无法连接了，查看不到堆栈信息；无奈只能从业务日志入手，发现零星的error日志，分别是上午9点左右，在error日志附近都是写库的日志，明显能看到写库的时间在变长，20多秒/30多秒零星出现。然后立马想到的是有可能是出现了60秒导致了中断异常导致某个地方出现内存泄露，致使cpu满载，jstack 无法查看，顺着error 日志的堆栈信息发现类似以下代码</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Queue queue=new LinkedBlockingQueue();</span><br><span class="line"></span><br><span class="line">public void consume() &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            consumeSomething();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">        System.out.println(&quot;遇到异常了：&quot;+e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void consumeSomething() throws InterruptedException &#123;</span><br><span class="line">        if(queue.isEmpty())&#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(&quot;i have consume &quot;+queue.peek());</span><br><span class="line">        if(RandomUtils.nextInt(0,10)==5)&#123;</span><br><span class="line">            throw new InterruptedException(&quot;test&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line">private void produce()&#123;</span><br><span class="line">    while (true)&#123;</span><br><span class="line">            queue.add(RandomUtils.nextInt());</span><br><span class="line">        try &#123;</span><br><span class="line">            TimeUnit.SECONDS.sleep(1);</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    OutMemoryTest outMemoryTest = new OutMemoryTest();</span><br><span class="line">    new Thread(()-&gt;outMemoryTest.produce()).start();</span><br><span class="line">    new Thread(()-&gt;outMemoryTest.consume()).start();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>大致意思是一个生产者源源不断的往队列放入消息，另外一个消费者不停的消费该队列。正常情况是没问题的，但当特殊情况18行代码(模拟数据库超时中断异常)成真时，try……catch在while 外面捕获，导致跳出while循环，消费者终止了消费，然而生产者依旧在不断生产数据，出现积压泄露，进而导致一系列假死状态</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
+  </entry>
+  <entry>
+    <title>领域驱动中的结构</title>
+    <url>/2019/08/30/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E4%B8%8E%E5%BA%94%E7%94%A8%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%8C%BA%E5%88%AB/</url>
+    <content><![CDATA[<h1 id="缘由"><a href="#缘由" class="headerlink" title="缘由"></a>缘由</h1><p>在实行DDD 领域驱动开发的过程中，需要面对的问题有： 如何分结构？在项目中怎样的包结构能够适用于领域驱动？应该怎样决定该段代码合适的位置？</p>
+<h1 id="战略结构"><a href="#战略结构" class="headerlink" title="战略结构"></a>战略结构</h1>]]></content>
+  </entry>
+  <entry>
+    <title>深入理解网络编程</title>
+    <url>/2023/07/31/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>长头发的十二种自然疗法</title>
+    <url>/2022/03/08/%E9%95%BF%E5%A4%B4%E5%8F%91%E7%9A%84%E5%8D%81%E4%BA%8C%E7%A7%8D%E8%87%AA%E7%84%B6%E7%96%97%E6%B3%95/</url>
+    <content><![CDATA[<h1 id="两个重要的事实"><a href="#两个重要的事实" class="headerlink" title="两个重要的事实"></a>两个重要的事实</h1><ul>
+<li>头发常受洗澡时不断冲水，水中含有的氟化物容易让人掉发，长粉刺；氟化物抑制甲状腺<ul>
+<li>使用能过滤氟化物的淋浴喷头</li>
+</ul>
+</li>
+<li>头发91%是蛋白质组成，硫酸盐会破坏蛋白质结构<ul>
+<li>使用不含硫酸盐的洗发水</li>
+</ul>
+</li>
+<li>双氢</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
     <title>让mac新手好用的配置</title>
     <url>/2022/04/21/%E8%AE%A9mac%E6%96%B0%E6%89%8B%E5%A5%BD%E7%94%A8%E7%9A%84%E9%85%8D%E7%BD%AE/</url>
     <content><![CDATA[<h1 id="让mac新手好用的配置"><a href="#让mac新手好用的配置" class="headerlink" title="让mac新手好用的配置"></a>让mac新手好用的配置</h1><h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>之前一直是windows为主用本，最近切到mac air m1 作为生产主力。刚切过来不论是快捷键还是设置有点不太适应，以下配置是我认为新手入门最需要配置的，加快投入生产尽快带来投资回报。</p>
@@ -522,39 +553,8 @@
 ]]></content>
   </entry>
   <entry>
-    <title>长头发的十二种自然疗法</title>
-    <url>/2022/03/08/%E9%95%BF%E5%A4%B4%E5%8F%91%E7%9A%84%E5%8D%81%E4%BA%8C%E7%A7%8D%E8%87%AA%E7%84%B6%E7%96%97%E6%B3%95/</url>
-    <content><![CDATA[<h1 id="两个重要的事实"><a href="#两个重要的事实" class="headerlink" title="两个重要的事实"></a>两个重要的事实</h1><ul>
-<li>头发常受洗澡时不断冲水，水中含有的氟化物容易让人掉发，长粉刺；氟化物抑制甲状腺<ul>
-<li>使用能过滤氟化物的淋浴喷头</li>
-</ul>
-</li>
-<li>头发91%是蛋白质组成，硫酸盐会破坏蛋白质结构<ul>
-<li>使用不含硫酸盐的洗发水</li>
-</ul>
-</li>
-<li>双氢</li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>领域驱动中的结构</title>
-    <url>/2019/08/30/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E4%B8%8E%E5%BA%94%E7%94%A8%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%8C%BA%E5%88%AB/</url>
-    <content><![CDATA[<h1 id="缘由"><a href="#缘由" class="headerlink" title="缘由"></a>缘由</h1><p>在实行DDD 领域驱动开发的过程中，需要面对的问题有： 如何分结构？在项目中怎样的包结构能够适用于领域驱动？应该怎样决定该段代码合适的位置？</p>
-<h1 id="战略结构"><a href="#战略结构" class="headerlink" title="战略结构"></a>战略结构</h1>]]></content>
-  </entry>
-  <entry>
     <title>记录一次线上卡顿发现与解决过程</title>
     <url>/2023/01/30/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E7%BA%BF%E4%B8%8A%E5%8D%A1%E9%A1%BF%E5%8F%91%E7%8E%B0%E4%B8%8E%E8%A7%A3%E5%86%B3%E8%BF%87%E7%A8%8B/</url>
     <content><![CDATA[]]></content>
-  </entry>
-  <entry>
-    <title>记录一次内存泄露定位</title>
-    <url>/2020/12/29/%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%AE%9A%E4%BD%8D/</url>
-    <content><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>这次问题的出现是公司另外一个项目组同事遇到的。当时情况是大约晚上9点左右grafana发出某个服务出现假死状态，研发人员立即登上服务器检查，发现服务器cpu满载，于是就尝试jstack 查看服务进程的堆栈情况，发现已经无法连接了，查看不到堆栈信息；无奈只能从业务日志入手，发现零星的error日志，分别是上午9点左右，在error日志附近都是写库的日志，明显能看到写库的时间在变长，20多秒/30多秒零星出现。然后立马想到的是有可能是出现了60秒导致了中断异常导致某个地方出现内存泄露，致使cpu满载，jstack 无法查看，顺着error 日志的堆栈信息发现类似以下代码</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Queue queue=new LinkedBlockingQueue();</span><br><span class="line"></span><br><span class="line">public void consume() &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            consumeSomething();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">        System.out.println(&quot;遇到异常了：&quot;+e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private void consumeSomething() throws InterruptedException &#123;</span><br><span class="line">        if(queue.isEmpty())&#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(&quot;i have consume &quot;+queue.peek());</span><br><span class="line">        if(RandomUtils.nextInt(0,10)==5)&#123;</span><br><span class="line">            throw new InterruptedException(&quot;test&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line">private void produce()&#123;</span><br><span class="line">    while (true)&#123;</span><br><span class="line">            queue.add(RandomUtils.nextInt());</span><br><span class="line">        try &#123;</span><br><span class="line">            TimeUnit.SECONDS.sleep(1);</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    OutMemoryTest outMemoryTest = new OutMemoryTest();</span><br><span class="line">    new Thread(()-&gt;outMemoryTest.produce()).start();</span><br><span class="line">    new Thread(()-&gt;outMemoryTest.consume()).start();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>大致意思是一个生产者源源不断的往队列放入消息，另外一个消费者不停的消费该队列。正常情况是没问题的，但当特殊情况18行代码(模拟数据库超时中断异常)成真时，try……catch在while 外面捕获，导致跳出while循环，消费者终止了消费，然而生产者依旧在不断生产数据，出现积压泄露，进而导致一系列假死状态</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>]]></content>
   </entry>
 </search>
