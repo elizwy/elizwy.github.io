@@ -169,7 +169,9 @@
       
     <div class="article-entry" itemprop="articleBody">
        
-  <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>java中为了提高效率引入基本数据类型，这些基本数据类型是参考C++方式，用在栈上存储的方式替代在堆上创建，提高内存分配效率与减少垃圾回收的消耗。<br>由于java本身是面向对象语言，在集合等某些场景只能存在对象，故java提供了自动拆箱与装箱功能，减少开发者的手动转化。</p>
+  <meta name="referrer" content="no-referrer"/>
+
+<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>java中为了提高效率引入基本数据类型，这些基本数据类型是参考C++方式，用在栈上存储的方式替代在堆上创建，提高内存分配效率与减少垃圾回收的消耗。<br>由于java本身是面向对象语言，在集合等某些场景只能存在对象，故java提供了自动拆箱与装箱功能，减少开发者的手动转化。</p>
 <h1 id="何为装箱与拆箱"><a href="#何为装箱与拆箱" class="headerlink" title="何为装箱与拆箱"></a>何为装箱与拆箱</h1><p>装箱： 将int值转化成Integer对象操作,就是调用<code>Integer.valueOf(a)</code>这一方法。自动装箱就是：不用开发人员编写这一段代码，编译器编译时看情况(放入集合中)<br>主动帮我们增加这一行代码<br>拆箱： 本质上就是调用<code>a.intValue()</code>这一方法。自动装箱就是：不用开发人员编写这一段代码，编译器编译时看情况(进行运算时)<br>主动帮我们增加这一行代码</p>
 <h1 id="装箱与拆箱底层实现"><a href="#装箱与拆箱底层实现" class="headerlink" title="装箱与拆箱底层实现"></a>装箱与拆箱底层实现</h1><p>装箱：<br><img src="http://117.72.11.95:8080/1691305774554.png" alt="装箱"><br>可以看到这里面对于-128 -&gt; IntegerCache.high 的值装箱时会使用到缓存, 而这个区间外的，每次装箱会产生一个新对象。<br>IntegerCache.high 默认值为127， 可以通过</p>
 <p>拆箱：</p>
