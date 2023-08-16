@@ -143,6 +143,168 @@
     
     
     <article
+  id="post-让mac新手好用的配置"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2022/04/21/%E8%AE%A9mac%E6%96%B0%E6%89%8B%E5%A5%BD%E7%94%A8%E7%9A%84%E9%85%8D%E7%BD%AE/"
+    >让mac新手好用的配置</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2022/04/21/%E8%AE%A9mac%E6%96%B0%E6%89%8B%E5%A5%BD%E7%94%A8%E7%9A%84%E9%85%8D%E7%BD%AE/" class="article-date">
+  <time datetime="2022-04-21T02:13:23.000Z" itemprop="datePublished">2022-04-21</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="让mac新手好用的配置"><a href="#让mac新手好用的配置" class="headerlink" title="让mac新手好用的配置"></a>让mac新手好用的配置</h1><h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>之前一直是windows为主用本，最近切到mac air m1 作为生产主力。刚切过来不论是快捷键还是设置有点不太适应，以下配置是我认为新手入门最需要配置的，加快投入生产尽快带来投资回报。</p>
+<h1 id="软件"><a href="#软件" class="headerlink" title="软件"></a>软件</h1><ul>
+<li>brew(需要翻墙）</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/bin/bash -c <span class="string">&quot;<span class="subst">$(curl -fsSL &lt;https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh&gt;)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>shadowsockets （非大陆区商店）</li>
+<li>expressvpn （翻墙后下载，付费更安全）</li>
+<li>typora （好的markdown 编辑工具）</li>
+<li>sublime （优秀的文本编辑工具）</li>
+<li>edge （最新版的基于chronium，内存管理优秀，打通之前windows上账号体系）</li>
+<li>jetbrain toolbox （jetbrain的全家桶）</li>
+<li>iterm2 （优秀的terminal 管理工具）</li>
+<li>坚果云 （同步工具）</li>
+<li>another redis desktop manager （redis 客户端）</li>
+<li>tunelblick （openvpn 客户端）</li>
+<li>xmind （脑图）</li>
+<li>maven</li>
+<li>gradle</li>
+<li>zsh</li>
+<li>lrzsz</li>
+</ul>
+<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><ul>
+<li><p>brew</p>
+<ul>
+<li><p>关闭自动更新</p>
+<p>echo “HOMEBREW_NO_AUTO_UPDATE=1” &gt;&gt; ~/.zshrc</p>
+</li>
+</ul>
+</li>
+<li><p>zsh</p>
+<ul>
+<li>开启自动建议</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> git://github.com/zsh-users/zsh-autosuggestions <span class="variable">$ZSH_CUSTOM</span>/plugins/zsh-autosuggestions</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>开启高亮</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> git://github.com/zsh-users/zsh-syntax-highlighting <span class="variable">$ZSH_CUSTOM</span>/plugins/zsh-syntax-highlighting</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>开启插件</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plugins=(git zsh-autosuggestions zsh-syntax-highlighting)</span><br></pre></td></tr></table></figure></li>
+<li><p>镜像源替换</p>
+<p>```<br><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1614039">https://cloud.tencent.com/developer/article/1614039</a></p>
+</li>
+</ul>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
+  id="post-可变参数的一次空指针异常复盘"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2022/04/12/%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E7%9A%84%E4%B8%80%E6%AC%A1%E7%A9%BA%E6%8C%87%E9%92%88%E5%BC%82%E5%B8%B8%E5%A4%8D%E7%9B%98/"
+    >可变参数的一次空指针异常复盘</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2022/04/12/%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E7%9A%84%E4%B8%80%E6%AC%A1%E7%A9%BA%E6%8C%87%E9%92%88%E5%BC%82%E5%B8%B8%E5%A4%8D%E7%9B%98/" class="article-date">
+  <time datetime="2022-04-12T13:05:50.000Z" itemprop="datePublished">2022-04-12</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>在一次业务实现中，对落盘日志中增加个监测字段，由于一个计划中的监测链接可能是多个，故在一个方法中使用了可变参数接收监测链接，然后做处理。在处理的过程中导致null 异常，导致日志落盘失败，这在日志系统中较为致命，故此复盘总结。</p>
+<h1 id="现场模拟"><a href="#现场模拟" class="headerlink" title="现场模拟"></a>现场模拟</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public class VariableParamTest &#123;</span><br><span class="line">    private static String a = null;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        final VariableParamTest paramTest = new VariableParamTest();</span><br><span class="line"></span><br><span class="line">        paramTest.test(null);</span><br><span class="line">        paramTest.test(a);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private void test(String... str) &#123;</span><br><span class="line">        System.out.println(str);</span><br><span class="line">        if (str == null) &#123;</span><br><span class="line">            System.out.println(&quot;检测到null&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="现场结果"><a href="#现场结果" class="headerlink" title="现场结果"></a>现场结果</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">null</span><br><span class="line">检测到null</span><br><span class="line">[Ljava.lang.String;@2be94b0f</span><br></pre></td></tr></table></figure>
+
+<h1 id="结果分析"><a href="#结果分析" class="headerlink" title="结果分析"></a>结果分析</h1><ul>
+<li>可变参数实际上是语法糖，java在运行时将该参数编译成一个数组形式，所以能看到结果的第三行输出的方法签名是一个字符串数组</li>
+<li>编译器在进行构建数组的过程中，会进行类型匹配，如果是非String类型的将会报错，这个在编辑器的时候就能被发现</li>
+<li>参数的其实是一个引用地址值，null直接传递编译器不会进行转化。但如果是a=null，传入a，那么编译器收到的正常的地址值，就进行正常转化成[null] 形式</li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>对于一个数组结构的入参判定不能仅仅停留在CollectionUtils.isEmpty层面，需要针对其中每个元素进行null判定，考虑到[3,null,null]这种类似情况</li>
+<li>在做单元测试时需要反复测试边界条件，确保所有的边界条件都测试到</li>
+<li>反复阅读代码，思考各种可能的情况，并把可能的情况都图形可视化</li>
+</ul>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://www.runoob.com/w3cnote/java-varargs-parameter.html">Java 可变参数 | 菜鸟教程 (runoob.com)</a></li>
+</ul>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
   id="post-线上debug流程"
   class="article article-type-post"
   itemscope
@@ -738,119 +900,6 @@
        
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/shell/" rel="tag">shell</a></li></ul>
 
-    </footer>
-  </div>
-
-    
- 
-    
-</article>
-
-    
-    <article
-  id="post-M1芯片安装homebrew的坑记录"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2021/07/18/M1%E8%8A%AF%E7%89%87%E5%AE%89%E8%A3%85homebrew%E7%9A%84%E5%9D%91%E8%AE%B0%E5%BD%95/"
-    >M1芯片安装homebrew后无法正常安装软件记录</a> 
-</h2>
- 
-
-      
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2021/07/18/M1%E8%8A%AF%E7%89%87%E5%AE%89%E8%A3%85homebrew%E7%9A%84%E5%9D%91%E8%AE%B0%E5%BD%95/" class="article-date">
-  <time datetime="2021-07-18T06:59:35.000Z" itemprop="datePublished">2021-07-18</time>
-</a>    
-    </div>
-      
-    <div class="article-entry" itemprop="articleBody">
-       
-  <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>苹果最新的芯片M1安装homebrew包管理器采用<a target="_blank" rel="noopener" href="https://brew.sh/">官网</a>的命令,结果遇到了1.无法进行任何软件安装.2.安装软件遇到报错信息</p>
-<h3 id="问题1"><a href="#问题1" class="headerlink" title="问题1"></a>问题1</h3><p>找不到任何软件,都是报formula或者cask不存在.不知道还以为是真不存在,可是官网明明有这个包的存在.最后我才用的是 <code>rm -fr $(brew --repo homebrew/core) </code> 命令直接删除core核心命令,然后重新brew install 时,它会自动更新core包代码.</p>
-<h3 id="问题2"><a href="#问题2" class="headerlink" title="问题2"></a>问题2</h3><p>安装软件时报以下异常</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Error: Failure while executing; `tar --extract --no-same-owner --file /Users/XX/Library/Caches/Homebrew/downloads/5da338c344047ee06f60495e7def31345483e10f19246aad74dca7f5dcea962d--gdbm-1.20.catalina.bottle.tar.gz --directory /private/tmp/d20210624-13993-hs6cjj` exited with 1. Here&#x27;s the output:</span><br><span class="line">tar: Error opening archive: Failed to open &#x27;/Users/XX/Library/Caches/Homebrew/downloads/5da338c344047ee06f60495e7def31345483e10f19246aad74dca7f5dcea962d--gdbm-1.20.catalina.bottle.tar.gz&#x27;</span><br></pre></td></tr></table></figure>
-
-<p>按照我所查到的资料^1^说:是由于国内镜像的问题.将国内的镜像设置去除即可<code>export HOMEBREW_BOTTLE_DOMAIN=&#39;&#39; </code></p>
-<h6 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h6><ol>
-<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/383707713">国内 Mac 安装 Homebrew 可能会跳的坑一览</a></li>
-</ol>
- 
-      <!-- reward -->
-      
-    </div>
-    
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%B7%A5%E5%85%B7%E9%9B%86/" rel="tag">工具集</a></li></ul>
-
-    </footer>
-  </div>
-
-    
- 
-    
-</article>
-
-    
-    <article
-  id="post-httpCilent的timeout设置"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2021/01/06/httpCilent%E7%9A%84timeout%E8%AE%BE%E7%BD%AE/"
-    >httpCilent的timeout设置</a> 
-</h2>
- 
-
-      
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2021/01/06/httpCilent%E7%9A%84timeout%E8%AE%BE%E7%BD%AE/" class="article-date">
-  <time datetime="2021-01-06T14:03:57.000Z" itemprop="datePublished">2021-01-06</time>
-</a>    
-    </div>
-      
-    <div class="article-entry" itemprop="articleBody">
-       
-  <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>公司项目同事在使用httpClient向某个url post 数据时发现：大部分数据在1,2秒内对方url就会有响应，但是偶尔会出现需要等待10多分钟，甚至是30多分钟才能接收到对方返回的成功响应。使用httpClient 时使用的connectionTimeOut,socketTimeOut都设置在一分钟以内，按道理是不会等这么长的时间，应该早就报异常了，但是在等待30分钟之后还是能收到对方的成功响应，这个问题就一直困扰着他。</p>
-<h3 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h3><p>其实他当时post文件都是在10m左右，按照计算机网络的通信协议，http协议是基于tcp协议的，tcp 和udp 协议除了前者是稳定传输，后者是非稳定传输；还有一个特点就是udp是不会对应用层的数据进行任何处理，拆分的，直接包上自己的udp头就发出去(其实超过了2^16-20-8 自己还是要拆包的)，而tcp是基于字节流传输的，是会拆分的。而socketTimeOut 指的是两个数据包的间隔，这样一来，我拆分出10个包，每个包从发出到接收到的ack包之间间隔只要在一分钟内就不会抛异常，总的传输时间在10分钟也不会抛异常</p>
-<h3 id="处理"><a href="#处理" class="headerlink" title="处理"></a>处理</h3><ol>
-<li>加大带宽</li>
-<li>每次发送异步判断耗时，耗时超过一定时间就重试或者其他逻辑</li>
-</ol>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p> 计算机网络和httpclient 底层原理未弄清</p>
-<p>5bnktj7l</p>
- 
-      <!-- reward -->
-      
-    </div>
-    
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
     </footer>
   </div>
 

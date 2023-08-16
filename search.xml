@@ -396,7 +396,27 @@
   <entry>
     <title>深入理解网络编程</title>
     <url>/2023/07/31/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/</url>
-    <content><![CDATA[]]></content>
+    <content><![CDATA[<h1 id="网络IO模型"><a href="#网络IO模型" class="headerlink" title="网络IO模型"></a>网络IO模型</h1><p>同步</p>
+<table>
+<thead>
+<tr>
+<th>网络模型</th>
+<th>优点</th>
+<th align="left">缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>同步阻塞IO</td>
+<td></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+]]></content>
   </entry>
   <entry>
     <title>漩涡矩阵</title>
@@ -557,6 +577,33 @@
 </li>
 <li>双氢</li>
 </ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>深入理解Fork/Join框架</title>
+    <url>/2023/08/14/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Fork-Join%E6%A1%86%E6%9E%B6/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>java attach 过程中遇到的问题集</title>
+    <url>/2023/08/16/java-attach-%E8%BF%87%E7%A8%8B%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98%E9%9B%86/</url>
+    <content><![CDATA[<h3 id="如何将指定的MANIFEST-MF-文件内容如何打入目标jar包中"><a href="#如何将指定的MANIFEST-MF-文件内容如何打入目标jar包中" class="headerlink" title="如何将指定的MANIFEST.MF 文件内容如何打入目标jar包中"></a>如何将指定的MANIFEST.MF 文件内容如何打入目标jar包中</h3><ol>
+<li>采用maven-jar-plugin 插件, 设置manifest 属性<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;archive&gt;</span><br><span class="line">    &lt;manifest&gt;</span><br><span class="line">        &lt;addClasspath&gt;true&lt;/addClasspath&gt;</span><br><span class="line">        &lt;mainClass&gt;com.zwy.application.Launcher&lt;/mainClass&gt;</span><br><span class="line">        &lt;/manifest&gt;</span><br><span class="line">        &lt;manifestFile&gt;src/main/resources/META-INF/MANIFEST.MF</span><br><span class="line">    &lt;/manifestFile&gt;</span><br><span class="line">&lt;/archive&gt;</span><br></pre></td></tr></table></figure></li>
+<li>采用maven-assemly-plugin 插件, 设置archive 属性<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;archive&gt;</span><br><span class="line">     &lt;manifestEntries&gt;</span><br><span class="line">        &lt;Premain-Class&gt;com.zwy.agent.MyInstrumentationAgent&lt;/Premain-Class&gt;</span><br><span class="line">        &lt;Agent-Class&gt;com.zwy.agent.MyInstrumentationAgent&lt;/Agent-Class&gt;</span><br><span class="line">        &lt;Can-Redefine-Classes&gt;true&lt;/Can-Redefine-Classes&gt;</span><br><span class="line">        &lt;Can-Retransform-Classes&gt;true&lt;/Can-Retransform-Classes&gt;</span><br><span class="line">        &lt;mainClass&gt;com.zwy.application.Launcher&lt;/mainClass&gt;</span><br><span class="line">    &lt;/manifestEntries&gt;</span><br><span class="line">&lt;/archive&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="Agent-JAR-loaded-but-agent-failed-to-initialize"><a href="#Agent-JAR-loaded-but-agent-failed-to-initialize" class="headerlink" title="Agent JAR loaded but agent failed to initialize"></a>Agent JAR loaded but agent failed to initialize</h3><p>遇到该问题解决思路:</p>
+<ol>
+<li>类的加载三步骤: 加载,链接,初始化. 出现该异常说明agent jar 已经被目标JVM类加载到了, 在初始化过程失败的. 那么一定会在目标JVM出抛出具体异常, 查看日志在分析</li>
+</ol>
+<h3 id="premain-agentmain-中的args参数如何通过启动命令传递-到达arthas类似的动态增强目标类-方法"><a href="#premain-agentmain-中的args参数如何通过启动命令传递-到达arthas类似的动态增强目标类-方法" class="headerlink" title="premain/agentmain 中的args参数如何通过启动命令传递,到达arthas类似的动态增强目标类,方法"></a>premain/agentmain 中的args参数如何通过启动命令传递,到达arthas类似的动态增强目标类,方法</h3><ol>
+<li>这个参数的传递可以通过 java -jar xxx-agent.jar=a,b,c 这样传递进去. 这样agentmain中的arg 就是a,b,c. 然后在程序中进行简单切分即可</li>
+</ol>
+<h3 id="ClassPool-getDefault-throwing-NotFoundException"><a href="#ClassPool-getDefault-throwing-NotFoundException" class="headerlink" title="ClassPool.getDefault() throwing NotFoundException"></a>ClassPool.getDefault() throwing NotFoundException</h3><p>在使用javassist 获取到类文件池时出现该异常,但是在编译器中是可以正常编译的.</p>
+<ol>
+<li>出现该现象原因就是jar包里真的没有javassist相关的包. 如果采用的是maven-jar-plugin 插件就会出现该现象, 该插件会将第三方依赖剔除掉.<br>所以可以采用maven-assembly-plugin插件. 具体配置如下<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;profile&gt;</span><br><span class="line">            &lt;id&gt;agent-full&lt;/id&gt;</span><br><span class="line">            &lt;build&gt;</span><br><span class="line">                &lt;finalName&gt;arthas-agent&lt;/finalName&gt;</span><br><span class="line">                &lt;plugins&gt;</span><br><span class="line">                    &lt;plugin&gt;</span><br><span class="line">                        &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;</span><br><span class="line">                        &lt;artifactId&gt;maven-assembly-plugin&lt;/artifactId&gt;</span><br><span class="line">                        &lt;executions&gt;</span><br><span class="line">                            &lt;execution&gt;</span><br><span class="line">                                &lt;goals&gt;</span><br><span class="line">                                    &lt;goal&gt;single&lt;/goal&gt;</span><br><span class="line">                                &lt;/goals&gt;</span><br><span class="line">                                &lt;phase&gt;package&lt;/phase&gt;</span><br><span class="line">                                &lt;configuration&gt;</span><br><span class="line">                                    &lt;descriptorRefs&gt;</span><br><span class="line">                                        &lt;descriptorRef&gt;jar-with-dependencies&lt;/descriptorRef&gt;</span><br><span class="line">                                    &lt;/descriptorRefs&gt;</span><br><span class="line">                                    &lt;archive&gt;</span><br><span class="line">                                        &lt;manifestEntries&gt;</span><br><span class="line">                                            &lt;Premain-Class&gt;com.zwy.agent.MyInstrumentationAgent&lt;/Premain-Class&gt;</span><br><span class="line">                                            &lt;Agent-Class&gt;com.zwy.agent.MyInstrumentationAgent&lt;/Agent-Class&gt;</span><br><span class="line">                                            &lt;Can-Redefine-Classes&gt;true&lt;/Can-Redefine-Classes&gt;</span><br><span class="line">                                            &lt;Can-Retransform-Classes&gt;true&lt;/Can-Retransform-Classes&gt;</span><br><span class="line">                                            &lt;mainClass&gt;com.zwy.application.Launcher&lt;/mainClass&gt;</span><br><span class="line">                                        &lt;/manifestEntries&gt;</span><br><span class="line">                                    &lt;/archive&gt;</span><br><span class="line">                                &lt;/configuration&gt;</span><br><span class="line">                            &lt;/execution&gt;</span><br><span class="line">                        &lt;/executions&gt;</span><br><span class="line">                    &lt;/plugin&gt;</span><br><span class="line">                &lt;/plugins&gt;</span><br><span class="line">            &lt;/build&gt;</span><br><span class="line">        &lt;/profile&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="javassist-CannotCompileException-source-error-is-missing"><a href="#javassist-CannotCompileException-source-error-is-missing" class="headerlink" title="javassist.CannotCompileException: [source error] ) is missing"></a>javassist.CannotCompileException: [source error] ) is missing</h3></li>
+</ol>
+<p>出现该问题有可能是在拼接字符串是双引号没有处理好, 导致后面的内容丢失,形不成完成的java语句</p>
 ]]></content>
   </entry>
 </search>

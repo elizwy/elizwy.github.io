@@ -11,7 +11,7 @@
         name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1"
       />
-      <title>java中自动装箱与拆箱 |  ELIZWY</title>
+      <title>java attach 过程中遇到的问题集 |  ELIZWY</title>
   <meta name="generator" content="hexo-theme-ayer">
       
       <link rel="shortcut icon" href="/favicon.ico" />
@@ -47,7 +47,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-java中自动装箱与拆箱"
+  id="post-java-attach-过程中遇到的问题集"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -58,7 +58,7 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  java中自动装箱与拆箱
+  java attach 过程中遇到的问题集
 </h1>
  
 
@@ -66,15 +66,15 @@
     </header>
      
     <div class="article-meta">
-      <a href="/2023/08/04/java%E4%B8%AD%E8%87%AA%E5%8A%A8%E8%A3%85%E7%AE%B1%E4%B8%8E%E6%8B%86%E7%AE%B1/" class="article-date">
-  <time datetime="2023-08-04T01:11:35.000Z" itemprop="datePublished">2023-08-04</time>
+      <a href="/2023/08/16/java-attach-%E8%BF%87%E7%A8%8B%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98%E9%9B%86/" class="article-date">
+  <time datetime="2023-08-16T15:26:11.000Z" itemprop="datePublished">2023-08-16</time>
 </a>   
 <div class="word_count">
     <span class="post-time">
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> Word count:</span>
-            <span class="post-count">548</span>
+            <span class="post-count">653</span>
         </span>
     </span>
 
@@ -83,7 +83,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> Reading time≈</span>
-            <span class="post-count">2 min</span>
+            <span class="post-count">3 min</span>
         </span>
     </span>
 </div>
@@ -98,17 +98,23 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <meta name="referrer" content="no-referrer"/>
-
-<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>java中为了提高效率引入基本数据类型，这些基本数据类型是参考C++方式，用在栈上存储的方式替代在堆上创建，提高内存分配效率与减少垃圾回收的消耗。<br>由于java本身是面向对象语言，在集合等某些场景只能存在对象，故java提供了自动拆箱与装箱功能，减少开发者的手动转化。</p>
-<h1 id="何为装箱与拆箱"><a href="#何为装箱与拆箱" class="headerlink" title="何为装箱与拆箱"></a>何为装箱与拆箱</h1><p>装箱： 将int值转化成Integer对象操作,就是调用<code>Integer.valueOf(a)</code>这一方法。自动装箱就是：不用开发人员编写这一段代码，编译器编译时看情况(放入集合中)<br>主动帮我们增加这一行代码<br>拆箱： 本质上就是调用<code>a.intValue()</code>这一方法。自动装箱就是：不用开发人员编写这一段代码，编译器编译时看情况(进行运算时)<br>主动帮我们增加这一行代码</p>
-<h1 id="装箱与拆箱底层实现"><a href="#装箱与拆箱底层实现" class="headerlink" title="装箱与拆箱底层实现"></a>装箱与拆箱底层实现</h1><p>装箱：<br><img src="http://117.72.11.95:8080/1691305774554.png" alt="装箱"><br>可以看到这里面对于-128 -&gt; IntegerCache.high 的值装箱时会使用到缓存, 而这个区间外的，每次装箱会产生一个新对象。<br>IntegerCache.high 默认值为127， 可以通过</p>
-<p>拆箱：</p>
-<p><img src="http://117.72.11.95:8080/1691305833592.png" alt="拆箱"></p>
-<p>拆箱就更简单，直接返回对象中的成员变量即可。</p>
-<h1 id="实际运用"><a href="#实际运用" class="headerlink" title="实际运用"></a>实际运用</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">private static void test1() &#123;</span><br><span class="line">	Integer i1 = 40;</span><br><span class="line">	Integer i2 =40;</span><br><span class="line">	Integer i3 =0;</span><br><span class="line">	Integer i4 = new Integer(40);</span><br><span class="line">	Integer i5 = new Integer(0);</span><br><span class="line">	Integer i6 = Integer.valueOf(40);</span><br><span class="line">	System.out.println(i1 == i2);       //1. true  有缓存 位于-128 -》127缓存</span><br><span class="line">	System.out.println(i1 == i2 + i3);  //2. true  拆箱</span><br><span class="line">	System.out.println(i1 == i4);       //3. false</span><br><span class="line">	System.out.println(i1 == i4 + i5);  //4. true  拆箱</span><br><span class="line">	System.out.println(i1 == i6);       //5. true</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static void test2() &#123;</span><br><span class="line">	Integer i1 = 200;</span><br><span class="line">	Integer i2 = 200;</span><br><span class="line">	Integer i3 =0;</span><br><span class="line">	Integer i4 = new Integer(200);</span><br><span class="line">	Integer i5 = new Integer(0);</span><br><span class="line">	Integer i6 = Integer.valueOf(200);</span><br><span class="line">	System.out.println(i1 == i2);      //6. false 超出-128 -》127缓存</span><br><span class="line">	System.out.println(i1 == i2 + i3); //7. true  拆箱</span><br><span class="line">	System.out.println(i1 == i4);      //8. false </span><br><span class="line">	System.out.println(i1 == i4 + i5); //9. true  拆箱</span><br><span class="line">	System.out.println(i1 == i6);      //10. false </span><br><span class="line">	 </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>字节码层面<br><img src="img_5.png" alt="img_5.png"></p>
-<p>可以看到 i1 == i2 + i3 时进行拆箱，拆箱完后属于基本数据类型，java中基本类型的 == 是直接比对其值的，所以会相等。</p>
+  <h3 id="如何将指定的MANIFEST-MF-文件内容如何打入目标jar包中"><a href="#如何将指定的MANIFEST-MF-文件内容如何打入目标jar包中" class="headerlink" title="如何将指定的MANIFEST.MF 文件内容如何打入目标jar包中"></a>如何将指定的MANIFEST.MF 文件内容如何打入目标jar包中</h3><ol>
+<li>采用maven-jar-plugin 插件, 设置manifest 属性<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;archive&gt;</span><br><span class="line">    &lt;manifest&gt;</span><br><span class="line">        &lt;addClasspath&gt;true&lt;/addClasspath&gt;</span><br><span class="line">        &lt;mainClass&gt;com.zwy.application.Launcher&lt;/mainClass&gt;</span><br><span class="line">        &lt;/manifest&gt;</span><br><span class="line">        &lt;manifestFile&gt;src/main/resources/META-INF/MANIFEST.MF</span><br><span class="line">    &lt;/manifestFile&gt;</span><br><span class="line">&lt;/archive&gt;</span><br></pre></td></tr></table></figure></li>
+<li>采用maven-assemly-plugin 插件, 设置archive 属性<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;archive&gt;</span><br><span class="line">     &lt;manifestEntries&gt;</span><br><span class="line">        &lt;Premain-Class&gt;com.zwy.agent.MyInstrumentationAgent&lt;/Premain-Class&gt;</span><br><span class="line">        &lt;Agent-Class&gt;com.zwy.agent.MyInstrumentationAgent&lt;/Agent-Class&gt;</span><br><span class="line">        &lt;Can-Redefine-Classes&gt;true&lt;/Can-Redefine-Classes&gt;</span><br><span class="line">        &lt;Can-Retransform-Classes&gt;true&lt;/Can-Retransform-Classes&gt;</span><br><span class="line">        &lt;mainClass&gt;com.zwy.application.Launcher&lt;/mainClass&gt;</span><br><span class="line">    &lt;/manifestEntries&gt;</span><br><span class="line">&lt;/archive&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="Agent-JAR-loaded-but-agent-failed-to-initialize"><a href="#Agent-JAR-loaded-but-agent-failed-to-initialize" class="headerlink" title="Agent JAR loaded but agent failed to initialize"></a>Agent JAR loaded but agent failed to initialize</h3><p>遇到该问题解决思路:</p>
+<ol>
+<li>类的加载三步骤: 加载,链接,初始化. 出现该异常说明agent jar 已经被目标JVM类加载到了, 在初始化过程失败的. 那么一定会在目标JVM出抛出具体异常, 查看日志在分析</li>
+</ol>
+<h3 id="premain-agentmain-中的args参数如何通过启动命令传递-到达arthas类似的动态增强目标类-方法"><a href="#premain-agentmain-中的args参数如何通过启动命令传递-到达arthas类似的动态增强目标类-方法" class="headerlink" title="premain/agentmain 中的args参数如何通过启动命令传递,到达arthas类似的动态增强目标类,方法"></a>premain/agentmain 中的args参数如何通过启动命令传递,到达arthas类似的动态增强目标类,方法</h3><ol>
+<li>这个参数的传递可以通过 java -jar xxx-agent.jar=a,b,c 这样传递进去. 这样agentmain中的arg 就是a,b,c. 然后在程序中进行简单切分即可</li>
+</ol>
+<h3 id="ClassPool-getDefault-throwing-NotFoundException"><a href="#ClassPool-getDefault-throwing-NotFoundException" class="headerlink" title="ClassPool.getDefault() throwing NotFoundException"></a>ClassPool.getDefault() throwing NotFoundException</h3><p>在使用javassist 获取到类文件池时出现该异常,但是在编译器中是可以正常编译的.</p>
+<ol>
+<li>出现该现象原因就是jar包里真的没有javassist相关的包. 如果采用的是maven-jar-plugin 插件就会出现该现象, 该插件会将第三方依赖剔除掉.<br>所以可以采用maven-assembly-plugin插件. 具体配置如下<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">&lt;profile&gt;</span><br><span class="line">            &lt;id&gt;agent-full&lt;/id&gt;</span><br><span class="line">            &lt;build&gt;</span><br><span class="line">                &lt;finalName&gt;arthas-agent&lt;/finalName&gt;</span><br><span class="line">                &lt;plugins&gt;</span><br><span class="line">                    &lt;plugin&gt;</span><br><span class="line">                        &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;</span><br><span class="line">                        &lt;artifactId&gt;maven-assembly-plugin&lt;/artifactId&gt;</span><br><span class="line">                        &lt;executions&gt;</span><br><span class="line">                            &lt;execution&gt;</span><br><span class="line">                                &lt;goals&gt;</span><br><span class="line">                                    &lt;goal&gt;single&lt;/goal&gt;</span><br><span class="line">                                &lt;/goals&gt;</span><br><span class="line">                                &lt;phase&gt;package&lt;/phase&gt;</span><br><span class="line">                                &lt;configuration&gt;</span><br><span class="line">                                    &lt;descriptorRefs&gt;</span><br><span class="line">                                        &lt;descriptorRef&gt;jar-with-dependencies&lt;/descriptorRef&gt;</span><br><span class="line">                                    &lt;/descriptorRefs&gt;</span><br><span class="line">                                    &lt;archive&gt;</span><br><span class="line">                                        &lt;manifestEntries&gt;</span><br><span class="line">                                            &lt;Premain-Class&gt;com.zwy.agent.MyInstrumentationAgent&lt;/Premain-Class&gt;</span><br><span class="line">                                            &lt;Agent-Class&gt;com.zwy.agent.MyInstrumentationAgent&lt;/Agent-Class&gt;</span><br><span class="line">                                            &lt;Can-Redefine-Classes&gt;true&lt;/Can-Redefine-Classes&gt;</span><br><span class="line">                                            &lt;Can-Retransform-Classes&gt;true&lt;/Can-Retransform-Classes&gt;</span><br><span class="line">                                            &lt;mainClass&gt;com.zwy.application.Launcher&lt;/mainClass&gt;</span><br><span class="line">                                        &lt;/manifestEntries&gt;</span><br><span class="line">                                    &lt;/archive&gt;</span><br><span class="line">                                &lt;/configuration&gt;</span><br><span class="line">                            &lt;/execution&gt;</span><br><span class="line">                        &lt;/executions&gt;</span><br><span class="line">                    &lt;/plugin&gt;</span><br><span class="line">                &lt;/plugins&gt;</span><br><span class="line">            &lt;/build&gt;</span><br><span class="line">        &lt;/profile&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="javassist-CannotCompileException-source-error-is-missing"><a href="#javassist-CannotCompileException-source-error-is-missing" class="headerlink" title="javassist.CannotCompileException: [source error] ) is missing"></a>javassist.CannotCompileException: [source error] ) is missing</h3></li>
+</ol>
+<p>出现该问题有可能是在拼接字符串是双引号没有处理好, 导致后面的内容丢失,形不成完成的java语句</p>
  
       <!-- reward -->
       
@@ -173,7 +179,7 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2023/08/04/java%E4%B8%AD%E8%87%AA%E5%8A%A8%E8%A3%85%E7%AE%B1%E4%B8%8E%E6%8B%86%E7%AE%B1/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2023/08/16/java-attach-%E8%BF%87%E7%A8%8B%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98%E9%9B%86/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -184,19 +190,10 @@
    
   <nav class="article-nav">
     
+    
       <a href="/2023/08/14/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Fork-Join%E6%A1%86%E6%9E%B6/" class="article-nav-link">
-        <strong class="article-nav-caption">上一篇</strong>
-        <div class="article-nav-title">
-          
-            深入理解Fork/Join框架
-          
-        </div>
-      </a>
-    
-    
-      <a href="/2023/08/03/%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3Optional/" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">深入了解Optional</div>
+        <div class="article-nav-title">深入理解Fork/Join框架</div>
       </a>
     
   </nav>

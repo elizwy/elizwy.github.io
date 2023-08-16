@@ -143,6 +143,119 @@
     
     
     <article
+  id="post-M1芯片安装homebrew的坑记录"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2021/07/18/M1%E8%8A%AF%E7%89%87%E5%AE%89%E8%A3%85homebrew%E7%9A%84%E5%9D%91%E8%AE%B0%E5%BD%95/"
+    >M1芯片安装homebrew后无法正常安装软件记录</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/07/18/M1%E8%8A%AF%E7%89%87%E5%AE%89%E8%A3%85homebrew%E7%9A%84%E5%9D%91%E8%AE%B0%E5%BD%95/" class="article-date">
+  <time datetime="2021-07-18T06:59:35.000Z" itemprop="datePublished">2021-07-18</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>苹果最新的芯片M1安装homebrew包管理器采用<a target="_blank" rel="noopener" href="https://brew.sh/">官网</a>的命令,结果遇到了1.无法进行任何软件安装.2.安装软件遇到报错信息</p>
+<h3 id="问题1"><a href="#问题1" class="headerlink" title="问题1"></a>问题1</h3><p>找不到任何软件,都是报formula或者cask不存在.不知道还以为是真不存在,可是官网明明有这个包的存在.最后我才用的是 <code>rm -fr $(brew --repo homebrew/core) </code> 命令直接删除core核心命令,然后重新brew install 时,它会自动更新core包代码.</p>
+<h3 id="问题2"><a href="#问题2" class="headerlink" title="问题2"></a>问题2</h3><p>安装软件时报以下异常</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Error: Failure while executing; `tar --extract --no-same-owner --file /Users/XX/Library/Caches/Homebrew/downloads/5da338c344047ee06f60495e7def31345483e10f19246aad74dca7f5dcea962d--gdbm-1.20.catalina.bottle.tar.gz --directory /private/tmp/d20210624-13993-hs6cjj` exited with 1. Here&#x27;s the output:</span><br><span class="line">tar: Error opening archive: Failed to open &#x27;/Users/XX/Library/Caches/Homebrew/downloads/5da338c344047ee06f60495e7def31345483e10f19246aad74dca7f5dcea962d--gdbm-1.20.catalina.bottle.tar.gz&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>按照我所查到的资料^1^说:是由于国内镜像的问题.将国内的镜像设置去除即可<code>export HOMEBREW_BOTTLE_DOMAIN=&#39;&#39; </code></p>
+<h6 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h6><ol>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/383707713">国内 Mac 安装 Homebrew 可能会跳的坑一览</a></li>
+</ol>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%B7%A5%E5%85%B7%E9%9B%86/" rel="tag">工具集</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
+  id="post-httpCilent的timeout设置"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2021/01/06/httpCilent%E7%9A%84timeout%E8%AE%BE%E7%BD%AE/"
+    >httpCilent的timeout设置</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/01/06/httpCilent%E7%9A%84timeout%E8%AE%BE%E7%BD%AE/" class="article-date">
+  <time datetime="2021-01-06T14:03:57.000Z" itemprop="datePublished">2021-01-06</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>公司项目同事在使用httpClient向某个url post 数据时发现：大部分数据在1,2秒内对方url就会有响应，但是偶尔会出现需要等待10多分钟，甚至是30多分钟才能接收到对方返回的成功响应。使用httpClient 时使用的connectionTimeOut,socketTimeOut都设置在一分钟以内，按道理是不会等这么长的时间，应该早就报异常了，但是在等待30分钟之后还是能收到对方的成功响应，这个问题就一直困扰着他。</p>
+<h3 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h3><p>其实他当时post文件都是在10m左右，按照计算机网络的通信协议，http协议是基于tcp协议的，tcp 和udp 协议除了前者是稳定传输，后者是非稳定传输；还有一个特点就是udp是不会对应用层的数据进行任何处理，拆分的，直接包上自己的udp头就发出去(其实超过了2^16-20-8 自己还是要拆包的)，而tcp是基于字节流传输的，是会拆分的。而socketTimeOut 指的是两个数据包的间隔，这样一来，我拆分出10个包，每个包从发出到接收到的ack包之间间隔只要在一分钟内就不会抛异常，总的传输时间在10分钟也不会抛异常</p>
+<h3 id="处理"><a href="#处理" class="headerlink" title="处理"></a>处理</h3><ol>
+<li>加大带宽</li>
+<li>每次发送异步判断耗时，耗时超过一定时间就重试或者其他逻辑</li>
+</ol>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p> 计算机网络和httpclient 底层原理未弄清</p>
+<p>5bnktj7l</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
   id="post-记录一次内存泄露定位"
   class="article article-type-post"
   itemscope

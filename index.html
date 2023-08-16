@@ -143,6 +143,117 @@
     
     
     <article
+  id="post-java-attach-过程中遇到的问题集"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2023/08/16/java-attach-%E8%BF%87%E7%A8%8B%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98%E9%9B%86/"
+    >java attach 过程中遇到的问题集</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2023/08/16/java-attach-%E8%BF%87%E7%A8%8B%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98%E9%9B%86/" class="article-date">
+  <time datetime="2023-08-16T15:26:11.000Z" itemprop="datePublished">2023-08-16</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="如何将指定的MANIFEST-MF-文件内容如何打入目标jar包中"><a href="#如何将指定的MANIFEST-MF-文件内容如何打入目标jar包中" class="headerlink" title="如何将指定的MANIFEST.MF 文件内容如何打入目标jar包中"></a>如何将指定的MANIFEST.MF 文件内容如何打入目标jar包中</h3><ol>
+<li>采用maven-jar-plugin 插件, 设置manifest 属性<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;archive&gt;</span><br><span class="line">    &lt;manifest&gt;</span><br><span class="line">        &lt;addClasspath&gt;true&lt;/addClasspath&gt;</span><br><span class="line">        &lt;mainClass&gt;com.zwy.application.Launcher&lt;/mainClass&gt;</span><br><span class="line">        &lt;/manifest&gt;</span><br><span class="line">        &lt;manifestFile&gt;src/main/resources/META-INF/MANIFEST.MF</span><br><span class="line">    &lt;/manifestFile&gt;</span><br><span class="line">&lt;/archive&gt;</span><br></pre></td></tr></table></figure></li>
+<li>采用maven-assemly-plugin 插件, 设置archive 属性<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;archive&gt;</span><br><span class="line">     &lt;manifestEntries&gt;</span><br><span class="line">        &lt;Premain-Class&gt;com.zwy.agent.MyInstrumentationAgent&lt;/Premain-Class&gt;</span><br><span class="line">        &lt;Agent-Class&gt;com.zwy.agent.MyInstrumentationAgent&lt;/Agent-Class&gt;</span><br><span class="line">        &lt;Can-Redefine-Classes&gt;true&lt;/Can-Redefine-Classes&gt;</span><br><span class="line">        &lt;Can-Retransform-Classes&gt;true&lt;/Can-Retransform-Classes&gt;</span><br><span class="line">        &lt;mainClass&gt;com.zwy.application.Launcher&lt;/mainClass&gt;</span><br><span class="line">    &lt;/manifestEntries&gt;</span><br><span class="line">&lt;/archive&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="Agent-JAR-loaded-but-agent-failed-to-initialize"><a href="#Agent-JAR-loaded-but-agent-failed-to-initialize" class="headerlink" title="Agent JAR loaded but agent failed to initialize"></a>Agent JAR loaded but agent failed to initialize</h3><p>遇到该问题解决思路:</p>
+<ol>
+<li>类的加载三步骤: 加载,链接,初始化. 出现该异常说明agent jar 已经被目标JVM类加载到了, 在初始化过程失败的. 那么一定会在目标JVM出抛出具体异常, 查看日志在分析</li>
+</ol>
+<h3 id="premain-agentmain-中的args参数如何通过启动命令传递-到达arthas类似的动态增强目标类-方法"><a href="#premain-agentmain-中的args参数如何通过启动命令传递-到达arthas类似的动态增强目标类-方法" class="headerlink" title="premain/agentmain 中的args参数如何通过启动命令传递,到达arthas类似的动态增强目标类,方法"></a>premain/agentmain 中的args参数如何通过启动命令传递,到达arthas类似的动态增强目标类,方法</h3><ol>
+<li>这个参数的传递可以通过 java -jar xxx-agent.jar=a,b,c 这样传递进去. 这样agentmain中的arg 就是a,b,c. 然后在程序中进行简单切分即可</li>
+</ol>
+<h3 id="ClassPool-getDefault-throwing-NotFoundException"><a href="#ClassPool-getDefault-throwing-NotFoundException" class="headerlink" title="ClassPool.getDefault() throwing NotFoundException"></a>ClassPool.getDefault() throwing NotFoundException</h3><p>在使用javassist 获取到类文件池时出现该异常,但是在编译器中是可以正常编译的.</p>
+<ol>
+<li>出现该现象原因就是jar包里真的没有javassist相关的包. 如果采用的是maven-jar-plugin 插件就会出现该现象, 该插件会将第三方依赖剔除掉.<br>所以可以采用maven-assembly-plugin插件. 具体配置如下<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">&lt;profile&gt;</span><br><span class="line">            &lt;id&gt;agent-full&lt;/id&gt;</span><br><span class="line">            &lt;build&gt;</span><br><span class="line">                &lt;finalName&gt;arthas-agent&lt;/finalName&gt;</span><br><span class="line">                &lt;plugins&gt;</span><br><span class="line">                    &lt;plugin&gt;</span><br><span class="line">                        &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;</span><br><span class="line">                        &lt;artifactId&gt;maven-assembly-plugin&lt;/artifactId&gt;</span><br><span class="line">                        &lt;executions&gt;</span><br><span class="line">                            &lt;execution&gt;</span><br><span class="line">                                &lt;goals&gt;</span><br><span class="line">                                    &lt;goal&gt;single&lt;/goal&gt;</span><br><span class="line">                                &lt;/goals&gt;</span><br><span class="line">                                &lt;phase&gt;package&lt;/phase&gt;</span><br><span class="line">                                &lt;configuration&gt;</span><br><span class="line">                                    &lt;descriptorRefs&gt;</span><br><span class="line">                                        &lt;descriptorRef&gt;jar-with-dependencies&lt;/descriptorRef&gt;</span><br><span class="line">                                    &lt;/descriptorRefs&gt;</span><br><span class="line">                                    &lt;archive&gt;</span><br><span class="line">                                        &lt;manifestEntries&gt;</span><br><span class="line">                                            &lt;Premain-Class&gt;com.zwy.agent.MyInstrumentationAgent&lt;/Premain-Class&gt;</span><br><span class="line">                                            &lt;Agent-Class&gt;com.zwy.agent.MyInstrumentationAgent&lt;/Agent-Class&gt;</span><br><span class="line">                                            &lt;Can-Redefine-Classes&gt;true&lt;/Can-Redefine-Classes&gt;</span><br><span class="line">                                            &lt;Can-Retransform-Classes&gt;true&lt;/Can-Retransform-Classes&gt;</span><br><span class="line">                                            &lt;mainClass&gt;com.zwy.application.Launcher&lt;/mainClass&gt;</span><br><span class="line">                                        &lt;/manifestEntries&gt;</span><br><span class="line">                                    &lt;/archive&gt;</span><br><span class="line">                                &lt;/configuration&gt;</span><br><span class="line">                            &lt;/execution&gt;</span><br><span class="line">                        &lt;/executions&gt;</span><br><span class="line">                    &lt;/plugin&gt;</span><br><span class="line">                &lt;/plugins&gt;</span><br><span class="line">            &lt;/build&gt;</span><br><span class="line">        &lt;/profile&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="javassist-CannotCompileException-source-error-is-missing"><a href="#javassist-CannotCompileException-source-error-is-missing" class="headerlink" title="javassist.CannotCompileException: [source error] ) is missing"></a>javassist.CannotCompileException: [source error] ) is missing</h3></li>
+</ol>
+<p>出现该问题有可能是在拼接字符串是双引号没有处理好, 导致后面的内容丢失,形不成完成的java语句</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
+  id="post-深入理解Fork-Join框架"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2023/08/14/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Fork-Join%E6%A1%86%E6%9E%B6/"
+    >深入理解Fork/Join框架</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2023/08/14/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Fork-Join%E6%A1%86%E6%9E%B6/" class="article-date">
+  <time datetime="2023-08-14T01:56:12.000Z" itemprop="datePublished">2023-08-14</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+   
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
   id="post-java中自动装箱与拆箱"
   class="article article-type-post"
   itemscope
@@ -322,7 +433,27 @@
       
     <div class="article-entry" itemprop="articleBody">
        
-   
+  <h1 id="网络IO模型"><a href="#网络IO模型" class="headerlink" title="网络IO模型"></a>网络IO模型</h1><p>同步</p>
+<table>
+<thead>
+<tr>
+<th>网络模型</th>
+<th>优点</th>
+<th align="left">缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>同步阻塞IO</td>
+<td></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+ 
       <!-- reward -->
       
     </div>
@@ -535,168 +666,6 @@
 <p>方案二： nginx 提供文件服务</p>
 <p>方案三： Rust 的miniserve 提供文件服务</p>
 <p>最终采用方案三，因该改方案提供简单授权机制，url混淆，证书认证，界面好看点。还有就是rust即将引入liunx阵营，提前看看源码了解下</p>
- 
-      <!-- reward -->
-      
-    </div>
-    
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
-    </footer>
-  </div>
-
-    
- 
-    
-</article>
-
-    
-    <article
-  id="post-让mac新手好用的配置"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2022/04/21/%E8%AE%A9mac%E6%96%B0%E6%89%8B%E5%A5%BD%E7%94%A8%E7%9A%84%E9%85%8D%E7%BD%AE/"
-    >让mac新手好用的配置</a> 
-</h2>
- 
-
-      
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2022/04/21/%E8%AE%A9mac%E6%96%B0%E6%89%8B%E5%A5%BD%E7%94%A8%E7%9A%84%E9%85%8D%E7%BD%AE/" class="article-date">
-  <time datetime="2022-04-21T02:13:23.000Z" itemprop="datePublished">2022-04-21</time>
-</a>    
-    </div>
-      
-    <div class="article-entry" itemprop="articleBody">
-       
-  <h1 id="让mac新手好用的配置"><a href="#让mac新手好用的配置" class="headerlink" title="让mac新手好用的配置"></a>让mac新手好用的配置</h1><h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>之前一直是windows为主用本，最近切到mac air m1 作为生产主力。刚切过来不论是快捷键还是设置有点不太适应，以下配置是我认为新手入门最需要配置的，加快投入生产尽快带来投资回报。</p>
-<h1 id="软件"><a href="#软件" class="headerlink" title="软件"></a>软件</h1><ul>
-<li>brew(需要翻墙）</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/bin/bash -c <span class="string">&quot;<span class="subst">$(curl -fsSL &lt;https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh&gt;)</span>&quot;</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>shadowsockets （非大陆区商店）</li>
-<li>expressvpn （翻墙后下载，付费更安全）</li>
-<li>typora （好的markdown 编辑工具）</li>
-<li>sublime （优秀的文本编辑工具）</li>
-<li>edge （最新版的基于chronium，内存管理优秀，打通之前windows上账号体系）</li>
-<li>jetbrain toolbox （jetbrain的全家桶）</li>
-<li>iterm2 （优秀的terminal 管理工具）</li>
-<li>坚果云 （同步工具）</li>
-<li>another redis desktop manager （redis 客户端）</li>
-<li>tunelblick （openvpn 客户端）</li>
-<li>xmind （脑图）</li>
-<li>maven</li>
-<li>gradle</li>
-<li>zsh</li>
-<li>lrzsz</li>
-</ul>
-<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><ul>
-<li><p>brew</p>
-<ul>
-<li><p>关闭自动更新</p>
-<p>echo “HOMEBREW_NO_AUTO_UPDATE=1” &gt;&gt; ~/.zshrc</p>
-</li>
-</ul>
-</li>
-<li><p>zsh</p>
-<ul>
-<li>开启自动建议</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> git://github.com/zsh-users/zsh-autosuggestions <span class="variable">$ZSH_CUSTOM</span>/plugins/zsh-autosuggestions</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>开启高亮</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> git://github.com/zsh-users/zsh-syntax-highlighting <span class="variable">$ZSH_CUSTOM</span>/plugins/zsh-syntax-highlighting</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>开启插件</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plugins=(git zsh-autosuggestions zsh-syntax-highlighting)</span><br></pre></td></tr></table></figure></li>
-<li><p>镜像源替换</p>
-<p>```<br><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1614039">https://cloud.tencent.com/developer/article/1614039</a></p>
-</li>
-</ul>
- 
-      <!-- reward -->
-      
-    </div>
-    
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
-    </footer>
-  </div>
-
-    
- 
-    
-</article>
-
-    
-    <article
-  id="post-可变参数的一次空指针异常复盘"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2022/04/12/%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E7%9A%84%E4%B8%80%E6%AC%A1%E7%A9%BA%E6%8C%87%E9%92%88%E5%BC%82%E5%B8%B8%E5%A4%8D%E7%9B%98/"
-    >可变参数的一次空指针异常复盘</a> 
-</h2>
- 
-
-      
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2022/04/12/%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E7%9A%84%E4%B8%80%E6%AC%A1%E7%A9%BA%E6%8C%87%E9%92%88%E5%BC%82%E5%B8%B8%E5%A4%8D%E7%9B%98/" class="article-date">
-  <time datetime="2022-04-12T13:05:50.000Z" itemprop="datePublished">2022-04-12</time>
-</a>    
-    </div>
-      
-    <div class="article-entry" itemprop="articleBody">
-       
-  <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>在一次业务实现中，对落盘日志中增加个监测字段，由于一个计划中的监测链接可能是多个，故在一个方法中使用了可变参数接收监测链接，然后做处理。在处理的过程中导致null 异常，导致日志落盘失败，这在日志系统中较为致命，故此复盘总结。</p>
-<h1 id="现场模拟"><a href="#现场模拟" class="headerlink" title="现场模拟"></a>现场模拟</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public class VariableParamTest &#123;</span><br><span class="line">    private static String a = null;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        final VariableParamTest paramTest = new VariableParamTest();</span><br><span class="line"></span><br><span class="line">        paramTest.test(null);</span><br><span class="line">        paramTest.test(a);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private void test(String... str) &#123;</span><br><span class="line">        System.out.println(str);</span><br><span class="line">        if (str == null) &#123;</span><br><span class="line">            System.out.println(&quot;检测到null&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="现场结果"><a href="#现场结果" class="headerlink" title="现场结果"></a>现场结果</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">null</span><br><span class="line">检测到null</span><br><span class="line">[Ljava.lang.String;@2be94b0f</span><br></pre></td></tr></table></figure>
-
-<h1 id="结果分析"><a href="#结果分析" class="headerlink" title="结果分析"></a>结果分析</h1><ul>
-<li>可变参数实际上是语法糖，java在运行时将该参数编译成一个数组形式，所以能看到结果的第三行输出的方法签名是一个字符串数组</li>
-<li>编译器在进行构建数组的过程中，会进行类型匹配，如果是非String类型的将会报错，这个在编辑器的时候就能被发现</li>
-<li>参数的其实是一个引用地址值，null直接传递编译器不会进行转化。但如果是a=null，传入a，那么编译器收到的正常的地址值，就进行正常转化成[null] 形式</li>
-</ul>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
-<li>对于一个数组结构的入参判定不能仅仅停留在CollectionUtils.isEmpty层面，需要针对其中每个元素进行null判定，考虑到[3,null,null]这种类似情况</li>
-<li>在做单元测试时需要反复测试边界条件，确保所有的边界条件都测试到</li>
-<li>反复阅读代码，思考各种可能的情况，并把可能的情况都图形可视化</li>
-</ul>
-<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
-<li><a target="_blank" rel="noopener" href="https://www.runoob.com/w3cnote/java-varargs-parameter.html">Java 可变参数 | 菜鸟教程 (runoob.com)</a></li>
-</ul>
  
       <!-- reward -->
       
