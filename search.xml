@@ -153,6 +153,13 @@
 <p>方案二： nginx 提供文件服务</p>
 <p>方案三： Rust 的miniserve 提供文件服务</p>
 <p>最终采用方案三，因该改方案提供简单授权机制，url混淆，证书认证，界面好看点。还有就是rust即将引入liunx阵营，提前看看源码了解下</p>
+<h1 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h1><h2 id="Liunx"><a href="#Liunx" class="headerlink" title="Liunx"></a>Liunx</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo curl -L https://github.com/svenstaro/miniserve/releases/download/v0.4.1/miniserve-linux-x86_64 -o /usr/local/bin/miniserve</span><br><span class="line">sudo chmod +x /usr/local/bin/miniserve</span><br></pre></td></tr></table></figure>
+<h2 id="服务于某个文件夹"><a href="#服务于某个文件夹" class="headerlink" title="服务于某个文件夹"></a>服务于某个文件夹</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">miniserve some_dir</span><br></pre></td></tr></table></figure>
+
+<p>还可以设置密码, 端口之类的. 直接查看帮助命令即可</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/64413802">https://zhuanlan.zhihu.com/p/64413802</a></li>
+</ul>
 ]]></content>
   </entry>
   <entry>
@@ -603,7 +610,46 @@
 <li>出现该现象原因就是jar包里真的没有javassist相关的包. 如果采用的是maven-jar-plugin 插件就会出现该现象, 该插件会将第三方依赖剔除掉.<br>所以可以采用maven-assembly-plugin插件. 具体配置如下<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;profile&gt;</span><br><span class="line">            &lt;id&gt;agent-full&lt;/id&gt;</span><br><span class="line">            &lt;build&gt;</span><br><span class="line">                &lt;finalName&gt;arthas-agent&lt;/finalName&gt;</span><br><span class="line">                &lt;plugins&gt;</span><br><span class="line">                    &lt;plugin&gt;</span><br><span class="line">                        &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;</span><br><span class="line">                        &lt;artifactId&gt;maven-assembly-plugin&lt;/artifactId&gt;</span><br><span class="line">                        &lt;executions&gt;</span><br><span class="line">                            &lt;execution&gt;</span><br><span class="line">                                &lt;goals&gt;</span><br><span class="line">                                    &lt;goal&gt;single&lt;/goal&gt;</span><br><span class="line">                                &lt;/goals&gt;</span><br><span class="line">                                &lt;phase&gt;package&lt;/phase&gt;</span><br><span class="line">                                &lt;configuration&gt;</span><br><span class="line">                                    &lt;descriptorRefs&gt;</span><br><span class="line">                                        &lt;descriptorRef&gt;jar-with-dependencies&lt;/descriptorRef&gt;</span><br><span class="line">                                    &lt;/descriptorRefs&gt;</span><br><span class="line">                                    &lt;archive&gt;</span><br><span class="line">                                        &lt;manifestEntries&gt;</span><br><span class="line">                                            &lt;Premain-Class&gt;com.zwy.agent.MyInstrumentationAgent&lt;/Premain-Class&gt;</span><br><span class="line">                                            &lt;Agent-Class&gt;com.zwy.agent.MyInstrumentationAgent&lt;/Agent-Class&gt;</span><br><span class="line">                                            &lt;Can-Redefine-Classes&gt;true&lt;/Can-Redefine-Classes&gt;</span><br><span class="line">                                            &lt;Can-Retransform-Classes&gt;true&lt;/Can-Retransform-Classes&gt;</span><br><span class="line">                                            &lt;mainClass&gt;com.zwy.application.Launcher&lt;/mainClass&gt;</span><br><span class="line">                                        &lt;/manifestEntries&gt;</span><br><span class="line">                                    &lt;/archive&gt;</span><br><span class="line">                                &lt;/configuration&gt;</span><br><span class="line">                            &lt;/execution&gt;</span><br><span class="line">                        &lt;/executions&gt;</span><br><span class="line">                    &lt;/plugin&gt;</span><br><span class="line">                &lt;/plugins&gt;</span><br><span class="line">            &lt;/build&gt;</span><br><span class="line">        &lt;/profile&gt;</span><br></pre></td></tr></table></figure>
 <h3 id="javassist-CannotCompileException-source-error-is-missing"><a href="#javassist-CannotCompileException-source-error-is-missing" class="headerlink" title="javassist.CannotCompileException: [source error] ) is missing"></a>javassist.CannotCompileException: [source error] ) is missing</h3></li>
 </ol>
-<p>出现该问题有可能是在拼接字符串是双引号没有处理好, 导致后面的内容丢失,形不成完成的java语句</p>
+<p>出现该问题有可能是在拼接字符串是双引号没有处理好, 导致后面的内容丢失,形不成完整的java语句</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>深入理解ThreadLocal</title>
+    <url>/2023/09/06/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3ThreadLocal/</url>
+    <content><![CDATA[<h1 id="整体设计"><a href="#整体设计" class="headerlink" title="整体设计"></a>整体设计</h1><p>ThreadLocal 主要作用是解决线程间数据共享问题带来锁的竞争问题. 如果一个变量的作用范围和线程紧紧绑定在一起, 就可以使用ThreadLocal. 每个线程都保存一个ThreadLocalMap变量副本来实现线程间资源隔离,避免竞争</p>
+<h1 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">    public class ThreadLocalDemo &#123;</span><br><span class="line">	private static ThreadLocal threadLocal1 = new ThreadLocal();</span><br><span class="line">	public static void main(String[] args) throws InterruptedException &#123;</span><br><span class="line">		ThreadLocal threadLocal1 = new ThreadLocal();</span><br><span class="line">		threadLocal1.set(&quot;haha&quot;);</span><br><span class="line"></span><br><span class="line">		Thread t1 = new Thread(()-&gt;&#123;</span><br><span class="line">			threadLocal1.set(&quot;a&quot;);</span><br><span class="line">			try &#123;</span><br><span class="line">				Thread.sleep(2);</span><br><span class="line">			&#125; catch (InterruptedException e) &#123;</span><br><span class="line">				throw new RuntimeException(e);</span><br><span class="line">			&#125;</span><br><span class="line">			System.out.println(threadLocal1.get());</span><br><span class="line">		&#125;);</span><br><span class="line"></span><br><span class="line">		t1.start();</span><br><span class="line">		t1.join();</span><br><span class="line">		System.gc();</span><br><span class="line">		Thread.sleep(1000);</span><br><span class="line">		System.out.println(threadLocal1.get());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结果输出:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">a</span><br><span class="line">haha</span><br></pre></td></tr></table></figure>
+<p>可以看出, main和t1线程调用同一个Threadlocal的set方法, 但是get出来值都是当初<br>set进去的值. 这就是ThreadLocal的特性, 线程隔离.</p>
+<h1 id="类图"><a href="#类图" class="headerlink" title="类图"></a>类图</h1><p><img src="http://101.42.167.152:8080/1697010144656.png" alt="1697010145409"></p>
+<p>ThreadLocalMap 是位于ThreadLocal静态内部类, 每个Thread 内部都有一个ThreadLocalMap, 它是一个Map, 用于存储K-V结构的数据,<br>ThreadLocalMap.Entry 是位于ThreadLocalMap的一个静态内部类,实现了WeakReference类.<br>ThreadLocal 是Thread 和 ThreadLocalMap之间连接的一个桥梁</p>
+<h1 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h1><p>直接看jdk中的源码吧</p>
+<h1 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h1><ul>
+<li>存储用户会话信息</li>
+<li>上下文信息保存</li>
+<li>数据库连接 (spring 中 TransactionSynchronizedManager 会将连接保存到当前线程的ThreadLocal中, 从而单线程内能够形成事务的必要条件)</li>
+</ul>
+<h1 id="内存泄露"><a href="#内存泄露" class="headerlink" title="内存泄露"></a>内存泄露</h1><ul>
+<li>“为何ThreadLocalMap的key是弱引用” 这是一个关于ThreadLocal的高频面试题 , 通常的答案是“防止内存泄露”, 因为ThreadLocalMap的key如果是强引用,如果某个时刻ThreadLocal对象对回收了, 但ThreadLocalMap还保持该ThreadLocal对象的引用,就会造成内存泄露.<br>例1:<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public void test()&#123;</span><br><span class="line">    new Thread(()-&gt;&#123;</span><br><span class="line">        while(true)&#123;</span><br><span class="line">            ThreadLocal t1 = new ThreadLocal();</span><br><span class="line">            t1.set(&quot;test&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+在上面的极端例子中, ThreadLocal的实例变量的生命范围按理应该出了while就可以被GC回收了, 但如果ThreadLocalMap中的key是强引用, 而ThreadLocalMap被Thread线程实例持有着, 就造成每一轮ThreadLocal的实例都是可达的, 但是在业务代码中有无法使用,形成内存泄露的局面.</li>
+</ul>
+<p>例子2:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public static ThreadLocal t1 = new ThreadLocal();</span><br><span class="line">  public void test()&#123;</span><br><span class="line">      new Thread(()-&gt;&#123;</span><br><span class="line">              t1.set(&quot;test&quot;);</span><br><span class="line">              t1 = null;</span><br><span class="line">              while(true)&#123;</span><br><span class="line"></span><br><span class="line">              &#125;</span><br><span class="line">      &#125;)</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>在例2的情况中, t1 被置为null, 但由于ThreadLocalMap的key是强引用, 导致ThreadLocalMap中依然保存着t1的引用, 造成内存泄露.</p>
+<p>例子1中,我们可以通过显示执行remove操作来避免内存泄露; 但例子2中,我们必须使用弱引用才能达到目的.</p>
+<h1 id="ThreadLocal-的优势与劣势"><a href="#ThreadLocal-的优势与劣势" class="headerlink" title="ThreadLocal 的优势与劣势"></a>ThreadLocal 的优势与劣势</h1><ul>
+<li>优势<br>  通过使用变量副本将资源与线程关联起来, 避免了在调用函数时将参数传递给函数的麻烦.同时也避免的公共资源的争抢</li>
+<li>劣势<ol>
+<li>可以在任何地方修改,不知何时可以remove</li>
+<li>昂贵的继承成本, 每新建一个子线程,都会从父线程继承过来ThreadLocal相关数据<br>替换方案: scoped value</li>
+</ol>
+</li>
+</ul>
+<p>#参考</p>
+<ul>
+<li><a href="https://doanduyhai.wordpress.com/2011/12/04/threadlocal-explained/">https://doanduyhai.wordpress.com/2011/12/04/threadlocal-explained/</a></li>
+<li><a href="https://openjdk.org/jeps/446#:~:text=In%20effect%2C%20a%20scoped%20value%20is%20an%20implicit,value%20object%20can%20access%20its%20value%20%28the%20data%29">https://openjdk.org/jeps/446#:~:text=In%20effect%2C%20a%20scoped%20value%20is%20an%20implicit,value%20object%20can%20access%20its%20value%20%28the%20data%29</a>.</li>
+</ul>
 ]]></content>
   </entry>
 </search>
